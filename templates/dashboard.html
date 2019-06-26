@@ -1,0 +1,587 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type"
+				content="text/html; charset=utf-8" />
+	<meta name="viewport"
+				content="width=device-width; initial-scale=1; maximum-scale=1" />
+	<meta name="author"
+				content="SmartTemplates" />
+	<meta name="description"
+				content="medikit admin dashboard" />
+	<meta name="keywords"
+				content="medical dashboard, HTML UI KIT, medikit" />
+	<title>Wired</title>
+	<link rel="stylesheet"
+				href=" {% static 'css/daterangepicker.css' %}" />
+	<link rel="stylesheet"
+				href=" {% static 'css/select2.css' %}" />
+	<link rel="stylesheet"
+				href=" {% static 'css/ion.rangeSlider.min.css' %}" />
+	<link rel="stylesheet"
+				href=" {% static 'css/dashboard.min.css' %}" />
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,900"
+				rel="stylesheet" />
+</head>
+
+<body>
+	<div class="dashboard-wrap">
+		<header class="sidebar-header">
+			<img src=" {% static 'images/logo.svg' %}" alt="logo" class="sidebar-header__logo">
+		</header>
+
+		<!-- Section sidebar -->
+		<div class="section section--sidebar" id="sidebar">
+			<nav class="sidebar-menu">
+				<ul>
+					<li class="dashboard">
+						<a href="/"><b>Dashboard</b></a>
+					</li>
+					<li class="components has-submenu">
+						<a href="#"><b>Parameters<span class="submenu-arrow"></span></b></a>
+						<ul class="sidebar-menu__submenu">
+							<li>
+								<a href="/reading/power">Power</a>
+							</li>
+							<li>
+								<a href="/reading/d_inputs">Digital inputs</a>
+							</li>
+							<li><a href="/reading/energy">Energy</a></li>
+							<li><a href="/reading/voltage">Voltage</a></li>
+							<li><a href="/reading/current">Current</a></li>
+							<li><a href="/reading/active_power">Active power</a></li>
+							<li><a href="/reading/reactive_power">Reactive power</a></li>
+							<li><a href="/reading/apparent_power">Apparent power</a></li>
+							<li><a href="/reading/pf">Power factor</a></li>
+							<li><a href="/reading/frequency">Frequency</a></li>
+							<li><a href="/reading/max_demands">Max demands</a></li>
+						</ul>
+					</li>
+		
+					<li class="patients has-submenu">
+						<a href="#"><b>Customers<span class="submenu-arrow"></span></b></a>
+						<ul class="sidebar-menu__submenu">
+							<li>
+								<a href="dashboard__patients-add.html">Add new customers</a>
+							</li>
+							<li>
+								<a href="dashboard__patients.html">View all customers</a>
+							</li>
+							<li><a href="dashboard__patient.html">Customers profile</a></li>
+						</ul>
+					</li>
+					<li class="inbox">
+						<a href="dashboard__messages.html"><b>Messages<span class="submenu-bubble">3</span></b></a>
+					</li>
+					<li class="settings">
+						<a href="#"><b>Access Control</b></a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+
+		<!-- Section -->
+		<div class="section section--content"
+				 id="content">
+			<header class="content-header">
+				<div class="sidebar-resize"></div>
+				<div class="mobile-menu">
+					<div class="st-burger-icon st-burger-icon--medium">
+						<span></span>
+					</div>
+				</div>
+
+				<div class="content-header__user content-header__dropdown">
+					<div class="content-header__user-avatar content-header__dropdown-activate"
+							 data-dropdown="userdropdown">
+						<div class="content-header__user-thumb">
+							<img src="images/avatar-2.jpg"
+									 alt=""
+									 title="" />
+						</div>
+						<span class="content-header__user-name">Adewole John</span>
+					</div>
+					<nav class="dropdown-menu dropdown-menu--header dropdown-menu--user-menu "
+							 id="userdropdown">
+						<h3 class="dropdown-menu__subtitle">User menu</h3>
+						<ul>
+							<li><a href="dashboard__patient.html">View profile</a></li>
+							<li><a href="dashboard__patients-add.html">Edit</a></li>
+							<li class="logout">
+								<a href="#"
+									 class="button button--general button--red-border">Logout</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+
+				<div class="mobile-submenu"></div>
+
+				<nav class="content-header__menu">
+					<ul>
+						<li class="appointment modal-toggle"
+								data-openpopup="appointment">
+							<a href="#">Make an appointment</a>
+						</li>
+						<li class="prescription modal-toggle"
+								data-openpopup="prescription">
+							<a href="#">Write a prescription</a>
+						</li>
+						<li class="reports modal-toggle"
+								data-openpopup="reports">
+							<a href="#">Generate report</a>
+						</li>
+					</ul>
+				</nav>
+			</header>
+			<div class="content-subheader">
+				<div class="content-subheader__titles">
+					<h2 class="content-subheader__title">Charts</h2>
+					<nav class="content-subheader__breadcrumb-menu">
+						<ul>
+							<li><a href="/">Dashboard</a></li>
+						</ul>
+					</nav>
+				</div>
+
+			</div>
+
+			<div class="grid grid--margin mb0">
+				<div class="grid__row">
+					<div class="grid__col grid__col--12 grid__col--margin grid__col--padding bg-white gradient-blue">
+							<div class="d-flex align-c">
+								<div class="info-nr info-nr--strong color-white">Total Energy 1546-kwh</div>
+								<div class="info-details color-white">
+									<p>(ALL TIME USAGE)</p>
+								</div>
+							</div>
+						</div>
+						<div class="grid__col grid__col--12 grid__col--margin grid__col--padding bg-white gradient-pop">
+							<div class="grid__row justify-sb">
+								<div class="grid__col grid__col--mb-12">
+									<h3 class="grid__col-title">Peak Power</h3>
+									<span class="grid__col-subtitle">LAST MONTH</span>
+								</div>
+							</div>
+							<div class="d-flex align-c">
+								<div class="info-nr info-nr--strong gradient-pink gradient-text">48</div>
+								<div class="info-details">
+								<p>kwh</p>
+								</div>
+							</div>
+						</div>
+				</div>
+			</div>
+			<!-- End of Grid -->
+
+			<div class="grid grid--margin mb0">
+				<div class="grid__row">
+					<div class="grid__col grid__col--12 grid__col--margin grid__col--padding bg-white mb0">
+						<canvas id="ActivityChart" width="100%" height="40"></canvas>
+					</div>
+					<div class="grid__col grid__col--12 grid__col--margin grid__col--padding bg-white mb0">
+						<canvas id="DiseasesChart" width="100%" height="40"></canvas>
+					</div>
+				</div>
+				<div class="grid__col  grid__col--padding bg-white mt20">
+					<div class="table table--18">
+						<div class="table__header">
+							<div class="table__row">
+								<div class="table__cell"></div>
+								<div class="table__cell">NAME</div>
+								<div class="table__cell">GENDER</div>
+								<div class="table__cell">DATE OF BIRTH</div>
+								<div class="table__cell">EMAIL</div>
+								<div class="table__cell">PHONE</div>
+								<div class="table__cell">ADRESS</div>
+								<div class="table__cell"></div>
+							</div>
+						</div>
+						<div class="table__body">
+							<div class="table__row">
+								<div class="table__cell"><div class="avatar-thumb"><img src="images/avatar-3.jpg" alt="" title=""/></div></div>
+								<div class="table__cell">Olivia Wilson</div>
+								<div class="table__cell"><img src="images/icons/icons-20-gray/female.png" alt="" title=""/></div>
+								<div class="table__cell">13/05/1980</div>
+								<div class="table__cell">olivia@wilson.com</div>
+								<div class="table__cell">+47 789 526 2222</div>
+								<div class="table__cell">Toronto, Canada</div>
+								
+								<div class="table__cell">
+									<span class="show-more show-more--ellipsis has-dropdown" data-dropdown="dropd1"></span>
+									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" id="dropd1"> 			
+										<ul>
+											<li><a href="dashboard__patient-profile.html">View Profile</a></li>
+											<li><a href="#">Contact</a></li>
+											<li><a href="#">Delete</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+							<div class="table__row">
+								<div class="table__cell"><div class="avatar-thumb"><img src="images/avatar-1.jpg" alt="" title=""/></div></div>
+								<div class="table__cell">Oliver Barnes</div>
+								<div class="table__cell"><img src="images/icons/icons-20-gray/male.png" alt="" title=""/></div>
+								<div class="table__cell">21/12/1975</div>
+								<div class="table__cell">oliver@barnes.com</div>
+								<div class="table__cell">+33 555 526 1111</div>
+								<div class="table__cell">Barcelona, Spain</div>
+								
+								<div class="table__cell">
+									<span class="show-more show-more--ellipsis has-dropdown" data-dropdown="dropd2"></span>
+									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" id="dropd2"> 			
+										<ul>
+											<li><a href="dashboard__patient-profile.html">View Profile</a></li>
+											<li><a href="#">Contact</a></li>
+											<li><a href="#">Delete</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+							
+							<div class="table__row">
+								<div class="table__cell"><div class="avatar-thumb"><img src="images/avatar-2.jpg" alt="" title=""/></div></div>
+								<div class="table__cell">Maya Cooper</div>
+								<div class="table__cell"><img src="images/icons/icons-20-gray/female.png" alt="" title=""/></div>
+								<div class="table__cell">07/06/1985</div>
+								<div class="table__cell">maya@cooper.com</div>
+								<div class="table__cell">+47 789 526 2222</div>
+								<div class="table__cell">Berlin, Germany</div>
+								
+								<div class="table__cell">
+									<span class="show-more show-more--ellipsis has-dropdown" data-dropdown="dropd3"></span>
+									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" id="dropd3"> 			
+										<ul>
+											<li><a href="dashboard__patient-profile.html">View Profile</a></li>
+											<li><a href="#">Contact</a></li>
+											<li><a href="#">Delete</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+							<div class="table__row">
+								<div class="table__cell"><div class="avatar-thumb"><img src="images/avatar-4.jpg" alt="" title=""/></div></div>
+								<div class="table__cell">Adam King</div>
+								<div class="table__cell"><img src="images/icons/icons-20-gray/male.png" alt="" title=""/></div>
+								<div class="table__cell">23/02/1975</div>
+								<div class="table__cell">adam@king.com</div>
+								<div class="table__cell">+45 111 526 6789</div>
+								<div class="table__cell">Paris, France</div>
+								
+								<div class="table__cell">
+									<span class="show-more show-more--ellipsis has-dropdown" data-dropdown="dropd4"></span>
+									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" id="dropd4"> 			
+										<ul>
+											<li><a href="dashboard__patient-profile.html">View Profile</a></li>
+											<li><a href="#">Contact</a></li>
+											<li><a href="#">Delete</a></li>
+										</ul>
+									</nav>
+								</div>
+							</div>
+
+						</div>
+						
+					</div>
+					<!-- TABLE end -->
+				</div>
+			</div>
+			<!-- End of Grid -->
+		</div>
+		
+	</div>
+	<!-- Wrap end -->
+
+	
+
+	<div class="section section-panel"
+			 id="panel">
+		<div class="panel-resize"></div>
+		<div class="section-panel__content scrollbar-macosx">
+			<div class="grid">
+				<div class="grid__row">
+					<div class="grid__col grid__col--padding">
+						<div class="grid__row">
+							<div class="grid__col grid__col--margin">
+								<h3 class="grid__col-title">Admin</h3>
+							</div>
+						</div>
+						<div class="grid__row align-c">
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<label class="form__label pb0">ENABLED OPTION</label>
+							</div>
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<div class="form__switcher">
+									<label class="switch">
+										<input class="switch__input"
+													 type="checkbox"
+													 data-role="none"
+													 checked />
+										<span class="switch__label"
+													data-on="On"
+													data-off="Off"></span>
+										<span class="switch__handle"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="grid__row align-c">
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<label class="form__label pb0">DISABLED OPTION</label>
+							</div>
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<div class="form__switcher">
+									<label class="switch">
+										<input class="switch__input"
+													 type="checkbox"
+													 data-role="none" />
+										<span class="switch__label"
+													data-on="On"
+													data-off="Off"></span>
+										<span class="switch__handle"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="grid__row align-c">
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<label class="form__label pb0">ENABLED OPTION</label>
+							</div>
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<div class="form__switcher">
+									<label class="switch">
+										<input class="switch__input"
+													 type="checkbox"
+													 data-role="none"
+													 checked />
+										<span class="switch__label"
+													data-on="On"
+													data-off="Off"></span>
+										<span class="switch__handle"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="grid__row align-c">
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<label class="form__label pb0">DISABLED OPTION</label>
+							</div>
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<div class="form__switcher">
+									<label class="switch">
+										<input class="switch__input"
+													 type="checkbox"
+													 data-role="none" />
+										<span class="switch__label"
+													data-on="On"
+													data-off="Off"></span>
+										<span class="switch__handle"></span>
+									</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End of Grid -->
+		</div>
+	</div>
+	<!-- End of right panel -->
+
+	<!-- Modal - Appointment -->
+	<div class="modal modal--appointment">
+		<div class="modal__overlay modal__overlay--toggle"></div>
+		<div class="modal__wrapper modal-transition">
+			<div class="modal__body">
+				<div class="modal__header">
+					<h2 class="modal__header-title">Create User</h2>
+					<div class="modal__close modal__overlay--toggle"><span></span></div>
+				</div>
+				<div class="modal__content">
+					<div class="grid">
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<h3 class="grid__col-title">Company Information</h3>
+							</div>
+						</div>
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<label class="form__label">COMPANY NAME</label>
+								<input name="fname"
+											 id="fname"
+											 class="form__input required"
+											 type="text" />
+							</div>
+							<div class="grid__col grid__col--margin">
+								<label class="form__label">LOCATIONS</label>
+								<select class="custom-select w100"
+												name="appname">
+									<option value="Patient Name">Ikeja ID:13245</option>
+									<option value="Patient Name">Yaba ID:72245</option>
+									<option value="Patient Name">Victoria Island ID:19455</option>
+									<option value="Patient Name">Surulere ID:2845</option>
+									<option value="Patient Name">Maryland ID:13245</option>
+								</select>
+							</div>
+						</div>
+						<div class="grid__row  grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<label class="form__label">ADDRESS</label>
+								<input name="adress"
+											 id="adress"
+											 class="form__input required"
+											 type="text" />
+							</div>
+						</div>
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<h3 class="grid__col-title">User Information</h3>
+							</div>
+						</div>
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--13 grid__col--margin">
+								<div class="grid__col grid__col--margin">
+									<label class="form__label">USERNAME</label>
+									<input name="fname"
+												 id="fname"
+												 class="form__input required"
+												 type="text" />
+								</div>
+							</div>
+							<div class="grid__col grid__col--13 grid__col--margin">
+								<div class="grid__col grid__col--margin">
+									<label class="form__label">PASSWORD</label>
+									<input name="password"
+												 id="password"
+												 class="form__input required"
+												 type="password" />
+								</div>
+							</div>
+							<div class="grid__col grid__col--13 grid__col--margin">
+								<div class="grid__col grid__col--margin">
+									<label class="form__label">CONFIRM PASSWORD</label>
+									<input name="password"
+												 id="password"
+												 class="form__input required"
+												 type="password" />
+								</div>
+							</div>
+						</div>
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<input type="submit"
+											 name="submit"
+											 class="button button--submit button--blue-bg"
+											 id="submit"
+											 value="CREATE" />
+							</div>
+						</div>
+					</div>
+					<!-- End of Grid -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal - prescription -->
+	
+
+	<!-- Modal - reports -->
+	<div class="modal modal--reports">
+		<div class="modal__overlay modal__overlay--toggle"></div>
+		<div class="modal__wrapper modal-transition">
+			<div class="modal__body">
+				<div class="modal__header">
+					<h2 class="modal__header-title">Generate report</h2>
+					<div class="modal__close modal__overlay--toggle"><span></span></div>
+				</div>
+				<div class="modal__content">
+					<div class="grid">
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<h3 class="grid__col-title">Patient Information</h3>
+							</div>
+						</div>
+						
+						<div class="grid__row  grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<h3 class="grid__col-title">Report Information</h3>
+							</div>
+						</div>
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<label class="form__label">REPORT TYPE</label>
+								<select class="custom-select"
+												name="applocation">
+									<option value="Diseases">Diseases report</option>
+									<option value="Activity">Activity report</option>
+								</select>
+							</div>
+							<div class="grid__col grid__col--12 grid__col--margin">
+								<label class="form__label">REPORT PERIOD</label>
+								<input type="text"
+											 name="dates"
+											 class="form__input"
+											 value="" />
+							</div>
+						</div>
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<h3 class="grid__col-title">Doctor Information</h3>
+							</div>
+						</div>
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--13 grid__col--margin">
+								<label class="form__label">Generated by Doctor</label>
+								<select class="custom-select"
+												name="apptype">
+									<option value="Patient Name">Dr. Alexander Davies</option>
+									<option value="Patient Name">Dr. William Evans</option>
+									<option value="Patient Name">Dr. Daniel Smith</option>
+									<option value="Patient Name">Dr. Jayden Taylor</option>
+									<option value="Patient Name">Dr. Oliver Thomas</option>
+									<option value="Patient Name">Dr. Carter Roberts</option>
+									<option value="Patient Name">Dr. Sebastian Walker</option>
+									<option value="Patient Name">Dr. Joseph Johnson</option>
+									<option value="Patient Name">Dr. David Thompson</option>
+									<option value="Patient Name">Dr. Gabriel Wood</option>
+									<option value="Patient Name">Dr. Julian Robinson</option>
+								</select>
+							</div>
+							<div class="grid__col grid__col--23 grid__col--margin">
+								<label class="form__label">NOTES</label>
+								<input name="notes"
+											 id="notes"
+											 class="form__input"
+											 type="text" />
+							</div>
+						</div>
+						<div class="grid__row grid__row--margin">
+							<div class="grid__col grid__col--margin">
+								<input type="submit"
+											 name="submit"
+											 class="button button--submit button--blue-bg"
+											 id="submit"
+											 value="GENERATE REPORT" />
+							</div>
+						</div>
+					</div>
+					<!-- End of Grid -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+	<script src="{% static 'js/Chart.min.js' %}"></script>
+	<script src="{% static 'js/chartjs-plugin-style.min.js' %}"></script>
+	<script src="{% static 'js/charts-custom-charts.js' %}"></script>
+	<script src="{% static 'js/moment.min.js' %}"></script>
+	<script src="{% static 'js/select2.min.js' %}"></script>
+	<script src="{% static 'js/daterangepicker.min.js' %}"></script>
+	<script src="{% static 'js/ion.rangeSlider.min.js' %}"></script>
+	<script src="{% static 'js/jquery.dashboard-custom.js' %}"></script>
+</body>
+
+</html>
