@@ -121,24 +121,25 @@
 
 				<nav class="content-header__menu">
 					<ul>
-						<li class="appointment modal-toggle"
-								data-openpopup="appointment">
-							<a href="#">Make an appointment</a>
-						</li>
-						<li class="prescription modal-toggle"
-								data-openpopup="prescription">
-							<a href="#">Write a prescription</a>
-						</li>
+						
 						<li class="reports modal-toggle"
-								data-openpopup="reports">
-							<a href="#">Generate report</a>
+						data-openpopup="reports">
+						<a href="#">Generate report</a>
+						</li>
+						<li class="reports prescription modal-toggle">
+						<select class="show-more show-more--select show-more--select-gray has-dropdown"><option value="volvo">IKOYI</option>
+							<option value="saab">MARYLAND</option>
+							<option value="mercedes">IKEJA</option>
+							<option value="audi">OGBA</option>
+						</select>
+						
 						</li>
 					</ul>
 				</nav>
 			</header>
 			<div class="content-subheader">
 				<div class="content-subheader__titles">
-					<h2 class="content-subheader__title">Charts</h2>
+					<h2 class="content-subheader__title">Home</h2>
 					<nav class="content-subheader__breadcrumb-menu">
 						<ul>
 							<li><a href="/">Dashboard</a></li>
@@ -190,93 +191,72 @@
 						<div class="table__header">
 							<div class="table__row">
 								<div class="table__cell"></div>
-								<div class="table__cell">NAME</div>
-								<div class="table__cell">GENDER</div>
-								<div class="table__cell">DATE OF BIRTH</div>
-								<div class="table__cell">EMAIL</div>
-								<div class="table__cell">PHONE</div>
-								<div class="table__cell">ADRESS</div>
+								<div class="table__cell">TIME</div>
+								<div class="table__cell">L1-VOLT</div>
+								<div class="table__cell">L2-VOLT</div>
+								<div class="table__cell">L3-VOLT</div>
+								<div class="table__cell">L1-CURRENT</div>
+								<div class="table__cell">L2-CURENT</div>
+								<div class="table__cell">L3-CURENT</div>
+								<div class="table__cell">RUNNING ON</div>
 								<div class="table__cell"></div>
 							</div>
 						</div>
 						<div class="table__body">
 							<div class="table__row">
-								<div class="table__cell"><div class="avatar-thumb"><img src="images/avatar-3.jpg" alt="" title=""/></div></div>
-								<div class="table__cell">Olivia Wilson</div>
-								<div class="table__cell"><img src="images/icons/icons-20-gray/female.png" alt="" title=""/></div>
-								<div class="table__cell">13/05/1980</div>
-								<div class="table__cell">olivia@wilson.com</div>
-								<div class="table__cell">+47 789 526 2222</div>
-								<div class="table__cell">Toronto, Canada</div>
+								<div class="table__cell"><div class="avatar-thumb"></div></div>
+								<div class="table__cell">13-05-2019 12pm</div>
+								<div class="table__cell">240V</div>
+								<div class="table__cell">230V</div>
+								<div class="table__cell">220V</div>
+								<div class="table__cell">60A</div>
+								<div class="table__cell">60A</div>
+								<div class="table__cell">60A</div>
+								<div class="table__cell">GEN</div>
 								
-								<div class="table__cell">
-									<span class="show-more show-more--ellipsis has-dropdown" data-dropdown="dropd1"></span>
-									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" id="dropd1"> 			
-										<ul>
-											<li><a href="dashboard__patient-profile.html">View Profile</a></li>
-											<li><a href="#">Contact</a></li>
-											<li><a href="#">Delete</a></li>
-										</ul>
-									</nav>
-								</div>
+								
 							</div>
 							<div class="table__row">
-								<div class="table__cell"><div class="avatar-thumb"><img src="images/avatar-1.jpg" alt="" title=""/></div></div>
-								<div class="table__cell">Oliver Barnes</div>
-								<div class="table__cell"><img src="images/icons/icons-20-gray/male.png" alt="" title=""/></div>
-								<div class="table__cell">21/12/1975</div>
-								<div class="table__cell">oliver@barnes.com</div>
-								<div class="table__cell">+33 555 526 1111</div>
-								<div class="table__cell">Barcelona, Spain</div>
-								
-								<div class="table__cell">
-									<span class="show-more show-more--ellipsis has-dropdown" data-dropdown="dropd2"></span>
-									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" id="dropd2"> 			
-										<ul>
-											<li><a href="dashboard__patient-profile.html">View Profile</a></li>
-											<li><a href="#">Contact</a></li>
-											<li><a href="#">Delete</a></li>
-										</ul>
-									</nav>
+									<div class="table__cell"><div class="avatar-thumb"></div></div>
+									<div class="table__cell">13-05-2019 12pm</div>
+									
+									<div class="table__cell">240V</div>
+									<div class="table__cell">230V</div>
+									<div class="table__cell">220V</div>
+									<div class="table__cell">60A</div>
+									<div class="table__cell">60A</div>
+									<div class="table__cell">60A</div>
+									<div class="table__cell">PHCN</div>
 								</div>
-							</div>
-							
-							<div class="table__row">
-								<div class="table__cell"><div class="avatar-thumb"><img src="images/avatar-2.jpg" alt="" title=""/></div></div>
-								<div class="table__cell">Maya Cooper</div>
-								<div class="table__cell"><img src="images/icons/icons-20-gray/female.png" alt="" title=""/></div>
-								<div class="table__cell">07/06/1985</div>
-								<div class="table__cell">maya@cooper.com</div>
-								<div class="table__cell">+47 789 526 2222</div>
-								<div class="table__cell">Berlin, Germany</div>
 								
-								<div class="table__cell">
-									<span class="show-more show-more--ellipsis has-dropdown" data-dropdown="dropd3"></span>
-									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" id="dropd3"> 			
-										<ul>
-											<li><a href="dashboard__patient-profile.html">View Profile</a></li>
-											<li><a href="#">Contact</a></li>
-											<li><a href="#">Delete</a></li>
-										</ul>
-									</nav>
+								<div class="table__row">
+									<div class="table__cell"><div class="avatar-thumb"></div></div>
+									<div class="table__cell">13-05-2019 12pm</div>
+
+									<div class="table__cell">240V</div>
+									<div class="table__cell">230V</div>
+									<div class="table__cell">220V</div>
+									<div class="table__cell">60A</div>
+									<div class="table__cell">60A</div>
+									<div class="table__cell">60A</div>
+									<div class="table__cell">PHCN</div>
 								</div>
-							</div>
-							<div class="table__row">
-								<div class="table__cell"><div class="avatar-thumb"><img src="images/avatar-4.jpg" alt="" title=""/></div></div>
-								<div class="table__cell">Adam King</div>
-								<div class="table__cell"><img src="images/icons/icons-20-gray/male.png" alt="" title=""/></div>
-								<div class="table__cell">23/02/1975</div>
-								<div class="table__cell">adam@king.com</div>
-								<div class="table__cell">+45 111 526 6789</div>
-								<div class="table__cell">Paris, France</div>
+								<div class="table__row">
+								<div class="table__cell"></div>
+								<div class="table__cell"></div>
+								<div class="table__cell"></div>
+								<div class="table__cell"></div>
+								<div class="table__cell"></div>
+								<div class="table__cell"></div>
+								<div class="table__cell"></div>
 								
 								<div class="table__cell">
-									<span class="show-more show-more--ellipsis has-dropdown" data-dropdown="dropd4"></span>
-									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" id="dropd4"> 			
+									<span ></span>
+									<nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" > 			
 										<ul>
-											<li><a href="dashboard__patient-profile.html">View Profile</a></li>
-											<li><a href="#">Contact</a></li>
-											<li><a href="#">Delete</a></li>
+											<li><a href=""></a></li>
+											<li><a href="#"></a></li>
+											<li><a href="#"></a></li>
 										</ul>
 									</nav>
 								</div>
