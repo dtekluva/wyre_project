@@ -246,3 +246,88 @@ var CustomChart = new Chart(chartcustom, {
     }
 });
 
+
+// POWER CHARTS LINE BASED CHART
+
+var chartpower = document.getElementById('power_chart').getContext("2d");
+
+
+var power_chart = new Chart(chartpower, {
+    type: 'line',
+    yAxisID: "k-Watts",
+    xAxisID: "Location",
+    data: {
+        labels: ["IKOYI", "MAIN", "HQTRS", "MRYLND", "OGBA", "IKJ", "V.I"],
+        datasets: [{
+            label: "Max kW",
+            borderColor: gradientStroke,
+            pointBorderColor: gradientStroke,
+            pointBackgroundColor: "rgba(255, 255, 255, 1)",
+            pointHoverBackgroundColor: "rgba(128, 182, 244, 1)",
+            pointHoverBorderColor: gradientStroke,
+            pointBorderWidth: 1,
+            pointHoverRadius: 3,
+            pointHoverBorderWidth: 1,
+            pointRadius: 3,
+            fill: true,
+			backgroundColor: gradientFill,
+            borderWidth: 2,
+            data: [40, 4, 31, 10, 34, 12, 48]
+        },	{
+            label: "Min kW",
+            borderColor: gradientStroke2,
+            pointBorderColor: gradientStroke2,
+            pointBackgroundColor: "rgba(255, 255, 255, 1)",
+            pointHoverBackgroundColor: "rgba(128, 182, 244, 1)",
+            pointHoverBorderColor: gradientStroke2,
+            pointBorderWidth: 1,
+            pointHoverRadius: 3,
+            pointHoverBorderWidth: 1,
+            pointRadius: 3,
+            fill: true,
+			backgroundColor: gradientFill2,
+            borderWidth: 2,
+            data: [26, 12, 20, 16, 6, 25, 18]
+        }
+		]
+    },
+    options: {          
+        legend: {
+            position: "top",
+            labels: {
+                boxWidth: 15,
+				padding: 15
+            },
+            title: {
+                display: true,
+                text: 'Usage so far this month(kWatts)'
+            }
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    fontColor: "rgba(0,0,0,0.5)",
+                    fontStyle: "bold",
+                    beginAtZero: true,
+                    maxTicksLimit: 5,
+                    padding: 20
+                },
+                gridLines: {
+                    drawTicks: false,
+                    display: false
+                }
+
+            }],
+            xAxes: [{
+                gridLines: {
+                    zeroLineColor: "transparent"
+                },
+                ticks: {
+                    padding: 20,
+                    fontColor: "rgba(0,0,0,0.5)",
+                    fontStyle: "bold"
+                }
+            }]
+        }
+    }
+});
