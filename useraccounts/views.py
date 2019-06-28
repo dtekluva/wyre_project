@@ -13,7 +13,6 @@ import ast
 
 
 def login_view(request):
-        print(request)
 
         if request.method == 'POST':
                 # form = LoginForm(request.POST)
@@ -25,22 +24,22 @@ def login_view(request):
                         email = email.lower()
                         password    = request.POST.get("password", "")
 
-                        # try:
-                        #GET CORRESPONDING USERNAME FROM EMAIL POSTED
-                        # username = User.objects.get(email = email).username
-                        user = authenticate(username = username.lower(), password = password)
-
-                        user = User.objects.get(username=username)
-                        if (user.username == username): #allows user to login using username
-                                # No backend authenticated the credentials
+                        try:
+                                #GET CORRESPONDING USERNAME FROM EMAIL POSTED
+                                # username = User.objects.get(email = email).username
+                                user = authenticate(username = username.lower(), password = password)
 
                                 user = User.objects.get(username=username)
-                                login(request, user)
+                                if (user.username == username): #allows user to login using username
+                                        # No backend authenticated the credentials
 
-                                return HttpResponse(json.dumps({"response":"success"}))
-                        # except:
-                        #         return HttpResponse(json.dumps({"response":"failure"}))    
-                        #         # return render(request, 'resolute/registration/login.html', {'form' : form, 'error':'Sorry incorrect Username or Password !!!'})
+                                        user = User.objects.get(username=username)
+                                        login(request, user)
+
+                                        return HttpResponse(json.dumps({"response":"success"}))
+                        except:
+                                return HttpResponse(json.dumps({"response":"failure"}))    
+                                # return render(request, 'resolute/registration/login.html', {'form' : form, 'error':'Sorry incorrect Username or Password !!!'})
 
         else:
                 return render(request, "login.html")
