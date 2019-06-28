@@ -2609,7 +2609,7 @@ input[type="radio"]:checked + label:before {
 }
 
 .modal__content--login {
-  background-color: #ff5acd;
+  background-color: #5616f5;
 }
 
 .modal__content--forgot {
@@ -2623,6 +2623,7 @@ input[type="radio"]:checked + label:before {
 .modal__info {
   width: 34%;
   display: table-cell;
+  background-color: #5616f5;
   height: 100%;
   padding: 40px 3%;
   color: #fff;
@@ -3359,6 +3360,7 @@ ul.grid__list--fmenu li a:hover {
   }
   .modal__info {
     display: none;
+    background-color: #5616f5;
   }
   .modal__form {
     width: 90%;
