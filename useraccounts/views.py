@@ -27,9 +27,9 @@ def login_view(request):
                         try:
                                 #GET CORRESPONDING USERNAME FROM EMAIL POSTED
                                 # username = User.objects.get(email = email).username
+                                # user = User.objects.get(username=username)
                                 user = authenticate(username = username.lower(), password = password)
 
-                                user = User.objects.get(username=username)
                                 if (user.username == username): #allows user to login using username
                                         # No backend authenticated the credentials
 

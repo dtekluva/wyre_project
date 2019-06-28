@@ -35,22 +35,18 @@ const post = ()=>{
         .then(resp => {
           resp = JSON.parse(resp)
           console.log(resp)
-
+          
           if (resp.response == 'success') {
             window.location.replace('/')
-          } else if (resp.response == 'fail') {
-            text = {
-                      title: "Possible Duplicate error",
-                      text: `User with similar record possibly exists. Please confirm`,
-                      icon: "error",
-                    }
+          } else if (resp.response == 'failure') {
+            $("#login_error").show()
           }
         })
         .catch(() => {
           text = {
             title: "Network Error",
             text: `Please check your internet connection.!!`,
-            icon: "error",
+            icon: "error"
           };
         }) // post data
 
