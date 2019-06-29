@@ -19,7 +19,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('power/', views.power, name='power')
+    path('power/', views.power, name='power'),
+    path('voltage/', views.voltage, name='voltage')
     # path('detail_view', views.detail_view, name='detail_view'),
     # path('locationpost', views.locationpost, name='locationpost'),
     # path('incidents', views.incidents, name='incidents'),

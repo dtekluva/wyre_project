@@ -22,6 +22,8 @@
 				href=" {% static 'css/ion.rangeSlider.min.css' %}" />
 	<link rel="stylesheet"
 				href=" {% static 'css/dashboard.min.css' %}" />
+	<link rel="stylesheet"
+				href=" {% static 'css/extra-style.css' %}" />
 	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,900"
 				rel="stylesheet" />
 </head>
@@ -46,10 +48,12 @@
 								<a href="/power">Power</a>
 							</li>
 							<li>
+								<a href="/voltage">Voltage</a>
+							</li>
+							<li>
 								<a href="/d_inputs">Digital inputs</a>
 							</li>
 							<li><a href="/energy">Energy</a></li>
-							<li><a href="/voltage">Voltage</a></li>
 							<li><a href="/current">Current</a></li>
 							<li><a href="/active_power">Active power</a></li>
 							<li><a href="/reactive_power">Reactive power</a></li>
@@ -140,6 +144,13 @@
 			<div class="content-subheader">
 				<div class="content-subheader__titles">
 					<h2 class="content-subheader__title">Home</h2>
+					{% if page != "Dashboard" %}
+					<nav class="content-subheader__breadcrumb-menu">
+						<ul>
+							<li><a href="/">Parameters</a></li>
+						</ul>
+					</nav>
+					{% endif %}
 					<nav class="content-subheader__breadcrumb-menu">
 						<ul>
 							<li><a href="/">{{page}}</a></li>
@@ -438,8 +449,6 @@
 		</div>
 	</div>
 	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
-
-	
 	<script src="{% static 'js/moment.min.js' %}"></script>
 	<script src="{% static 'js/select2.min.js' %}"></script>
 	<script src="{% static 'js/daterangepicker.min.js' %}"></script>

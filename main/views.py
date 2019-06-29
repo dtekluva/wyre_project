@@ -21,3 +21,9 @@ def power(request):
         user = User.objects.get(pk = request.user.id)
 
         return render(request, 'power.html', {'user':user, "page": page})
+
+def voltage(request):
+        page = "Voltage Readings (Volts)"
+        user = User.objects.get(pk = request.user.id)
+
+        return render(request, 'voltage.html', {'user':user, "page": page})
