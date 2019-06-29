@@ -120,7 +120,7 @@ var DiseasesChart = new Chart(chartdiseases, {
     options: {    
         title: {
             display: true,
-            text: 'Usage so far this month(kWatts)'
+            text: 'Usage so far this month(Hrs.)'
         },      
         legend: {
             position: "bottom",
