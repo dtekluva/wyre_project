@@ -55,12 +55,12 @@
 							</li> -->
 							<!-- <li><a href="/energy">Energy</a></li> -->
 							<li><a href="/current">Current</a></li>
-							<li><a href="/active_power">Active power</a></li>
-							<li><a href="/reactive_power">Reactive power</a></li>
+							<li><a href="/interaction">Load Interactions</a></li>
+							<!-- <li><a href="/reactive_power">Reactive power</a></li>
 							<li><a href="/apparent_power">Apparent power</a></li>
 							<li><a href="/pf">Power factor</a></li>
-							<li><a href="/frequency">Frequency</a></li>
-							<li><a href="/max_demands">Max demands</a></li>
+							<li><a href="/frequency">Frequency</a></li> -->
+							<li><a href="/max_demand">Max demands</a></li>
 						</ul>
 					</li>
 		
@@ -131,12 +131,16 @@
 						<a href="#">Generate report</a>
 						</li>
 						<li class="reports prescription modal-toggle">
-						<select class="show-more show-more--select show-more--select-gray has-dropdown"><option value="volvo">IKOYI</option>
-							<option value="saab">MARYLAND</option>
-							<option value="mercedes">IKEJA</option>
-							<option value="audi">OGBA</option>
+						<select class="show-more show-more--select show-more--select-gray has-dropdown" id="branch">
+							{% for branch in branches %}
+								<option value="{{branch.id}}">{{branch.name}}</option>
+							{% endfor %}
 						</select>
 						
+						</li>
+						<li class="reports modal-toggle">
+							
+							<input type="text" name="dates" class="time_period form__input button" value="">
 						</li>
 					</ul>
 				</nav>
@@ -447,13 +451,15 @@
 				</div>
 			</div>
 		</div>
-	</div>
+		{% csrf_token %}
+		</div>
 	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 	<script src="{% static 'js/moment.min.js' %}"></script>
 	<script src="{% static 'js/select2.min.js' %}"></script>
 	<script src="{% static 'js/daterangepicker.min.js' %}"></script>
 	<script src="{% static 'js/ion.rangeSlider.min.js' %}"></script>
 	<script src="{% static 'js/jquery.dashboard-custom.js' %}"></script>
+	<script src="{% static 'js/dashboard.js' %}"></script>
 </body>
 
 </html>

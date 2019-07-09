@@ -90,7 +90,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'wyre.wsgi.application'
-
+# DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases

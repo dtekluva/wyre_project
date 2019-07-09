@@ -3,3 +3,7 @@
 .table__cell{
     text-align: center !important;
 }
+
+.time_period {
+    margin-left: 20px;
+}

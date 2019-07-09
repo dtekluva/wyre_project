@@ -4,6 +4,7 @@ from main.models import Branch, Customer, Device, Reading, Location
 
 class BranchAdmin(admin.ModelAdmin):
     list_display = ('name', 'address' )
+    
 
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('user', 'company_name', 'phone' )

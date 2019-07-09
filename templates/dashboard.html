@@ -8,7 +8,7 @@
 				<div class="grid__row">
 					<div class="grid__col grid__col--12 grid__col--margin grid__col--padding bg-white gradient-blue">
 							<div class="d-flex align-c">
-								<div class="info-nr info-nr--strong color-white">Total Energy 1546-kwh</div>
+								<div class="info-nr info-nr--strong color-white">Total Energy {{energy_used}}-kwh</div>
 								<div class="info-details color-white">
 									<p>(ALL TIME USAGE)</p>
 								</div>
@@ -39,7 +39,7 @@
 							">
 									<h3 class="grid__col-title">Peak Demand</h3>
 									<span class="grid__col-subtitle">THIS MONTH</span>
-									<div class="info-nr info-nr--strong gradient-pink gradient-text">67</div>
+									<div class="info-nr info-nr--strong gradient-pink gradient-text">{{peak_kw}}</div>
 									<div class="info-details">
 										<p style="
 								text-align: center;
@@ -52,7 +52,7 @@
 							">
 								<h3 class="grid__col-title">Min. Demand</h3>
 								<span class="grid__col-subtitle">THIS MONTH</span>
-								<div class="info-nr info-nr--strong gradient-pink gradient-text">40</div>
+								<div class="info-nr info-nr--strong gradient-pink gradient-text">{{min_kw}}</div>
 								<div class="info-details">
 									<p style="
 								text-align: center;
@@ -64,7 +64,7 @@
 							">
 								<h3 class="grid__col-title">Avg. Demand</h3>
 								<span class="grid__col-subtitle">THIS MONTH</span>
-								<div class="info-nr info-nr--strong gradient-pink gradient-text">59</div>
+								<div class="info-nr info-nr--strong gradient-pink gradient-text">{{avg_kw}}</div>
 								<div class="info-details">
 									<p style="
 								text-align: center;
@@ -176,47 +176,3 @@
 			<script src="{% static 'js/chartjs-plugin-style.min.js' %}"></script>
 			<script src="{% static 'js/charts-custom-charts.js' %}"></script>
 		{% endblock %}
-<div class="grid__col grid__col--12 grid__col--margin grid__col--padding bg-white gradient-pop" style="
-		display: flex;
-	">
-	<div class="grid__row justify-sb" style="
-		flex: 1;
-	">
-		<div class="grid__col grid__col--mb-12" style="
-		text-align: center;
-	">
-			<h3 class="grid__col-title">Peak Power</h3>
-			<span class="grid__col-subtitle">LAST MONTH</span>
-			<div class="info-nr info-nr--strong gradient-pink gradient-text">48</div>
-			<div class="info-details">
-				<p style="
-		text-align: center;
-	">kwh</p>
-			</div>
-		</div>
-	</div>
-	<div class="grid__col grid__col--mb-12" style="
-		text-align: center;
-	">
-		<h3 class="grid__col-title">Peak Power</h3>
-		<span class="grid__col-subtitle">LAST MONTH</span>
-		<div class="info-nr info-nr--strong gradient-pink gradient-text">48</div>
-		<div class="info-details">
-			<p style="
-		text-align: center;
-	">kwh</p>
-		</div>
-	</div>
-	<div class="grid__col grid__col--mb-12" style="
-		text-align: center;
-	">
-		<h3 class="grid__col-title">Peak Power</h3>
-		<span class="grid__col-subtitle">LAST MONTH</span>
-		<div class="info-nr info-nr--strong gradient-pink gradient-text">48</div>
-		<div class="info-details">
-			<p style="
-		text-align: center;
-	">kwh</p>
-		</div>
-	</div>
-</div>

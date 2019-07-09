@@ -13,22 +13,27 @@ class Customer(models.Model):
 
 
 class Branch(models.Model):
-    customer        = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'branch_customer')
-    name        = models.CharField(max_length=256, default = " ",null=True, blank = True)
-    phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
-    address         = models.TextField(max_length=400, null=True, blank = True)
+    customer  = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'branch_customer')
+    user     = models.ForeignKey(User, on_delete=models.CASCADE, default = 1, related_name = 'branch_user')
+    name      = models.CharField(max_length=256, default = " ",null=True, blank = True)
+    phone     = models.CharField(max_length=40, default = 0,null=True, blank = True)
+    address   = models.TextField(max_length=400, null=True, blank = True)
+
+    class Meta:
+        verbose_name_plural = "Branches"
 
     def __str__(self):
         return self.name
 
 
 class Location(models.Model):
-    customer        = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'location_customer')
-    branch          = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name = 'location_branch')
-    device_type     = models.CharField(max_length=40, null=True, blank = True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'location_customer')
+    branch   = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name = 'location_branch')
+    user     = models.ForeignKey(User, on_delete=models.CASCADE, default = 1, related_name = 'location_user')
+    device_type = models.CharField(max_length=40, null=True, blank = True)
     name        = models.CharField(max_length=256, default = " ",null=True, blank = True)
-    phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
-    address         = models.TextField(max_length=400, null=True, blank = True)
+    phone       = models.CharField(max_length=40, default = 0,null=True, blank = True)
+    address     = models.TextField(max_length=400, null=True, blank = True)
 
     def __str__(self):
         return self.name
@@ -37,6 +42,8 @@ class Location(models.Model):
 class Device(models.Model):
     customer        = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'device_customer')
     location        = models.ForeignKey(Location, on_delete=models.CASCADE, related_name = 'device_location')
+    branch        = models.ForeignKey(Branch, on_delete=models.CASCADE, default = 1, related_name = 'device_branch')
+    user        = models.ForeignKey(User, on_delete=models.CASCADE, default = 1, related_name = 'device_user')
     device_id       = models.CharField(max_length=40, null=True, blank = True)
     device_type     = models.CharField(max_length=40, null=True, blank = True)
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
@@ -49,7 +56,9 @@ class Device(models.Model):
 class Reading(models.Model):
     customer        = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'reading_customer', default = 1)
     device          = models.ForeignKey(Device, on_delete=models.CASCADE, related_name = 'reading_device', default = 1)
-    post_date    = models.DateField(auto_now_add = True)
+    user          = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'reading_user', default = 1)
+    post_datetime= models.DateTimeField(blank = True)
+    post_date    = models.DateField(blank = True)
     post_time    = models.TimeField(blank=True)
     voltage_l1_l12  = models.FloatField(null=True, blank=True, default=None)
     voltage_l2_l23  = models.FloatField(null=True, blank=True, default=None)
