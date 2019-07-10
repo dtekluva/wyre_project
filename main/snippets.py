@@ -46,9 +46,12 @@ def get_reading_stats(user_id, start_date, end_date):
 
         readings += [x[0] for x in  list(get_readings(device.id, start_date, end_date, target))]#UNWRAP TUPLES AND REMOVE INTEGER VALUES
     
-    max_read = int(max(readings))
-    min_read = int(min(readings))
-    avg_read = int(sum(readings)/len(readings))
+    if len(readings) > 0:
+        max_read = int(max(readings))
+        min_read = int(min(readings))
+        avg_read = int(sum(readings)/len(readings))
+    else:
+        min_read = max_read = avg_read = 0
 
     return max_read, min_read, avg_read
 
