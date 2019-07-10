@@ -7,3 +7,7 @@
 .time_period {
     margin-left: 20px;
 }
+
+#total_kw{
+    font-weight: lighter !important;
+}

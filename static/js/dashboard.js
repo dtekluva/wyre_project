@@ -53,7 +53,7 @@ const post = (branch, period)=>{
           
           if (resp.response == 'success') {
             // alert("Feature in progress");
-            total_kw.innerHTML = `Total Energy ${resp.data.energy_used}-kwh`;
+            total_kw.innerHTML = `${resp.data.energy_used} kwh`;
             peak_kw.innerHTML = resp.data.peak_kw;
             min_kw.innerHTML = resp.data.min_kw;
             avg_kw.innerHTML = resp.data.avg_kw;
