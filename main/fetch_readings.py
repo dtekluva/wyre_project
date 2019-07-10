@@ -9,8 +9,8 @@ username = "ppl"
 password = "Wyre1234"
 device_id = "133813"
 
-start_date = "2019-06-01"
-end_date = "2019-07-06"
+start_date = "2019-07-07"
+end_date = "2019-07-15"
 
 def authenticate(username, password):#LOGIN TO EXPERT POWER PLUS
 

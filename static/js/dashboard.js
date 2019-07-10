@@ -8,25 +8,31 @@ var host = window.location.hostname == 'localhost'
 ///////////////////                                     ///////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-$('#branch').on('change', async e => {
-  console.log(e.target.value)
-})
+total_kw = document.getElementById("total_kw")
+min_kw = document.getElementById("min_kw")
+peak_kw = document.getElementById("peak_kw")
+avg_kw = document.getElementById("avg_kw")
 
-
-
+console.log(total_kw)
     
 $('#branch').on('change', async e => {
-    let branch = e.target.value
-    console.log(branch)
-    post(branch)
-    
+    let branch = $("#branch")[0].value
+    let period = $("#time_period")[0].value
+    post(branch, period);
+})
+$('#time_period').on('apply.daterangepicker', async e => {
+    let branch = $("#branch")[0].value
+    let period = $("#time_period")[0].value
+    post(branch, period);
 })
 
-const post = (branch)=>{
+const post = (branch, period)=>{
   let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
-  console.log(csrftoken)
+  console.log(period)
 
-  let data = {branch}; // add lives_in select value to post data
+  let data = {"branch": branch,
+              "period": period
+              }; // add lives_in select value to post data
 
   function csrfSafeMethod (method) {
         // these HTTP methods do not require CSRF protection
@@ -46,7 +52,12 @@ const post = (branch)=>{
           resp = JSON.parse(resp)
           
           if (resp.response == 'success') {
-            alert("done");
+            // alert("Feature in progress");
+            total_kw.innerHTML = `Total Energy ${resp.data.energy_used}-kwh`;
+            peak_kw.innerHTML = resp.data.peak_kw;
+            min_kw.innerHTML = resp.data.min_kw;
+            avg_kw.innerHTML = resp.data.avg_kw;
+            console.log(resp)
           } else if (resp.response == 'failure') {
             $("#login_error").show()
           }
