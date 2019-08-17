@@ -1,0 +1,214 @@
+import requests
+from requests.auth import HTTPBasicAuth
+import json
+import datetime
+from dateutil import parser
+import numpy as np
+
+
+def make_request(device_id, start_date, end_date):
+
+    req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre1234')
+
+    auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) chnaged to (form_p)
+    auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
+    cookie = {auth_key_name: auth_key_value}
+    # device_id = "128166" #2019-04-15
+
+    url_data_logs = f'http://www.expertpowerplus.com:8080/api/basic/{device_id}/Datalogs?startDate={start_date}&endDate={end_date}&datalogNum=1'
+
+    r = requests.get(url_data_logs, cookies=cookie)
+    return r.json()
+
+def get_time_dif(a, b):
+    
+    c = b - a
+    hours = c.seconds/3600
+    return hours
+
+
+def format_date(date):###THIS FUNCTION CONVERTS DATE FROM DD-MM-YYY TO YYY-MM-DD
+
+    datetime_object = parser.parse(date)
+
+    return datetime_object
+
+
+def process_usage(device_id, start_date, end_date):
+    data = make_request(device_id, start_date, end_date)
+    
+    readings = data['data'][0]['data']
+    utility_times = []
+    gen_times = []
+
+    for readings in reversed(data['data']):
+        record_time = readings["recordTime"]
+        digital_in = readings["data"][0]["value"]
+        energy_1 = readings["data"][1]["value"]
+        energy_2 = readings["data"][2]["value"]
+        total_energy = readings["data"][3]["value"]
+        
+        if digital_in == 0:
+            utility_times.append(record_time)
+        elif digital_in == 1:
+            gen_times.append(record_time)
+
+    nums = data["data"].copy()
+    nums.reverse()
+    utility_hrs = []
+    gen1_hrs = []
+    gen2_hrs = []
+
+    while len(nums) > 1:
+        x,y = nums.pop(0), nums[0]
+        
+        x_di = x["data"][0]["value"]
+        y_di = y["data"][0]["value"]
+        x_time, y_time = format_date(x["recordTime"]), format_date(y["recordTime"])
+        x_kwh, y_kwh = x["data"][1]["value"], y["data"][1]["value"]
+        
+        if x_di == 0 and y_di == 1 or y_di == 2:
+            time_diff = get_time_dif(x_time, y_time)
+            if y_di == 1:
+                gen1_hrs.append(time_diff)
+            
+            elif y_di == 2:
+                gen2_hrs.append(time_diff)
+
+            
+        elif x_di == 1 and y_di == 0:
+            time_diff = get_time_dif(x_time, y_time)
+            utility_hrs.append(time_diff)
+            
+            
+        elif x_di == y_di == 1 or x_di == y_di == 2:
+            time_diff = get_time_dif(x_time, y_time)
+            if y_di == 1:
+                gen1_hrs.append(time_diff)
+            
+            elif y_di == 2:
+                gen2_hrs.append(time_diff)
+
+        elif x_di == y_di == 0:
+            time_diff = get_time_dif(x_time, y_time)
+            utility_hrs.append(time_diff)
+            
+        
+    return(sum(utility_hrs), sum(gen1_hrs), sum(gen2_hrs))
+        
+def utility_vs_gen(device_ids, start_date, end_date):
+    utility_times = 0
+    gen1_times = 0
+    gen2_times = 0
+
+    for device_id in device_ids:
+        utility, gen1_hrs, gen2_hrs = process_usage(device_id, start_date, end_date)
+        gen1_times += gen1_hrs
+        gen2_times += gen2_hrs
+        utility_times += utility
+    
+    return utility_times, gen1_times, gen2_times
+
+def rearrange_data(data):#
+    df_data = {}
+    for item in data:
+        day = format_date(item["recordTime"])
+        print(item)
+        if df_data.get(day.day, False):
+#             print(day.day)
+            df_data[day.day].append(item)
+        else:
+            df_data[day.day] = []
+            df_data[day.day].append(item)
+            # print(df_data)
+    return df_data
+
+def get_daily_usage(data):
+    
+    utility_kwh = []
+    gen1_kwh = []
+    gen2_kwh = []
+
+    nums = data.copy()
+    nums.reverse()
+    utility_hrs = []
+    gen1_hrs = []
+    gen2_hrs = []
+
+    while len(nums) > 1:
+        x,y = nums.pop(0), nums[0]
+        
+        x_di = x["data"][0]["value"]
+        y_di = y["data"][0]["value"]
+        x_time, y_time = format_date(x["recordTime"]), format_date(y["recordTime"])
+        x_kwh, y_kwh = x["data"][1]["value"], y["data"][1]["value"]
+        
+        if x_di == 0 and y_di == 1 or y_di == 2:
+            kwh_diff = y_kwh - x_kwh
+            if y_di == 1:
+                gen1_kwh.append(kwh_diff)
+
+            elif y_di == 2:
+                gen2_kwh.append(kwh_diff)
+
+        elif x_di == 1 and y_di == 0:
+            kwh_diff = y_kwh - x_kwh
+            utility_kwh.append(kwh_diff)
+
+
+        elif x_di == y_di == 1 or x_di == y_di == 2:
+            kwh_diff = y_kwh - x_kwh
+            if y_di == 1:
+                gen1_kwh.append(kwh_diff)
+
+            elif y_di == 2:
+                gen2_kwh.append(kwh_diff)
+
+        elif x_di == y_di == 0:
+            kwh_diff = y_kwh - x_kwh
+            utility_kwh.append(kwh_diff)
+            
+        
+    return (sum(utility_kwh), sum(gen1_kwh), sum(gen2_kwh))
+        
+def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
+    daily_data = {}
+    daily_usage = {"days":[], "gen1":[], "gen2":[], "utility":[]}
+    for device_id in device_ids:
+        old_data = daily_data.copy()
+        data = make_request(device_id, start_date, end_date)
+        # print(data)
+        df_data = rearrange_data(data["data"])
+        
+        for day in df_data:
+            if daily_data.get(day,False):
+                daily_data[day] = get_daily_usage(df_data[day])
+            else:
+                daily_data[day] = []
+                daily_data[day] = get_daily_usage(df_data[day])
+                
+        daily_data = merge_daily_readings(old_data, daily_data)
+
+    for key in daily_data:
+        daily_usage["days"].append(key)
+        daily_usage["utility"].append(daily_data[key][0])
+        daily_usage["gen1"].append(daily_data[key][1])
+        daily_usage["gen2"].append(daily_data[key][2])
+
+    return daily_usage
+
+
+def merge_daily_readings(old_read, new_read):
+    
+    for key in new_read:
+        old_value = old_read.get(key,(0,0,0))
+        old_read[key] = [new_read[key][0] + old_value[0], new_read[key][1] + old_value[1], new_read[key][2] + old_value[2]]
+    
+    # print(old_read)
+    
+    return old_read
+
+
+
+# daily_utility_vs_gen_kwh(["125639" ], "2019-07-01", "2019-07-08")
+# pass

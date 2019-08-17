@@ -48,6 +48,7 @@ class Device(models.Model):
     device_type     = models.CharField(max_length=40, null=True, blank = True)
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address         = models.TextField(max_length=400, null=True, blank = True)
+    name            = models.CharField(max_length=100, null=True, blank = True)
 
     def __str__(self):
         return self.device_id

@@ -5068,4 +5068,10 @@ select::-ms-expand {
   background-color: darkblue;
   border-radius: 10px;
 }
+
+@media screen and (max-width: 400px) {
+  height: 30px;
+}
+
+.sidebar-header__logo 
 /*# sourceMappingURL=dashboard.css.map */

@@ -29,7 +29,7 @@
 #     def add_token(self):
 #         self.user.token = self.generate_token()
 #         self.user.save()
-#         print(self.user.token)
+#         # print(self.user.token)
 
 
 # class Session(models.Model):

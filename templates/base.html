@@ -41,25 +41,36 @@
 					<li class="dashboard">
 						<a href="/"><b>Dashboard</b></a>
 					</li>
+					<li>
+							<a style="background-image: url('https://img.icons8.com/office/25/000000/electricity.png')" href="/score_card"><b>Score card</b></a>
+					</li>
+					<!-- <li>
+						<a style="background-image: url('https://img.icons8.com/ultraviolet/20/000000/charge-battery.png')" href="/power"><b>Power</b></a>
+					</li>
+					<li>
+						<a style="background-image: url('https://img.icons8.com/office/25/000000/electricity.png')" href="/voltage"><b>Voltage</b></a>
+					</li>
+					<li><a style="background-image: url('https://img.icons8.com/ultraviolet/25/000000/cable-release.png')" href="/current"><b>Current</b></a></li>
+					<li><a style="background-image: url('https://img.icons8.com/ultraviolet/25/000000/electrical.png')" href="/interaction"><b>Load Interactions</b></a></li>
+					<li><a style="background-image: url('https://img.icons8.com/officel/25/000000/plug-3.png')" href="/max_demand"><b>Max demands</b></a></li> -->
 					<li class="components has-submenu">
 						<a href="#"><b>Parameters<span class="submenu-arrow"></span></b></a>
 						<ul class="sidebar-menu__submenu">
+							<li>
+								<a href="/power">Last Readings</a>
+							</li>
+							<li>
+								<a href="/interaction">Load Interactions</a>
+							</li>
 							<li>
 								<a href="/power">Power</a>
 							</li>
 							<li>
 								<a href="/voltage">Voltage</a>
 							</li>
-							<!-- <li>
-								<a href="/d_inputs">Digital inputs</a>
-							</li> -->
-							<!-- <li><a href="/energy">Energy</a></li> -->
+							
 							<li><a href="/current">Current</a></li>
-							<li><a href="/interaction">Load Interactions</a></li>
-							<!-- <li><a href="/reactive_power">Reactive power</a></li>
-							<li><a href="/apparent_power">Apparent power</a></li>
-							<li><a href="/pf">Power factor</a></li>
-							<li><a href="/frequency">Frequency</a></li> -->
+							
 							<li><a href="/max_demand">Max demands</a></li>
 						</ul>
 					</li>
@@ -67,6 +78,7 @@
 					<li class="patients has-submenu">
 						<a href="#"><b>Customers<span class="submenu-arrow"></span></b></a>
 						<ul class="sidebar-menu__submenu">
+							<li><a href="dashboard__patient.html">Bills and Uploads</a></li>
 							<li>
 								<a href="dashboard__patients-add.html">Add new customers</a>
 							</li>
@@ -131,16 +143,18 @@
 						<a href="#">Generate report</a>
 						</li>
 						<li class="reports prescription modal-toggle">
-						<select class="show-more show-more--select show-more--select-gray has-dropdown" id="branch">
-							{% for branch in branches %}
-								<option value="{{branch.id}}">{{branch.name}}</option>
+						<select class="show-more show-more--select show-more--select-gray has-dropdown" id="device">
+							{% for device in devices %}
+							{{devices}}
+								<option value="{{device.id}}">{{device.name}}</option>
 							{% endfor %}
 						</select>
 						
 						</li>
 						<li class="reports modal-toggle">
 							
-							<input type="text" name="dates" class="time_period form__input button" value="" id = "time_period">
+							<input type="text" name="dates" class="time_period form__input button" value="{{def_start_date}}-{{def_end_date}}" id = "time_period">
+							<div id = "default_range" hidden>{{def_start_date}}-{{def_end_date}}</div>
 						</li>
 					</ul>
 				</nav>
@@ -453,7 +467,12 @@
 		</div>
 		{% csrf_token %}
 		</div>
+	
 	<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+	<!-- Sweet-Alert  -->
+	<script src= "{% static '/sweetalert/sweetalert.min.js'  %}"></script>
+	<script src="{% static '/sweetalert/jquery.sweet-alert.custom.js' %}"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<script src="{% static 'js/moment.min.js' %}"></script>
 	<script src="{% static 'js/select2.min.js' %}"></script>
 	<script src="{% static 'js/daterangepicker.min.js' %}"></script>
