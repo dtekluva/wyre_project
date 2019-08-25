@@ -4,8 +4,15 @@
     text-align: center !important;
 }
 
-.time_period {
+.time_period, .single_date {
     margin-left: 20px;
+    align-items: center;
+}
+
+.single_date, #single_date {
+    margin-left: 20px;
+    text-align: center;
+    width: 60%;
 }
 
 #total_kw{

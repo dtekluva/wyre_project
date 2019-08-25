@@ -57,10 +57,10 @@
 						<a href="#"><b>Parameters<span class="submenu-arrow"></span></b></a>
 						<ul class="sidebar-menu__submenu">
 							<li>
-								<a href="/power">Last Readings</a>
+								<a href="/last_read">Last Readings</a>
 							</li>
 							<li>
-								<a href="/interaction">Load Interactions</a>
+								<a href="/readings">Readings</a>
 							</li>
 							<li>
 								<a href="/power">Power</a>
@@ -126,7 +126,7 @@
 							<li><a href="/">View profile</a></li>
 							<li><a href="/">Edit</a></li>
 							<li class="logout">
-								<a href="auth/logout"
+								<a href="../auth/logout"
 									 class="button button--general button--red-border">Logout</a>
 							</li>
 						</ul>
@@ -151,13 +151,35 @@
 						</select>
 						
 						</li>
+						{% if page == "Dashboard" %}
 						<li class="reports modal-toggle">
 							
 							<input type="text" name="dates" class="time_period form__input button" value="{{def_start_date}}-{{def_end_date}}" id = "time_period">
 							<div id = "default_range" hidden>{{def_start_date}}-{{def_end_date}}</div>
 						</li>
+						{% endif%}
+						{% if page == "Readings (Volts-Amp-Watts)" %}
+
+						<li class="reports modal-toggle">
+							<input type="text" name="" class="single_date button form__input" id="datepicker" value="02/15/2019" />
+						</li>
+
+						<li class="reports prescription modal-toggle">
+							<select class="show-more show-more--select show-more--select-gray has-dropdown" id="parameter">
+								{% for device in devices %}
+								{{devices}}
+									<option value="{{device.id}}">Voltage</option>
+									<option value="{{device.id}}">Current</option>
+									<option value="{{device.id}}">Energy</option>
+								{% endfor %}
+							</select>
+							
+							</li>
+						{% endif%}
+						
 					</ul>
 				</nav>
+
 			</header>
 			<div class="content-subheader">
 				<div class="content-subheader__titles">
@@ -302,8 +324,8 @@
 						<div class="grid__row grid__row--margin">
 							<div class="grid__col grid__col--margin">
 								<label class="form__label">COMPANY NAME</label>
-								<input name="fname"
-											 id="fname"
+								<input name="company"
+											 id="company"
 											 class="form__input required"
 											 type="text" />
 							</div>
@@ -356,7 +378,7 @@
 								<div class="grid__col grid__col--margin">
 									<label class="form__label">CONFIRM PASSWORD</label>
 									<input name="password"
-												 id="password"
+												 id="password_2"
 												 class="form__input required"
 												 type="password" />
 								</div>
@@ -478,7 +500,24 @@
 	<script src="{% static 'js/daterangepicker.min.js' %}"></script>
 	<script src="{% static 'js/ion.rangeSlider.min.js' %}"></script>
 	<script src="{% static 'js/jquery.dashboard-custom.js' %}"></script>
+	{% if page == "Readings (Volts-Amp-Watts)" %}
+	<script src="{% static 'js/readings.js' %}"></script>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  	<!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	{% endif %}
+	{% if page == "Dashboard" %}
 	<script src="{% static 'js/dashboard.js' %}"></script>
+	{% endif %}
+	{% if page == "Last Readings" %}
+	<script src="{% static 'js/last_read.js' %}"></script>
+	{% endif %}
+	<script>
+		// $( function() {
+		// $( "#datepicker" ).datepicker();
+		// } );
+	</script>
 </body>
 
 </html>

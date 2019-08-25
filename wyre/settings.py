@@ -28,6 +28,8 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/auth/login'
 LOGIN_URL = '/auth/login'
 
+CACHE_EXPIRY = 1800
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 

@@ -20,9 +20,12 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('power/', views.power, name='power'),
+    path('last_read/', views.last_read, name='last_read'),
+    path('get_last_read/', views.get_last_read, name='get_last_read'),
     path('voltage/', views.voltage, name='voltage'),
     path('current/', views.current, name='current'),
-    path('interaction/', views.interaction, name='interaction'),
+    path('readings/', views.readings, name='readings'),
+    path('get_line_readings/', views.get_line_readings, name='get_line_readings'),
     path('max_demand/', views.max_demand, name='max_demand'),
     path('fetch_vals_period/', views.fetch_vals_period, name='fetch_vals_period'),
     path('fetch_device_vals/', views.fetch_vals_period_per_device, name='fetch_vals_period_per_device')

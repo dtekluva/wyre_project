@@ -142,9 +142,9 @@ var DiseasesChart = new Chart(chartdiseases, {
             label: "Data",
             fill: true,
 			backgroundColor: [
-			"#ff5acd",
-            "#38e9f4",
-            "#5817f5"
+			"#ff0cb1",
+            "#22d228",
+            "#16e6f5"
 			],
             borderWidth: 2,
             data: [1, 1, 1]

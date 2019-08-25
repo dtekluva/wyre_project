@@ -6,9 +6,9 @@ import json
 
 username = "ppl"
 password = "Wyre1234"
-device_ids = ["128162"]#,"125639","128166", "133813"
+device_ids = ["128162","125639","128166", "133813"]
 
-start_date = "2019-05-01"
+start_date = "2019-08-10"
 end_date = "2019-08-31"
 
 def authenticate(username, password):#LOGIN TO EXPERT POWER PLUS

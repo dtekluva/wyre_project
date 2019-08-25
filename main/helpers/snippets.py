@@ -55,11 +55,11 @@ def get_reading_stats(user_id, start_date, end_date):
 
     return max_read, min_read, avg_read
 
-###########################################################################
-####################                                    ###################
-##################  JAVASCRIPT FILTER BY BRANCH AND TIME  #################
-####################                                    ###################
-###########################################################################
+            ###########################################################################
+            ####################                                    ###################
+            ##################  JAVASCRIPT FILTER BY BRANCH AND TIME  #################
+            ####################                                    ###################
+            ###########################################################################
 
 def js_get_readings(device_id, start_date, end_date, target):
 
@@ -125,22 +125,22 @@ def format_date(date):###THIS FUNCTION CONVERTS DATE FROM DD-MM-YYY TO YYY-MM-DD
     return datetime_object
 
 
-############################################################################
-####################                                     ###################
-################## JAVASCRIPT FILTER BY PARAMETER AND TIME #################
-####################                                     ###################
-############################################################################
+            ############################################################################
+            ####################                                     ###################
+            ################## JAVASCRIPT FILTER BY PARAMETER AND TIME #################
+            ####################                                     ###################
+            ############################################################################
 
 
 def js_get_readings_kw(device_id, start_date, end_date, target1, target2, target3):
 
     readings = Reading.objects.filter(device__id = device_id, post_datetime__range = (start_date, end_date)).values_list("post_datetime", target1, target2, target3)
- 
+
     return readings
 
 
-
 def get_js_power():
+
     time_now = datetime.now()
     start_date = "2019-07-01"
     end_date = "2019-07-02"
@@ -157,3 +157,4 @@ def get_js_power():
     read_qty = 8
     last_readings = hourly_data.tail(read_qty)
     last_readings_as_tuples = [tuple(reading) for reading in last_readings.values]
+

@@ -6,7 +6,7 @@ from dateutil import parser
 import numpy as np
 
 
-def make_request(device_id, start_date, end_date):
+def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
 
     req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre1234')
 
@@ -17,7 +17,11 @@ def make_request(device_id, start_date, end_date):
 
     url_data_logs = f'http://www.expertpowerplus.com:8080/api/basic/{device_id}/Datalogs?startDate={start_date}&endDate={end_date}&datalogNum=1'
 
-    r = requests.get(url_data_logs, cookies=cookie)
+    url_last_read = f'http://expertpowerplus.com:8080/api/basic/{device_id}/LastReading'
+
+    url = url_data_logs if url == "logs" else url_last_read
+
+    r = requests.get(url, cookies=cookie)
     return r.json()
 
 def get_time_dif(a, b):
@@ -111,16 +115,28 @@ def utility_vs_gen(device_ids, start_date, end_date):
 
 def rearrange_data(data):#
     df_data = {}
+    previous_day = False
+    current_day = False
+    
     for item in data:
         day = format_date(item["recordTime"])
-        print(item)
+        current_day = day.day
+
         if df_data.get(day.day, False):
-#             print(day.day)
             df_data[day.day].append(item)
+
         else:
             df_data[day.day] = []
             df_data[day.day].append(item)
-            # print(df_data)
+
+        if previous_day != current_day and previous_day:
+            # print(previous_day != current_day)
+            # print(previous_day)
+            # print(df_data.keys(), '\n\n\n')
+            df_data[previous_day].append(item)
+
+        previous_day = day.day
+
     return df_data
 
 def get_daily_usage(data):
@@ -177,7 +193,6 @@ def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
     for device_id in device_ids:
         old_data = daily_data.copy()
         data = make_request(device_id, start_date, end_date)
-        # print(data)
         df_data = rearrange_data(data["data"])
         
         for day in df_data:
@@ -195,6 +210,9 @@ def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
         daily_usage["gen1"].append(daily_data[key][1])
         daily_usage["gen2"].append(daily_data[key][2])
 
+    daily_usage["days"], daily_usage["utility"], daily_usage["gen1"], daily_usage["gen2"] = sort_multiple_lists(daily_usage["days"], daily_usage["utility"], daily_usage["gen1"], daily_usage["gen2"]) #rearrange daily day accending
+    
+
     return daily_usage
 
 
@@ -204,11 +222,37 @@ def merge_daily_readings(old_read, new_read):
         old_value = old_read.get(key,(0,0,0))
         old_read[key] = [new_read[key][0] + old_value[0], new_read[key][1] + old_value[1], new_read[key][2] + old_value[2]]
     
-    # print(old_read)
     
     return old_read
 
 
+def get_last_readings(device_id):
 
-# daily_utility_vs_gen_kwh(["125639" ], "2019-07-01", "2019-07-08")
-# pass
+    template = {'voltage_l1_l12': {"value":0}, 'voltage_l2_l23': {"value":0}, 'voltage_l3_l31': {"value":0},
+         'current_l1': {"value":0}, 'current_l2': {"value":0}, 'current_l3': {"value":0}, 'kw_l1': {"value":0}, 'kw_l2': {"value":0}, 
+         'kw_l3': {"value":0}, 'kvar_l1': {"value":0}, 'kvar_l2': {"value":0}, 'kvar_l3': {"value":0}, 'kva_l1': {"value":0}, 
+         'kva_l2': {"value":0}, 'kva_l3': {"value":0}, 'power_factor_l1': {"value":0}, 'power_factor_l2': {"value":0}, 'power_factor_l3': {"value":0}, 'total_kw': {"value":0}, 'total_kvar': {"value":0}, 'total_kva': {"value":0}, 
+         'total_pf': {"value":0}, 'avg_frequency': {"value":0}, 'neutral_current': {"value":0}, 'volt_thd_l1_l12': {"value":0}, 'volt_thd_l2_l23': {"value":0}, 'volt_thd_l3_l31': {"value":0}, 'current_thd_l1': {"value":0}, 'current_thd_l2': {"value":0},
+         'current_thd_l3': {"value":0}, 'current_tdd_l1': {"value":0}, 'current_tdd_l2': {"value":0}, 'current_tdd_l3': {"value":0},
+         'kwh_import': {"value":0}, 'kwh_export': {"value":0}, 'kvarh_import': {"value":0}, 'kvah_total': {"value":0},
+         'max_amp_demand_l1': {"value":0}, 'max_amp_demand_l2': {"value":0}, 'max_amp_demand_l3': {"value":0},
+         'max_sliding_window_kw_demand': {"value":0}, 'accum_kw_demand': {"value":0},
+         'max_sliding_window_kva_demand': {"value":0}, 'present_sliding_window_kw_demand': {"value":0},
+         'present_sliding_window_kva_demand': {"value":0}, 'accum_kva_demand': {"value":0}, 
+         'pf_import_at_maximum_kva_sliding_window_demand': {"value":0}}
+
+    last_read = make_request(device_id = device_id, url = "last_read")["data"][0]['data']
+
+    for value in last_read:
+        template[value["description"].lower().replace('.','').replace(' ','_').replace('/','_').replace('(','').replace(')','')] = value
+
+    return template
+
+def sort_multiple_lists(i,j,k,l):
+    """(i,j,k,l) are lists to be sorted"""
+
+    sorted_list = list(sorted(zip(i,j,k,l)))
+    i,j,k,l = zip(*sorted_list)
+
+    return i,j,k,l
+# daily_utility_vs_gen_kwh(["125639"], "2019-07-17", "2019-08-01")
