@@ -71,10 +71,17 @@ const post = (device)=>{
           resp = JSON.parse(resp)
           values.data = resp.data;
           if (resp.response == 'success') {
-            console.log(values)
+            console.log(parameter.value)
             console.log(prepare_data_current())
+            
+            if (parameter.value == "Voltage"){
 
-              populate(prepare_data_current());
+              populate_voltage(prepare_data_voltage());
+            }
+            else if(parameter.value == "Current"){
+
+              populate_current(prepare_data_current());
+            } 
             
           } else if (resp.response == 'failure') {
             swal({
@@ -96,14 +103,16 @@ const post = (device)=>{
         }) // post data
 }
 
-function populate(data){
+function populate_current(data){
+    
     ActivityChart.chart.data.datasets[0].data = data.l1
     ActivityChart.chart.data.datasets[0].label = "Amps(L1)"
     ActivityChart.chart.data.datasets[1].data = data.l2
     ActivityChart.chart.data.datasets[1].label = "Amps(L2)"
     ActivityChart.chart.data.datasets[2].data = data.l3
     ActivityChart.chart.data.datasets[2].label = "Amps(L3)"
-    ActivityChart.chart.data.datasets[3].data = data.hz
+    ActivityChart.chart.data.datasets[3].data = data.neutral
+    ActivityChart.chart.data.datasets[3].label = "Amps(Neutral)"
     ActivityChart.chart.data.labels = data.time
     ActivityChart.update();
   
@@ -114,13 +123,46 @@ function prepare_data_current(){
   let l1 = [];
   let l2 = [];
   let l3 = [];
-  let hz = [];
+  let neutral = [];
 
   values.data.forEach(element => {
     _time.push(time_convert(element.post_time))
     l1.push(element.current_l1)
     l2.push(element.current_l2)
     l3.push(element.current_l3)
+    neutral.push(element.neutral_current)
+  });
+
+  return {'time':_time,'l1':l1,'l2':l2, 'l3':l3, 'neutral':neutral}
+};
+
+function populate_voltage(data){
+    
+  ActivityChart.chart.data.datasets[0].data = data.l1
+  ActivityChart.chart.data.datasets[0].label = "Volts(L1)"
+  ActivityChart.chart.data.datasets[1].data = data.l2
+  ActivityChart.chart.data.datasets[1].label = "Volts(L2)"
+  ActivityChart.chart.data.datasets[2].data = data.l3
+  ActivityChart.chart.data.datasets[2].label = "Volts(L3)"
+  ActivityChart.chart.data.datasets[3].data = data.hz
+  ActivityChart.chart.data.datasets[3].label = "Frequency"
+  ActivityChart.chart.data.labels = data.time
+  ActivityChart.update();
+
+}
+
+function prepare_data_voltage(){
+  let _time = [];
+  let l1 = [];
+  let l2 = [];
+  let l3 = [];
+  let hz = [];
+
+  values.data.forEach(element => {
+    _time.push(time_convert(element.post_time))
+    l1.push(element.voltage_l1_l12)
+    l2.push(element.voltage_l2_l23)
+    l3.push(element.voltage_l3_l31)
     hz.push(element.avg_frequency)
   });
 

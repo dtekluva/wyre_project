@@ -166,11 +166,9 @@
 
 						<li class="reports prescription modal-toggle">
 							<select class="show-more show-more--select show-more--select-gray has-dropdown" id="parameter">
-								{% for device in devices %}
+								{% for parameter in parameters %}
 								{{devices}}
-									<option value="{{device.id}}">Voltage</option>
-									<option value="{{device.id}}">Current</option>
-									<option value="{{device.id}}">Energy</option>
+									<option value="{{parameter}}">{{parameter}}</option>
 								{% endfor %}
 							</select>
 							

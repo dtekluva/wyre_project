@@ -91,7 +91,9 @@ def readings(request):
         user = User.objects.get(pk = request.user.id)
         devices = Device.objects.filter(user_id = request.user.id)
 
-        return render(request, 'readings.html', {'user':user, "page": page, "devices":devices})
+        parameters = ["Voltage", "Current", "Energy"]
+
+        return render(request, 'readings.html', {'user':user, "page": page, "devices":devices, "parameters":parameters})
 
 def max_demand(request):
         page = "Max Demand (Amps)"

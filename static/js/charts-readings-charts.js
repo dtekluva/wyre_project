@@ -54,7 +54,7 @@ var ActivityChart = new Chart(chartactivity, {
             fill: true,
 			backgroundColor: gradientFill,
             borderWidth: 2,
-            data: [240, 224, 231, 210, 234, 212, 248]
+            data: []
         },	{
             label: "L2 Volts",
             borderColor: gradientStroke2,
@@ -69,7 +69,7 @@ var ActivityChart = new Chart(chartactivity, {
             fill: true,
 			backgroundColor: gradientFill2,
             borderWidth: 2,
-            data: [250, 240, 210, 216, 236, 235, 218]
+            data: []
         },
         	{
             label: "L3 Volts",
@@ -85,7 +85,7 @@ var ActivityChart = new Chart(chartactivity, {
             fill: true,
 			backgroundColor: gradientFill3,
             borderWidth: 2,
-            data: [240, 230, 220, 230, 226, 200, 210]
+            data: []
         },
         	{
             label: "Freq Hertz(Avg.)",
@@ -101,7 +101,7 @@ var ActivityChart = new Chart(chartactivity, {
             fill: true,
 			backgroundColor: gradientFill4,
             borderWidth: 2,
-            data: [50, 52, 50, 55, 50, 56, 50]
+            data: []
         }
 		]
     },
