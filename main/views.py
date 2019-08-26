@@ -224,7 +224,6 @@ def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
                 
 
-                print(data)
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
         # try:
         #         data = Reading.objects.all()               
