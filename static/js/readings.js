@@ -72,7 +72,7 @@ const post = (device)=>{
           values.data = resp.data;
           if (resp.response == 'success') {
             console.log(parameter.value)
-            console.log(prepare_data_current())
+            console.log(values)
             
             if (parameter.value == "Voltage"){
 
@@ -82,11 +82,15 @@ const post = (device)=>{
 
               populate_current(prepare_data_current());
             } 
+            else if(parameter.value == "Energy"){
+
+              populate_energy(prepare_data_energy());
+            } 
             
           } else if (resp.response == 'failure') {
             swal({
                   title: "Error fetching data!!",
-                  text: "Try selecting a valid date range first",
+                  text: "Something went wrong",
                 });
           }
         })
@@ -163,6 +167,39 @@ function prepare_data_voltage(){
     l1.push(element.voltage_l1_l12)
     l2.push(element.voltage_l2_l23)
     l3.push(element.voltage_l3_l31)
+    hz.push(element.avg_frequency)
+  });
+
+  return {'time':_time,'l1':l1,'l2':l2, 'l3':l3, 'hz':hz}
+};
+
+function populate_energy(data){
+    
+  ActivityChart.chart.data.datasets[0].data = data.l1
+  ActivityChart.chart.data.datasets[0].label = "K-watts(L1)"
+  ActivityChart.chart.data.datasets[1].data = data.l2
+  ActivityChart.chart.data.datasets[1].label = "K-watts(L2)"
+  ActivityChart.chart.data.datasets[2].data = data.l3
+  ActivityChart.chart.data.datasets[2].label = "K-watts(L3)"
+  ActivityChart.chart.data.datasets[3].data = data.hz
+  ActivityChart.chart.data.datasets[3].label = "Frequency"
+  ActivityChart.chart.data.labels = data.time
+  ActivityChart.update();
+
+}
+
+function prepare_data_energy(){
+  let _time = [];
+  let l1 = [];
+  let l2 = [];
+  let l3 = [];
+  let hz = [];
+
+  values.data.forEach(element => {
+    _time.push(time_convert(element.post_time))
+    l1.push(element.kw_l1)
+    l2.push(element.kw_l2)
+    l3.push(element.kw_l3)
     hz.push(element.avg_frequency)
   });
 

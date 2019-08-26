@@ -91,7 +91,7 @@ def readings(request):
         user = User.objects.get(pk = request.user.id)
         devices = Device.objects.filter(user_id = request.user.id)
 
-        parameters = ["Voltage", "Current", "Energy"]
+        parameters = ["Current", "Voltage", "Energy"]
 
         return render(request, 'readings.html', {'user':user, "page": page, "devices":devices, "parameters":parameters})
 
@@ -224,11 +224,7 @@ def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
                 
 
+        try:
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
-        # try:
-        #         data = Reading.objects.all()               
-
-        #         return HttpResponse(json.dumps({"response": "success", "data": data}))
-        
-        # except:
-        #         return HttpResponse(json.dumps({"response": "failure"}))
+        except:
+                return HttpResponse(json.dumps({"response": "failure"}))
