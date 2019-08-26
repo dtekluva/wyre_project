@@ -7,6 +7,8 @@ from main.models import Reading, Branch, Device
 from main.helpers.snippets import total_energy, get_reading_stats, js_total_energy, js_get_reading_stats, format_date,js_get_readings
 from main.helpers.datalogs import utility_vs_gen, daily_utility_vs_gen_kwh, get_last_readings
 import json, datetime, calendar
+from django.core.serializers.json import DjangoJSONEncoder
+
 
 # import main.helpers.fetch_readings
 
@@ -210,18 +212,22 @@ def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 device_id = request.POST.get("device", "")
                 devices = Device.objects.filter(id = device_id)
                 date = request.POST.get("date", "")
-
                 #####REPLACE SLASHES WITH DASHES######
                 date = format_date(date.replace("/","-"))
 
-                data = Reading.objects.filter(device__id = device_id, post_datetime = date).values()   
-                print(date.month)            
+                end_date = date + datetime.timedelta(days = 1) #ADD ONE DAY TO DAY TO ENABLE FILTERING BY DURATION AS YOU CANNOT FILTER BY ONE DAY.
 
-                return HttpResponse(json.dumps({"response": "success", "data": data}))
-        try:
-                data = Reading.objects.filter(device__id = device_id, post_datetime = date).values()               
+                raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').values())
 
-                return HttpResponse(json.dumps({"response": "success", "data": data}))
+                data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
+                
+
+                print(data)
+                return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+        # try:
+        #         data = Reading.objects.all()               
+
+        #         return HttpResponse(json.dumps({"response": "success", "data": data}))
         
-        except:
-                return HttpResponse(json.dumps({"response": "failure"}))
+        # except:
+        #         return HttpResponse(json.dumps({"response": "failure"}))

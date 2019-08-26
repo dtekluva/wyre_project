@@ -24,3 +24,7 @@
 # response = requests.get("""http://resolute40.pythonanywhere.com/get_data?user=shola&start=2018-07-06&end=2018-07-07""")
 
 # data = response.json()
+
+x = [{"a":23},{"b":32}]
+
+y = map(lambda x: x["a"] = x["a"] *8 )
