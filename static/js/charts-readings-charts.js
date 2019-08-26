@@ -88,7 +88,7 @@ var ActivityChart = new Chart(chartactivity, {
             data: [240, 230, 220, 230, 226, 200, 210]
         },
         	{
-            label: "Freq Hertz",
+            label: "Freq Hertz(Avg.)",
             borderColor: gradientStroke4,
             pointBorderColor: gradientStroke4,
             pointBackgroundColor: "rgba(255, 255, 255, 1)",

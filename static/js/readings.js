@@ -71,6 +71,7 @@ const post = (device)=>{
           resp = JSON.parse(resp)
           values.data = resp.data;
           if (resp.response == 'success') {
+            console.log(values)
             console.log(prepare_data_current())
 
               populate(prepare_data_current());
@@ -102,7 +103,7 @@ function populate(data){
     ActivityChart.chart.data.datasets[1].label = "Amps(L2)"
     ActivityChart.chart.data.datasets[2].data = data.l3
     ActivityChart.chart.data.datasets[2].label = "Amps(L3)"
-    ActivityChart.chart.data.datasets[3].data = data.l3
+    ActivityChart.chart.data.datasets[3].data = data.hz
     ActivityChart.chart.data.labels = data.time
     ActivityChart.update();
   
@@ -113,15 +114,17 @@ function prepare_data_current(){
   let l1 = [];
   let l2 = [];
   let l3 = [];
+  let hz = [];
 
   values.data.forEach(element => {
     _time.push(time_convert(element.post_time))
     l1.push(element.current_l1)
     l2.push(element.current_l2)
     l3.push(element.current_l3)
+    hz.push(element.avg_frequency)
   });
 
-  return {'time':_time,'l1':l1,'l2':l2, 'l3':l3}
+  return {'time':_time,'l1':l1,'l2':l2, 'l3':l3, 'hz':hz}
 };
 
 function time_convert (time) {
@@ -136,5 +139,3 @@ function time_convert (time) {
   }
   return time.join (''); // return adjusted time or original string
 }
-
-// tConvert ('18:00:00');
