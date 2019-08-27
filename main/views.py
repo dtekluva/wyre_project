@@ -8,9 +8,7 @@ from main.helpers.snippets import total_energy, get_reading_stats, js_total_ener
 from main.helpers.datalogs import utility_vs_gen, daily_utility_vs_gen_kwh, get_last_readings
 import json, datetime, calendar
 from django.core.serializers.json import DjangoJSONEncoder
-
-
-# import main.helpers.fetch_readings
+from main.helpers.fetch_readings import run_migrations
 
 # Create your views here.
 # x = Reading.objects.get(id = 1)
@@ -230,5 +228,6 @@ def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 return HttpResponse(json.dumps({"response": "failure"}))
 
 def load_readings(request):
-        import main.helpers.fetch_readings
+        
+        run_migrations()
         return HttpResponse(json.dumps({"response": "success"}))
