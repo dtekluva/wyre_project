@@ -44,8 +44,10 @@ def populate_db(readings, device_code):
         date = record['recordTime'][:10]
         time = record['recordTime'][11:]
         _datetime = (record['recordTime']).replace('T'," ")
+
         if utc.localize(parse(record['recordTime'])) > last_reading:
                 reading = reshape_data_to_dict(record["data"])
+                print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
 
                 Reading.objects.create(post_date = date, post_time = time, 
                         post_datetime = _datetime, 
@@ -100,8 +102,8 @@ def populate_db(readings, device_code):
                         pf_import_at_maximum_kva_sliding_window_demand = reading.get("pf_import_at_maximum_kva_sliding_window_demand", 0)
                 )
         
-        else: 
-                print("Done populating")
+        # else: 
+        #         print("Done populating")
 
 def update_user_readings(user_id):
         last_update = (Reading.objects.filter(user_id = user_id).order_by("-id")[0]).post_datetime
@@ -129,6 +131,7 @@ for device_id in device_ids:
         target_device = Device.objects.get(device_id = device_id)
         last_reading = Reading.objects.filter(device = target_device).latest('post_datetime').post_datetime #GET LAST READING FOR PARTICULAR DEVICE
         tommorow = datetime.datetime.now() + datetime.timedelta(days = 1)#GET TODAYS DATE AND ADD ONE DAY
+        print(target_device.name)
 
         start_date = f"{last_reading.year}-{last_reading.month}-{last_reading.day}" #"2019-08-18"
         end_date = f"{tommorow.year}-{tommorow.month}-{tommorow.day}"
