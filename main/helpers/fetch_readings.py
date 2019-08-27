@@ -45,7 +45,6 @@ def populate_db(readings, device_code):
         time = record['recordTime'][11:]
         _datetime = (record['recordTime']).replace('T'," ")
         if utc.localize(parse(record['recordTime'])) > last_reading:
-                print(device_code)
                 reading = reshape_data_to_dict(record["data"])
 
                 Reading.objects.create(post_date = date, post_time = time, 

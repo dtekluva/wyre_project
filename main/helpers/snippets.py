@@ -70,7 +70,7 @@ def js_get_readings(device_id, start_date, end_date, target):
 def js_get_device_reading_for_period(start_date, end_date, device_id):
 
     readings = Reading.objects.filter(device__id = device_id, post_datetime__range = (start_date, end_date)).order_by("post_datetime").values_list('kwh_import')
-    print(readings)
+
     if len(readings) != 0:
 
         total_kwh_device  = readings[len(readings)-1][0] - readings[0][0]
@@ -90,7 +90,7 @@ def js_total_energy(user_id, start_date, end_date, device_id = False):
 
     reading_collections = map(lambda x: js_get_device_reading_for_period(start_date, end_date, x.id), devices)
     readings_as_list = list(reading_collections)
-    print(readings_as_list)
+
     total_kwh = sum(readings_as_list)
     return total_kwh
 
