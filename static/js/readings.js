@@ -12,9 +12,8 @@ var values = {"data":{}}
 
 device = document.getElementById("device")
 parameter = document.getElementById("parameter")
-_date = document.getElementById("datepicker")
-
-// 
+_date = document.getElementById("single_date")
+// let period = $("#time_period")[0].value
     
 $('#device').on('change', async e => {
   let device = $("#device")[0].value;
@@ -26,18 +25,22 @@ $('#parameter').on('change', async e => {
   post(device);
 })
 
-$( function() {
-    $('#datepicker').datepicker( {
-          changeMonth: true,
-          changeYear: true,
-          showButtonPanel: true,
-          dateFormat: 'mm/dd/yy',
-          onSelect: function() {
-            let device = $("#device")[0].value;
-            post(device);
-        }
-      });
-  } );
+//LOAD DATE PICKER
+$(function() {
+  $('input[name="date"]').daterangepicker({
+    singleDatePicker: true,
+    showDropdowns: true,
+    "minYear": 2017,
+    "maxYear": 2025,
+    "startDate": todays_date,
+  });
+});
+
+//LOAD DATEPICKER ONCHANGE EVENT
+$('input[name="date"]').on('apply.daterangepicker', async e => {
+  let device = $("#device")[0].value
+  post(device);
+})
 
 $(window).on('load', function() {
   let device = $("#device")[0].value;
@@ -217,4 +220,24 @@ function time_convert (time) {
     time[0] = +time[0] % 12 || 12; // Adjust hours
   }
   return time.join (''); // return adjusted time or original string
+}
+
+$(document).ready(function() {
+  $('#reaing_table').DataTable( {
+      "scrollX": true,
+      dom: 'Bfrtip',
+      buttons: [
+          'copy', 'csv', 'excel', 'pdf', 'print'
+      ]
+  } );
+} );
+
+function todays_date(){
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  var yyyy = today.getFullYear();
+
+  today = mm + '/' + dd + '/' + yyyy;
+  return today
 }

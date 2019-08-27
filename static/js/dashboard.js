@@ -14,7 +14,6 @@ min_kw = document.getElementById("min_kw")
 peak_kw = document.getElementById("peak_kw")
 avg_kw = document.getElementById("avg_kw")
 
-console.log(total_kw)
 
 $(window).on('load', function() {
   let device = $("#device")[0].value;
@@ -135,18 +134,3 @@ function sum(input){
                 }
               return total;
              }
-
-// create_bar(["IKOYI", "MAIN", "HQTRS", "MRYLND", "OGBA", "IKJ", "V.I", "IKJ", "V.I"],[26, 12, 20, 16, 6, 25, 18, 25, 18], [26, 12, 20, 16, 6, 25, 18, 25, 18])
-// function addData(chart, utility, gen) {
-//   chart.data.datasets.forEach((dataset) => {
-//       dataset.data = [utility, gen];
-//   });
-//   chart.update();
-// }
-
-// function removeData(chart) {
-//   chart.data.datasets.forEach((dataset) => {
-//       dataset.data= [];
-//   });
-//   chart.update();
-// }

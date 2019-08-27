@@ -4,77 +4,83 @@
 		{% block content %}
 
         <div class="grid grid--margin">
-          <div class="grid__col grid__col--padding bg-white mb5">
+          <div class="grid__col grid__col--padding bg-white mb5 readings_table">
             <canvas id="ActivityChart" width="100%" height="40"></canvas>
           </div>
         </div>
+        <!-- <li class="reports modal-toggle">
+							
+            <input type="text" name="dates" class="time_period form__input button" value="{{def_start_date}}-{{def_end_date}}" id = "time_period">
+            <div id = "default_range" hidden>{{def_start_date}}-{{def_end_date}}</div>
+          </li> -->
         <div class="grid grid--margin mb0">
             
             <div class="grid__col  grid__col--padding bg-white mt20">
-              <div class="table table--18">
-                <div class="table__header">
-                  <div class="table__row">
-                    <div class="table__cell"></div>
-                    <div class="table__cell">TIME</div>
-                    <div class="table__cell">kVAr L1-2-3</div>
-                    <div class="table__cell">kVA L1-2-3</div>
-                    <div class="table__cell">PF</div>
-                    <div class="table__cell"></div>
-                  </div>
-                </div>
-                <div class="table__body">
-                  <div class="table__row">
-                    <div class="table__cell"><div class="avatar-thumb"></div></div>
-                    <div class="table__cell">13-05-2019 12pm</div>
-                    <div class="table__cell">240Kvar</div>
-                    <div class="table__cell">230kva</div>
-                    <div class="table__cell">0.9</div>
-                    <div class="table__cell"></div>
-                    
-                    
-                  </div>
-                  <div class="table__row">
-                    <div class="table__cell"><div class="avatar-thumb"></div></div>
-                    <div class="table__cell">13-05-2019 12pm</div>
-                    <div class="table__cell">240kW</div>
-                    <div class="table__cell">230kW</div>
-                    <div class="table__cell">220kW</div>
-                    <div class="table__cell"></div>
-                    </div>
-                    
-                    <div class="table__row">
-                      <div class="table__cell"><div class="avatar-thumb"></div></div>
-                      <div class="table__cell">13-05-2019 12pm</div>
-                      <div class="table__cell">240kW</div>
-                      <div class="table__cell">230kW</div>
-                      <div class="table__cell">220kW</div>
-                      <div class="table__cell"></div>
-                      
-                    </div>
-                    <div class="table__row">
-                    <div class="table__cell"></div>
-                    <div class="table__cell"></div>
-                    <div class="table__cell"></div>
-                    <div class="table__cell"></div>
-                    <div class="table__cell"></div>
-                    <div class="table__cell"></div>
-                    
-                    <div class="table__cell">
-                      <span ></span>
-                      <nav class="dropdown-menu dropdown-menu--content dropdown-menu--table" > 			
-                        <ul>
-                          <li><a href=""></a></li>
-                          <li><a href="#"></a></li>
-                          <li><a href="#"></a></li>
-                        </ul>
-                      </nav>
-                    </div>
-                  </div>
-    
-                </div>
-                
-              </div>
+              
               <!-- TABLE end -->
+              <table id="reaing_table" class="display">
+                  <thead>
+                      <tr>
+                          <th>Date/Time</th>
+                          <th>Line 1 (Volts)</th>
+                          <th>Line 2 (Volts)</th>
+                          <th>Line 3 (Volts)</th>
+                          <th>Line 1 (Amps)</th>
+                          <th>Line 2 (Amps)</th>
+                          <th>Line 3 (Amps)</th>
+                          <th>Line 1 (KWatts)</th>
+                          <th>Line 2 (KWatts)</th>
+                          <th>Line 3 (KWatts)</th>
+                          <th>Line 1 (Kvar)</th>
+                          <th>Line 2 (Kvar)</th>
+                          <th>Line 3 (Kvar)</th>
+                          <th>Line 1 (P.F)</th>
+                          <th>Line 2 (P.F)</th>
+                          <th>Line 3 (P.F)</th>
+                          <th>Frequency (AVG)</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>Row 1 Data 1</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                          <td>Row 1 Data 2</td>
+                      </tr>
+                      <tr>
+                          <td>Row 2 Data 1</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                          <td>Row 2 Data 2</td>
+                      </tr>
+                  </tbody>
+              </table>
             </div>
           </div>
 

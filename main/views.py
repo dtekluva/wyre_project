@@ -10,7 +10,7 @@ import json, datetime, calendar
 from django.core.serializers.json import DjangoJSONEncoder
 
 
-# import main.helpers.fetch_readings
+import main.helpers.fetch_readings
 
 # Create your views here.
 # x = Reading.objects.get(id = 1)
@@ -219,10 +219,10 @@ def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
 
                 end_date = date + datetime.timedelta(days = 1) #ADD ONE DAY TO DAY TO ENABLE FILTERING BY DURATION AS YOU CANNOT FILTER BY ONE DAY.
 
-                raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').values())
+                raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
 
                 data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
-                
+                print(data)
 
         try:
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
