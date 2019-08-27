@@ -10,7 +10,7 @@ import json, datetime, calendar
 from django.core.serializers.json import DjangoJSONEncoder
 
 
-import main.helpers.fetch_readings
+# import main.helpers.fetch_readings
 
 # Create your views here.
 # x = Reading.objects.get(id = 1)
@@ -228,3 +228,7 @@ def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
         except:
                 return HttpResponse(json.dumps({"response": "failure"}))
+
+def load_readings(request):
+        import main.helpers.fetch_readings
+        return HttpResponse(json.dumps({"response": "success"}))

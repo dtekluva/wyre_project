@@ -131,7 +131,7 @@ for device_id in device_ids:
         target_device = Device.objects.get(device_id = device_id)
         last_reading = Reading.objects.filter(device = target_device).latest('post_datetime').post_datetime #GET LAST READING FOR PARTICULAR DEVICE
         tommorow = datetime.datetime.now() + datetime.timedelta(days = 1)#GET TODAYS DATE AND ADD ONE DAY
-        print(target_device.name)
+        print(target_device.name) 
 
         start_date = f"{last_reading.year}-{last_reading.month}-{last_reading.day}" #"2019-08-18"
         end_date = f"{tommorow.year}-{tommorow.month}-{tommorow.day}"
