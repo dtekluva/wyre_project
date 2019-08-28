@@ -45,7 +45,7 @@ const post = (device)=>{
   $.post(host + endpoint, data)
         .then(resp => {
           resp = JSON.parse(resp)
-          console.log(resp);
+          // console.log(resp);
           if (resp.response == 'success') {
             
               populate(resp);

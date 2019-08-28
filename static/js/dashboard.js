@@ -17,7 +17,7 @@ avg_kw = document.getElementById("avg_kw")
 
 $(window).on('load', function() {
   let device = $("#device")[0].value;
-  console.log(device)
+  // console.log(device)
   let period = $("#default_range")[0].innerHTML;
   post(device, period);
 })
@@ -35,7 +35,7 @@ $('#time_period').on('apply.daterangepicker', async e => {
 
 const post = (device, period)=>{
   let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
-  console.log(period)
+  // console.log(period)
 
   let data = {
               "device": device,

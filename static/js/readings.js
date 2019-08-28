@@ -3,6 +3,8 @@ const host = window.location.hostname == 'localhost'
     : 'http://' + window.location.hostname + '/'
     
 const endpoint = "get_line_readings/";
+const logs_url = "get_line_readings_log/";
+var table;
 var values = {"data":{}}
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////                                     ///////////////////
@@ -17,12 +19,22 @@ _date = document.getElementById("single_date")
     
 $('#device').on('change', async e => {
   let device = $("#device")[0].value;
+  let period = $("#read_time_period")[0].value
+
   post(device);
+  get_logs(device, period);
 })
 
 $('#parameter').on('change', async e => {
   let device = $("#device")[0].value;
   post(device);
+})
+
+//LOAD DATE RANGE PICKER
+$('#read_time_period').on('apply.daterangepicker', async e => {
+  let device = $("#device")[0].value
+  let period = $("#read_time_period")[0].value
+  get_logs(device, period);
 })
 
 //LOAD DATE PICKER
@@ -41,12 +53,26 @@ $('input[name="date"]').on('apply.daterangepicker', async e => {
   let device = $("#device")[0].value
   post(device);
 })
+$(document).ready(function() {
+  
+} );
 
 $(window).on('load', function() {
+
   let device = $("#device")[0].value;
-  console.log(ActivityChart);
+  let period = $("#default_range")[0].innerHTML;
+
+  table = $('#reaing_table').DataTable( {
+                "scrollX": true,
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+              } );
   post(device);
+  get_logs(device, period);
 })
+
 
 const post = (device)=>{
   let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
@@ -54,7 +80,7 @@ const post = (device)=>{
               "device": device,
               "date": _date.value
               }; // add lives_in select value to post data
-  console.log(data);
+  // console.log(data);
   
   function csrfSafeMethod (method) {
         // these HTTP methods do not require CSRF protection
@@ -74,10 +100,11 @@ const post = (device)=>{
           resp = JSON.parse(resp)
           values.data = resp.data;
           if (resp.response == 'success') {
-            console.log(parameter.value)
-            console.log(values)
+            // console.log(parameter.value)
+            // console.log(values)
             
             if (parameter.value == "Voltage"){
+              table.clear().draw();
 
               populate_voltage(prepare_data_voltage());
             }
@@ -94,6 +121,55 @@ const post = (device)=>{
             swal({
                   title: "Error fetching data!!",
                   text: "Something went wrong",
+                });
+          }
+        })
+        .catch(() => {
+          text = {
+            title: "Network Error",
+            text: `Please check your internet connection.!!`,
+            icon: "error"
+          };
+          swal({
+            title: "Network Error",
+            text: "Please check your internet connection.!!",
+          });
+        }) // post data
+}
+
+const get_logs = (device, period)=>{
+  let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
+  // console.log(period)
+
+  let data = {
+              "device": device,
+              "period": period
+              }; // add lives_in select value to post data
+
+  function csrfSafeMethod (method) {
+        // these HTTP methods do not require CSRF protection
+    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method)
+  }
+
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader('X-CSRFToken', csrftoken)
+      }
+    }
+  })
+  
+  $.post(host + logs_url, data)
+        .then(resp => {
+          resp = JSON.parse(resp)
+          // console.log(resp);
+          if (resp.response == 'success') {
+            add_to_tables(resp);
+            
+          } else if (resp.response == 'failure') {
+            swal({
+                  title: "Error fetching data!!",
+                  text: "Try selecting a valid date range first",
                 });
           }
         })
@@ -222,15 +298,33 @@ function time_convert (time) {
   return time.join (''); // return adjusted time or original string
 }
 
-$(document).ready(function() {
-  $('#reaing_table').DataTable( {
-      "scrollX": true,
-      dom: 'Bfrtip',
-      buttons: [
-          'copy', 'csv', 'excel', 'pdf', 'print'
-      ]
-  } );
-} );
+function add_to_tables(readings){
+
+  table.clear().draw()
+
+  readings.data.forEach(element => {
+    table.row.add( [
+      element.post_datetime,
+      element.voltage_l1_l12,
+      element.voltage_l2_l23,
+      element.voltage_l3_l31,
+      element.current_l1,
+      element.current_l2,
+      element.current_l3,
+      element.kw_l1,
+      element.kw_l2,
+      element.kw_l3,
+      element.kvar_l1,
+      element.kvar_l2,
+      element.kvar_l3,
+      element.power_factor_l1,
+      element.power_factor_l2,
+      element.power_factor_l3,
+      element.avg_frequency
+  ] ).draw(false )
+  });
+    
+};
 
 function todays_date(){
   var today = new Date();

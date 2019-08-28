@@ -29,14 +29,24 @@ def get_date_range():
 
         return default_start_date, default_end_date
 
-def get_raw_range_for_js():
-        today = datetime.datetime.now()
-        today_year = today.year
-        today_month = today.month
-        month_last_day = calendar.monthrange(today_year, today_month)[1]
+def get_raw_range_for_js(add_one_day = False):
+        if not add_one_day:
+                today = datetime.datetime.now()
+                today_year = today.year
+                today_month = today.month
+                month_last_day = calendar.monthrange(today_year, today_month)[1]
 
-        default_start_date = f"{today_month}/01/{today_year}"
-        default_end_date = f"{today_month}/{month_last_day}/{today_year}"
+                default_start_date = f"{today_month}/01/{today_year}"
+                default_end_date = f"{today_month}/{month_last_day}/{today_year}"
+
+        if add_one_day:
+                today = datetime.datetime.now()
+                tommorrow = datetime.datetime.now() + datetime.timedelta(days = 1)
+                today_year, today_month, today_day= today.year, today.month, today.day
+                tommorrow_year, tommorrow_day, tommorrow_month = tommorrow.year, tommorrow.day, tommorrow.month
+
+                default_start_date = f"{today_month}/{today_day}/{today_year}"
+                default_end_date = f"{tommorrow_month}/{tommorrow.day}/{tommorrow_year}"
 
         return default_start_date, default_end_date
 
@@ -88,10 +98,10 @@ def readings(request):
         page = "Readings (Volts-Amp-Watts)"
         user = User.objects.get(pk = request.user.id)
         devices = Device.objects.filter(user_id = request.user.id)
-
+        start_date, end_date = get_raw_range_for_js(add_one_day=True)
         parameters = ["Current", "Voltage", "Energy"]
 
-        return render(request, 'readings.html', {'user':user, "page": page, "devices":devices, "parameters":parameters})
+        return render(request, 'readings.html', {'user':user, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
 
 def max_demand(request):
         page = "Max Demand (Amps)"
@@ -202,8 +212,7 @@ def get_min_max_each_device(devices, start_date, end_date):
         
         return result
 
-def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
-        #THIS IS SIMILAR TO THE (fetch_vals_period) FUNCTION ONLY THAT THIS FUNCTION ONLY FETCHES FOR ALL THE DEVICES I.E GETS VALUE FOR JUST ONE DEVICE OF A CUSTOMER ALTHOUGH IT STILL HAS THE ABILITY TO FETCH OVERALL TOTAL.
+def get_line_readings(request): 
 
         user = User.objects.get(pk = request.user.id)
 
@@ -226,6 +235,32 @@ def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
         except:
                 return HttpResponse(json.dumps({"response": "failure"}))
+
+def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
+        #THIS IS SIMILAR TO THE (get_line_readings) FUNCTION ONLY THAT THIS FUNCTION ONLY FETCHES FOR LOG TABLE
+
+        user = User.objects.get(pk = request.user.id)
+
+        if request.method == "POST":
+                device_id = request.POST.get("device", "")
+                devices = Device.objects.filter(id = device_id)
+                date, end_date = request.POST.get("period", "").split("-") 
+
+                #####REPLACE SLASHES WITH DASHES######
+                date = format_date(date.replace("/","-"))
+                end_date = format_date(end_date.replace("/","-"))
+
+                raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
+
+                data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
+
+
+        try:
+                return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+        except:
+                return HttpResponse(json.dumps({"response": "failure"}))
+
+#URL FOR POPULATING DATABASE
 def load_readings(request):
         run_migrations()
         return HttpResponse(json.dumps({"response": "success"}))

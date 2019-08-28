@@ -1,19 +1,19 @@
 var host = window.location.hostname == 'localhost'
     ? 'http://localhost:8000/'
     : 'http://' + window.location.hostname + '/'
-console.log(host)
+// console.log(host)
     
 $('#LoginForm').on('submit', async e => {
     e.preventDefault()
     let data = $('#LoginForm') // add lives_in select value to post data
-    console.log(data)
+    // console.log(data)
     post()
     
 })
 
 const post = ()=>{
   let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
-  console.log(csrftoken)
+  // console.log(csrftoken)
   let page = 'login'
 
   let form_data = `${$('#LoginForm').serialize()}` // add lives_in select value to post data
@@ -34,7 +34,7 @@ const post = ()=>{
   $.post(host + 'auth/'+ page , form_data)
         .then(resp => {
           resp = JSON.parse(resp)
-          console.log(resp)
+          // console.log(resp)
           
           if (resp.response == 'success') {
             window.location.replace('/')
