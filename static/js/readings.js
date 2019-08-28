@@ -158,14 +158,28 @@ const get_logs = (device, period)=>{
       }
     }
   })
+
+  Swal.fire({
+    title: 'PROCCESSING PLEASE WAIT !!!',
+    html: '<strong>FETCHING READINGS FOR SELECTED PERIOD</strong>.'
+  });
+  Swal.showLoading();
   
   $.post(host + logs_url, data)
         .then(resp => {
           resp = JSON.parse(resp)
-          // console.log(resp);
+          
+          Swal.getContent().querySelector('strong')
+            .textContent = `LOADED ${resp.data.length} READINGS, RENDERING VALUES.`
+          
+          return resp;
+        })
+        .then(resp=> {
           if (resp.response == 'success') {
-            add_to_tables(resp);
-            
+            // add_to_tables(resp);
+            setTimeout(() => {
+              add_to_tables(resp);
+            }, 3000);
           } else if (resp.response == 'failure') {
             swal({
                   title: "Error fetching data!!",
@@ -299,7 +313,7 @@ function time_convert (time) {
 }
 
 function add_to_tables(readings){
-
+  x = document.getElementById("xxx");
   table.clear().draw()
 
   readings.data.forEach(element => {
@@ -321,9 +335,11 @@ function add_to_tables(readings){
       element.power_factor_l2,
       element.power_factor_l3,
       element.avg_frequency
-  ] ).draw(false )
-  });
+  ] )
+  Swal.close()
+});
     
+ table.draw();
 };
 
 function todays_date(){
@@ -335,3 +351,32 @@ function todays_date(){
   today = mm + '/' + dd + '/' + yyyy;
   return today
 }
+
+
+
+
+
+
+var timerInterval
+// progress = Swal.fire({
+//   title: 'Auto close alert!',
+//   html: 'I will close in <strong></strong> milliseconds.',
+//   timer: 2000,
+//   onBeforeOpen: () => {
+//     Swal.showLoading()
+//     timerInterval = setInterval(() => {
+//       Swal.getContent().querySelector('strong')
+//         .textContent = Swal.getTimerLeft()
+//     }, 100)
+//   },
+//   onClose: () => {
+//     clearInterval(timerInterval)
+//   }
+// }).then((result) => {
+//   if (
+//     /* Read more about handling dismissals below */
+//     result.dismiss === Swal.DismissReason.timer
+//   ) {
+//     console.log('I was closed by the timer')
+//   }
+// })

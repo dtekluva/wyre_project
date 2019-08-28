@@ -72,7 +72,7 @@ def power(request):
         devices = Device.objects.filter(user_id = request.user.id)
 
         return render(request, 'power.html', {'user':user, "page": page, "devices":devices})
-
+@login_required
 def last_read(request):
         
         page = "Last Readings"
@@ -93,7 +93,7 @@ def current(request):
         user = User.objects.get(pk = request.user.id)
 
         return render(request, 'current.html', {'user':user, "page": page})
-
+@login_required
 def readings(request):
         page = "Readings (Volts-Amp-Watts)"
         user = User.objects.get(pk = request.user.id)
