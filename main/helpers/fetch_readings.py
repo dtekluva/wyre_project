@@ -35,12 +35,12 @@ def make_request(cookie, device_id, start_date, end_date):
     return readings
 
 
-def populate_db(readings, device_code):
+def populate_db(readings, device_code, last_reading):
 
     device = Device.objects.get(device_id = device_code)
-    last_reading = Reading.objects.latest('post_datetime').post_datetime
+#     last_reading = Reading.objects.latest('post_datetime').post_datetime
 
-    for record in readings:
+    for record in reversed(readings):
         date = record['recordTime'][:10]
         time = record['recordTime'][11:]
         _datetime = (record['recordTime']).replace('T'," ")
@@ -135,10 +135,10 @@ def run_migrations():
                 target_device = Device.objects.get(device_id = device_id)
                 last_reading = Reading.objects.filter(device = target_device).latest('post_datetime').post_datetime #GET LAST READING FOR PARTICULAR DEVICE
                 tommorow = datetime.datetime.now() + datetime.timedelta(days = 1)#GET TODAYS DATE AND ADD ONE DAY
-                print(target_device.name) 
+                print(target_device.name, last_reading) 
 
                 start_date = f"{last_reading.year}-{last_reading.month}-{last_reading.day}" #"2019-08-18"
                 end_date = f"{tommorow.year}-{tommorow.month}-{tommorow.day}"
 
                 readings = make_request(cookies, device_id, start_date, end_date)
-                populate_db(readings, device_id)
+                populate_db(readings, device_id, last_reading)

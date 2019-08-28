@@ -226,8 +226,6 @@ def get_line_readings(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
         except:
                 return HttpResponse(json.dumps({"response": "failure"}))
-
 def load_readings(request):
-        
         run_migrations()
         return HttpResponse(json.dumps({"response": "success"}))
