@@ -1,6 +1,6 @@
 import requests
 
-fetch_url = "http://localhost:8000/load_readings/"
+fetch_url = "http://wyre.pythonanywhere.com/load_readings/"
 
 try:
     response = requests.get(fetch_url)
