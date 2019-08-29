@@ -67,7 +67,11 @@ $(window).on('load', function() {
                 dom: 'Bfrtip',
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
+                ],
+                "columnDefs": [
+                  {"className": "dt-center", "targets": "_all"}
+                ],
+                "pageLength": 20
               } );
   post(device);
   get_logs(device, period);
@@ -176,10 +180,12 @@ const get_logs = (device, period)=>{
         })
         .then(resp=> {
           if (resp.response == 'success') {
-            // add_to_tables(resp);
+            if (resp.data.length < 1){
+              Swal.close()
+            }
             setTimeout(() => {
               add_to_tables(resp);
-            }, 3000);
+            }, 1000);
           } else if (resp.response == 'failure') {
             swal({
                   title: "Error fetching data!!",
@@ -313,12 +319,11 @@ function time_convert (time) {
 }
 
 function add_to_tables(readings){
-  x = document.getElementById("xxx");
   table.clear().draw()
 
   readings.data.forEach(element => {
     table.row.add( [
-      element.post_datetime,
+      (new Date(element.post_datetime)).remHours(1).toLocaleString(),
       element.voltage_l1_l12,
       element.voltage_l2_l23,
       element.voltage_l3_l31,
@@ -354,29 +359,7 @@ function todays_date(){
 
 
 
-
-
-
-var timerInterval
-// progress = Swal.fire({
-//   title: 'Auto close alert!',
-//   html: 'I will close in <strong></strong> milliseconds.',
-//   timer: 2000,
-//   onBeforeOpen: () => {
-//     Swal.showLoading()
-//     timerInterval = setInterval(() => {
-//       Swal.getContent().querySelector('strong')
-//         .textContent = Swal.getTimerLeft()
-//     }, 100)
-//   },
-//   onClose: () => {
-//     clearInterval(timerInterval)
-//   }
-// }).then((result) => {
-//   if (
-//     /* Read more about handling dismissals below */
-//     result.dismiss === Swal.DismissReason.timer
-//   ) {
-//     console.log('I was closed by the timer')
-//   }
-// })
+Date.prototype.remHours = function(h) {
+  this.setTime(this.getTime() - (h*60*60*1000));
+  return this;
+}
