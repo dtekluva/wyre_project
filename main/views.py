@@ -262,5 +262,12 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
 
 #URL FOR POPULATING DATABASE
 def load_readings(request):
-        run_migrations()
-        return HttpResponse(json.dumps({"response": "success"}))
+
+        try:
+                run_migrations()
+
+                return HttpResponse(json.dumps({"response": "success"}))
+                        
+        except:
+                return HttpResponse(json.dumps({"response": "failure", "message": "Something went wrong"}))
+                
