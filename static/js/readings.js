@@ -218,7 +218,6 @@ function populate_current(data){
     ActivityChart.chart.data.datasets[3].label = "Amps(Neutral)"
     ActivityChart.chart.data.labels = data.time
     ActivityChart.update();
-  
 }
 
 function prepare_data_current(){

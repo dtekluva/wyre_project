@@ -3,28 +3,30 @@
 var chartactivity = document.getElementById('ActivityChart').getContext("2d");
 
 var gradientStroke = chartactivity.createLinearGradient(200, 0, 100, 0);
-gradientStroke.addColorStop(0, "rgba(58, 233, 245, 1)");
-gradientStroke.addColorStop(1, "rgba(18, 216, 227, 1)");
+gradientStroke.addColorStop(0, "rgba(124, 39, 235, 1)");
+gradientStroke.addColorStop(1, "rgba(124, 39, 235, 1)");
 
 var gradientStroke2 = chartactivity.createLinearGradient(200, 0, 100, 0);
-gradientStroke2.addColorStop(0, "rgba(255, 92, 203, 1)");
-gradientStroke2.addColorStop(1, "rgba(253, 133, 168, 1)");  
+gradientStroke2.addColorStop(0, "rgba(255, 99, 180, 1)");
+gradientStroke2.addColorStop(1, "rgba(255, 99, 180, 1)");
 
 var gradientStroke3 = chartactivity.createLinearGradient(200, 0, 100, 0);
-gradientStroke3.addColorStop(0, "rgba(55, 200, 60, 1)");
-gradientStroke3.addColorStop(1, "rgba(53, 255, 50, 1)");
+gradientStroke3.addColorStop(0, "rgba(0, 220, 255, 1)");
+gradientStroke3.addColorStop(1, "rgba(0, 220, 255, 1)");
 
-var gradientFill = chartactivity.createLinearGradient(0, 0, 0, 350);
-gradientFill.addColorStop(0, "rgba(128, 182, 244, 0.5)");
-gradientFill.addColorStop(1, "rgba(128, 182, 244, 0)");
+
+var gradientFill = chartactivity.createLinearGradient(50, 150, 0, 350);
+gradientFill.addColorStop(0, "rgba(100, 204, 63, 0.5)");
+gradientFill.addColorStop(1, "rgba(100, 204, 63, 0)");
 
 var gradientFill2 = chartactivity.createLinearGradient(0, 0, 0, 350);
 gradientFill2.addColorStop(0, "rgba(255, 91, 204, 0.5)");
 gradientFill2.addColorStop(1, "rgba(255, 91, 204, 0)");
 
-var gradientFill3 = chartactivity.createLinearGradient(50, 150, 0, 350);
-gradientFill3.addColorStop(0, "rgba(100, 204, 63, 0.5)");
-gradientFill3.addColorStop(1, "rgba(100, 204, 63, 0)");
+var gradientFill3 = chartactivity.createLinearGradient(0, 0, 0, 350);
+gradientFill3.addColorStop(0, "rgba(128, 182, 244, 0.5)");
+gradientFill3.addColorStop(1, "rgba(128, 182, 244, 0)");
+
 
 
 var ActivityChart = new Chart(chartactivity, {
@@ -125,6 +127,9 @@ var ActivityChart = new Chart(chartactivity, {
             yAxes: [{
                 stacked: true // this also..
              }]
+        },
+        tooltips: {
+            mode: "index"
         }
     }
 });
@@ -142,9 +147,9 @@ var DiseasesChart = new Chart(chartdiseases, {
             label: "Data",
             fill: true,
 			backgroundColor: [
-			"#ff0cb1",
-            "#22d228",
-            "#16e6f5"
+            "rgba(255, 99, 180, 1)",
+            "rgba(0, 220, 255, 1)",
+            "rgba(124, 39, 235, 1)"
 			],
             borderWidth: 2,
             data: [1, 1, 1]
@@ -160,6 +165,9 @@ var DiseasesChart = new Chart(chartdiseases, {
             labels: {
                 boxWidth: 15,
 				padding: 15
+            },
+            tooltips: {
+                mode: "index"
             }
 			
         }
