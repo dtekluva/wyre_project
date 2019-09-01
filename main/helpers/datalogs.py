@@ -241,11 +241,13 @@ def get_last_readings(device_id):
          'present_sliding_window_kva_demand': {"value":0}, 'accum_kva_demand': {"value":0}, 
          'pf_import_at_maximum_kva_sliding_window_demand': {"value":0}}
 
-    last_read = make_request(device_id = device_id, url = "last_read")["data"][0]['data']
+    raw_data = make_request(device_id = device_id, url = "last_read")
+    last_read = raw_data["data"][0]['data']
+    template["record_time"] = raw_data["data"][0]["recordTime"]
 
     for value in last_read:
         template[value["description"].lower().replace('.','').replace(' ','_').replace('/','_').replace('(','').replace(')','')] = value
-
+        
     return template
 
 def sort_multiple_lists(i,j,k,l):

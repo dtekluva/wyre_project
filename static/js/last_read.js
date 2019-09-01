@@ -10,6 +10,7 @@ var endpoint = "get_last_read/";
 ///////////////////////////////////////////////////////////////////////////
 
 total_kw = document.getElementById("total_kw")
+var time_span = document.getElementById("update_time")
 
 
 $(window).on('load', function() {
@@ -72,6 +73,8 @@ const post = (device)=>{
 }
 
 function populate(_data){
+  console.log(_data);
+  time_span.innerHTML = new Date(_data.data.record_time);
   
   document.getElementById("vl1").innerHTML = _data.data.voltage_l1_l12.value || '-';
   document.getElementById("vl2").innerHTML = _data.data.voltage_l2_l23.value || '-';
@@ -120,4 +123,17 @@ function populate(_data){
   document.getElementById("present_sliding_window_kva_demand").innerHTML = _data.data.present_sliding_window_kva_demand.value || '-';
   document.getElementById("accum_kva_demand").innerHTML = _data.data.accum_kva_demand.value || '-';
   document.getElementById("pf_import_at_maximum_kva_sliding_window_demand").innerHTML = _data.data.pf_import_at_maximum_kva_sliding_window_demand.value || '-';
+}
+
+function time_convert (time) {
+  // Check correct time format and split into components
+  time = time.slice(0,8)
+  time = time.toString().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+  if (time.length > 1) { // If time format correct
+    time = time.slice(1);  // Remove full string match value
+    time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+    time[0] = +time[0] % 12 || 12; // Adjust hours
+  }
+  return time.join (''); // return adjusted time or original string
 }

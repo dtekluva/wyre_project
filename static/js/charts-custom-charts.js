@@ -46,7 +46,7 @@ var ActivityChart = new Chart(chartactivity, {
             pointHoverBorderWidth: 1,
             pointRadius: 3,
             fill: true,
-			backgroundColor: gradientFill,
+			backgroundColor: gradientStroke,
             borderWidth: 2,
             data: [50,50,50,50,50,50,50,50,50,50]
             },	
@@ -62,7 +62,7 @@ var ActivityChart = new Chart(chartactivity, {
             pointHoverBorderWidth: 1,
             pointRadius: 3,
             fill: true,
-			backgroundColor: gradientFill2,
+			backgroundColor: gradientStroke2,
             borderWidth: 2,
             data: [50,50,50,50,50,50,50,50,50,50]
             },
@@ -78,7 +78,7 @@ var ActivityChart = new Chart(chartactivity, {
             pointHoverBorderWidth: 1,
             pointRadius: 3,
             fill: true,
-			backgroundColor: gradientFill3,
+			backgroundColor: gradientStroke3,
             borderWidth: 2,
             data: [50,50,50,50,50,50,50,50,50,50]
         }

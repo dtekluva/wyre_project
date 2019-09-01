@@ -4,7 +4,7 @@ var chartactivity = document.getElementById('ActivityChart').getContext("2d");
 
 var gradientStroke = chartactivity.createLinearGradient(200, 0, 100, 0);
 gradientStroke.addColorStop(0, "rgba(58, 233, 245, 1)");
-gradientStroke.addColorStop(1, "rgba(18, 216, 227, 1)");
+gradientStroke.addColorStop(1, "rgba(58, 233, 245, 1)");
 
 var gradientStroke2 = chartactivity.createLinearGradient(200, 0, 100, 0);
 gradientStroke2.addColorStop(0, "rgba(255, 92, 203, 1)");
@@ -42,64 +42,56 @@ var ActivityChart = new Chart(chartactivity, {
         labels: ["1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm"],
         datasets: [{
             label: "L1 Volts",
-            borderColor: gradientStroke,
-            pointBorderColor: gradientStroke,
-            pointBackgroundColor: "rgba(255, 255, 255, 1)",
-            pointHoverBackgroundColor: "rgba(128, 182, 244, 1)",
-            pointHoverBorderColor: gradientStroke,
-            pointBorderWidth: 1,
-            pointHoverRadius: 3,
-            pointHoverBorderWidth: 1,
-            pointRadius: 3,
-            fill: true,
-			backgroundColor: gradientFill,
+            borderColor: "#55bae7",
+            backgroundColor: "#55cae7",
+            // pointBackgroundColor: "rgba(255, 255, 255, 1)",
+            // pointBorderColor: "#55bae7",
+            // pointHoverBackgroundColor: "#55bae7",
+            // pointHoverBorderColor: "#55bae7",
+            // pointRadius: 2,
+            fill: false,
+			backgroundColor: "#55cae7",
             borderWidth: 2,
             data: []
         },	{
             label: "L2 Volts",
-            borderColor: gradientStroke2,
-            pointBorderColor: gradientStroke2,
-            pointBackgroundColor: "rgba(255, 255, 255, 1)",
-            pointHoverBackgroundColor: "rgba(128, 182, 244, 1)",
-            pointHoverBorderColor: gradientStroke2,
-            pointBorderWidth: 1,
-            pointHoverRadius: 3,
-            pointHoverBorderWidth: 1,
-            pointRadius: 3,
-            fill: true,
-			backgroundColor: gradientFill2,
+            borderColor: "#C20F0F",
+            backgroundColor: "#C20F0F",
+            // pointBackgroundColor: "rgba(255, 255, 255, 1)",
+            // pointBorderColor: "#C20F0F",
+            // pointHoverBackgroundColor: "#C20F0F",
+            // pointHoverBorderColor: "#C20F0F",
+            // pointRadius: 2,
+            fill: false,
+			backgroundColor: "#C20F0F",
             borderWidth: 2,
             data: []
         },
         	{
             label: "L3 Volts",
-            borderColor: gradientStroke3,
-            pointBorderColor: gradientStroke3,
-            pointBackgroundColor: "rgba(255, 255, 255, 1)",
-            pointHoverBackgroundColor: "rgba(128, 182, 244, 1)",
-            pointHoverBorderColor: gradientStroke3,
-            pointBorderWidth: 1,
-            pointHoverRadius: 3,
-            pointHoverBorderWidth: 1,
-            pointRadius: 3,
-            fill: true,
-			backgroundColor: gradientFill3,
+            borderColor: "#5E8A00",
+            backgroundColor: "#5E8A00",
+            // pointBackgroundColor: "rgba(255, 255, 255, 1)",
+            // pointBorderColor: "#7DB800",
+            // pointHoverBackgroundColor: "#7DB800",
+            // pointHoverBorderColor: "#7DB800",
+            // pointRadius: 2,
+            fill: false,
+			backgroundColor: "#5E8A00",
             borderWidth: 2,
             data: []
         },
         	{
             label: "Freq Hertz(Avg.)",
-            borderColor: gradientStroke4,
-            pointBorderColor: gradientStroke4,
-            pointBackgroundColor: "rgba(255, 255, 255, 1)",
-            pointHoverBackgroundColor: "rgba(128, 182, 244, 1)",
-            pointHoverBorderColor: gradientStroke4,
-            pointBorderWidth: 1,
-            pointHoverRadius: 3,
-            pointHoverBorderWidth: 1,
-            pointRadius: 3,
-            fill: true,
-			backgroundColor: gradientFill4,
+            borderColor: "#FFB56B",
+            backgroundColor: "#FFB56B",
+            // pointBackgroundColor: "rgba(255, 255, 255, 1)",
+            // pointBorderColor: "#7DB800",
+            // pointHoverBackgroundColor: "#7DB800",
+            // pointHoverBorderColor: "#7DB800",
+            // pointRadius: 2,
+            fill: false,
+			backgroundColor: "#FFB56B",
             borderWidth: 2,
             data: []
         }
@@ -142,6 +134,9 @@ var ActivityChart = new Chart(chartactivity, {
                     fontStyle: "bold"
                 }
             }]
-        }
+        },
+        tooltips: {
+            mode: 'index'
+         }
     }
 });

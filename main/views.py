@@ -270,4 +270,3 @@ def load_readings(request):
                         
         except:
                 return HttpResponse(json.dumps({"response": "failure", "message": "Something went wrong"}))
-                
