@@ -95,11 +95,11 @@ def current(request):
         return render(request, 'current.html', {'user':user, "page": page})
 @login_required
 def readings(request):
-        page = "Readings (Volts-Amp-Watts)"
+        page = "Readings"
         user = User.objects.get(pk = request.user.id)
         devices = Device.objects.filter(user_id = request.user.id)
         start_date, end_date = get_raw_range_for_js(add_one_day=True)
-        parameters = ["Current", "Voltage", "Energy"]
+        parameters = ["Current (Amps)", "Voltage (Volts)", "Active-Power (kW)", "Reactive-Power (kvar)", "Energy (kWH)"]
 
         return render(request, 'readings.html', {'user':user, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
 

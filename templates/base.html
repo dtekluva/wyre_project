@@ -152,7 +152,7 @@
 							<div id = "default_range" hidden>{{def_start_date}}-{{def_end_date}}</div>
 						</li>
 						{% endif%}
-						{% if page == "Readings (Volts-Amp-Watts)" %}
+						{% if page == "Readings" %}
 						<li class="reports modal-toggle">
 							<input class="single_date button form__input" type="text" name="date" value="08/11/2019" id="single_date"/>
 						</li>
@@ -160,7 +160,6 @@
 						<li class="reports prescription modal-toggle">
 							<select class="show-more show-more--select show-more--select-gray has-dropdown" id="parameter">
 								{% for parameter in parameters %}
-								{{devices}}
 									<option value="{{parameter}}">{{parameter}}</option>
 								{% endfor %}
 							</select>
@@ -492,7 +491,13 @@
 	<script src="{% static 'js/daterangepicker.min.js' %}"></script>
 	<script src="{% static 'js/ion.rangeSlider.min.js' %}"></script>
 	<script src="{% static 'js/jquery.dashboard-custom.js' %}"></script>
-	{% if page == "Readings (Volts-Amp-Watts)" %}
+	{% if page == "Dashboard" %}
+	<script src="{% static 'js/dashboard.js' %}"></script>
+	{% endif %}
+	{% if page == "Last Readings" %}
+	<script src="{% static 'js/last_read.js' %}"></script>
+	{% endif %}
+	{% if page == "Readings" %}
 	<script src="{% static 'js/readings.js' %}"></script>
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>	
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>	
@@ -502,12 +507,6 @@
 	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>	
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>	
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>	
-	{% endif %}
-	{% if page == "Dashboard" %}
-	<script src="{% static 'js/dashboard.js' %}"></script>
-	{% endif %}
-	{% if page == "Last Readings" %}
-	<script src="{% static 'js/last_read.js' %}"></script>
 	{% endif %}
 </body>
 

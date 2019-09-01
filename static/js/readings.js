@@ -45,6 +45,9 @@ $(function() {
     "minYear": 2017,
     "maxYear": 2025,
     "startDate": todays_date,
+    onSelect: function() {
+      $(this).data('datepicker').inline = true;                               
+  }
   });
 });
 
@@ -103,20 +106,29 @@ const post = (device)=>{
         .then(resp => {
           resp = JSON.parse(resp)
           values.data = resp.data;
+          console.log(values);
           if (resp.response == 'success') {
             // console.log(parameter.value)
             // console.log(values)
             
-            if (parameter.value == "Voltage"){
-              table.clear().draw();
+            if (parameter.value == "Voltage (Volts)"){
+              table.clear().draw(); 
 
               populate_voltage(prepare_data_voltage());
             }
-            else if(parameter.value == "Current"){
+            else if(parameter.value == "Current (Amps)"){
 
               populate_current(prepare_data_current());
             } 
-            else if(parameter.value == "Energy"){
+            else if(parameter.value == "Active-Power (kW)"){
+
+              populate_active_power(prepare_data_active_power());
+            } 
+            else if(parameter.value == "Reactive-Power (kvar)"){
+
+              populate_reactive_power(prepare_data_reactive_power());
+            } 
+            else if(parameter.value == "Energy (kWH)"){
 
               populate_energy(prepare_data_energy());
             } 
@@ -239,6 +251,7 @@ function prepare_data_current(){
 };
 
 function populate_voltage(data){
+ 
     
   ActivityChart.chart.data.datasets[0].data = data.l1
   ActivityChart.chart.data.datasets[0].label = "Volts(L1)"
@@ -271,7 +284,7 @@ function prepare_data_voltage(){
   return {'time':_time,'l1':l1,'l2':l2, 'l3':l3, 'hz':hz}
 };
 
-function populate_energy(data){
+function populate_active_power(data){
     
   ActivityChart.chart.data.datasets[0].data = data.l1
   ActivityChart.chart.data.datasets[0].label = "K-watts(L1)"
@@ -286,7 +299,7 @@ function populate_energy(data){
 
 }
 
-function prepare_data_energy(){
+function prepare_data_active_power(){
   let _time = [];
   let l1 = [];
   let l2 = [];
@@ -304,6 +317,71 @@ function prepare_data_energy(){
   return {'time':_time,'l1':l1,'l2':l2, 'l3':l3, 'hz':hz}
 };
 
+function populate_reactive_power(data){
+    
+  ActivityChart.chart.data.datasets[0].data = data.l1
+  ActivityChart.chart.data.datasets[0].label = "K-var (L1)"
+  ActivityChart.chart.data.datasets[1].data = data.l2
+  ActivityChart.chart.data.datasets[1].label = "K-var (L2)"
+  ActivityChart.chart.data.datasets[2].data = data.l3
+  ActivityChart.chart.data.datasets[2].label = "K-var (L3)"
+  ActivityChart.chart.data.datasets[3].data = data.hz
+  ActivityChart.chart.data.datasets[3].label = "Frequency"
+  ActivityChart.chart.data.labels = data.time
+  ActivityChart.update();
+
+};
+
+function prepare_data_reactive_power(){
+  let _time = [];
+  let l1 = [];
+  let l2 = [];
+  let l3 = [];
+  let hz = [];
+
+  values.data.forEach(element => {
+    _time.push(time_convert(element.post_time))
+    l1.push(element.kvar_l1)
+    l2.push(element.kvar_l2)
+    l3.push(element.kvar_l3)
+    hz.push(element.avg_frequency)
+  });
+
+  return {'time':_time,'l1':l1,'l2':l2, 'l3':l3, 'hz':hz}
+};
+
+function populate_energy(data){
+    
+  ActivityChart.chart.data.datasets[0].data = data.energy
+  ActivityChart.chart.data.datasets[0].label = "Energy Usage (Kwh)"
+  ActivityChart.chart.data.datasets[1].data = data.l2
+  ActivityChart.chart.data.datasets[1].label = "-"
+  ActivityChart.chart.data.datasets[2].data = data.l3
+  ActivityChart.chart.data.datasets[2].label = "-"
+  ActivityChart.chart.data.datasets[3].data = data.hz
+  ActivityChart.chart.data.datasets[3].label = "-"
+  ActivityChart.chart.data.labels = data.time
+  ActivityChart.update();
+
+}
+
+function prepare_data_energy(){
+  let _time = [];
+  let energy = [];
+  let l2 = [];
+  let l3 = [];
+  let hz = [];
+  
+  let start_energy_val = values.data.length > 0 ?  values.data[0].kwh_import : 0;
+
+  values.data.forEach(element => {
+    _time.push(time_convert(element.post_time))
+    energy.push(element.kwh_import - start_energy_val);
+  });
+
+  return {'time':_time,'energy':energy,'l2':l2, 'l3':l3, 'hz':hz}
+};
+
 function time_convert (time) {
   // Check correct time format and split into components
   time = time.slice(0,8)
@@ -319,7 +397,6 @@ function time_convert (time) {
 
 function add_to_tables(readings){
   table.clear().draw()
-
   readings.data.forEach(element => {
     table.row.add( [
       (new Date(element.post_datetime)).remHours(1).toLocaleString(),
@@ -356,9 +433,8 @@ function todays_date(){
   return today
 }
 
-
-
-Date.prototype.remHours = function(h) {
+// ADD THE ABILITY TO REMOVE ONE HOUR FROM A TIME OBJECT TO JS TIME CLASS
+Date.prototype.remHours = function(h) {  
   this.setTime(this.getTime() - (h*60*60*1000));
   return this;
 }
