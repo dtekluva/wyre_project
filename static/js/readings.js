@@ -399,7 +399,7 @@ function add_to_tables(readings){
   table.clear().draw()
   readings.data.forEach(element => {
     table.row.add( [
-      (new Date(element.post_datetime)).remHours(1).toLocaleString(),
+      element.post_datetime,
       element.voltage_l1_l12,
       element.voltage_l2_l23,
       element.voltage_l3_l31,
