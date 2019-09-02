@@ -51,7 +51,7 @@ var ActivityChart = new Chart(chartactivity, {
             pointRadius: 1,
             fill: false,
 			backgroundColor: "#55cae7",
-            borderWidth: 2,
+            borderWidth: 1,
             data: []
         },	{
             label: "L2 Volts",
@@ -64,7 +64,7 @@ var ActivityChart = new Chart(chartactivity, {
             pointRadius: 1,
             fill: false,
 			backgroundColor: "#C20F0F",
-            borderWidth: 2,
+            borderWidth: 1,
             data: []
         },
         	{
@@ -78,7 +78,7 @@ var ActivityChart = new Chart(chartactivity, {
             pointRadius: 1,
             fill: false,
 			backgroundColor: "#5E8A00",
-            borderWidth: 2,
+            borderWidth: 1,
             data: []
         },
         	{
@@ -92,7 +92,7 @@ var ActivityChart = new Chart(chartactivity, {
             pointRadius: 1,
             fill: false,
 			backgroundColor: "#FFB56B",
-            borderWidth: 2,
+            borderWidth: 1,
             data: []
         }
 		]

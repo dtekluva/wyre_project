@@ -6,6 +6,10 @@ body{
     text-align: center !important;
 }
 
+.blue_text{
+    color:#7e2af5 !important;
+}
+
 .time_period, .single_date {
     margin-left: 20px;
     align-items: center;
