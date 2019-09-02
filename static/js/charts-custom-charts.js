@@ -53,7 +53,7 @@ var ActivityChart = new Chart(chartactivity, {
             data: [50,50,50,50,50,50,50,50,50,50]
             },	
             {
-            label: "Gen 1",
+            label: "Gen 1 (KWh)",
             borderColor: gradientStroke2,
             pointBorderColor: gradientStroke2,
             pointBackgroundColor: "rgba(255, 255, 255, 1)",
@@ -69,7 +69,7 @@ var ActivityChart = new Chart(chartactivity, {
             data: [50,50,50,50,50,50,50,50,50,50]
             },
             {
-            label: "Gen 2",
+            label: "Gen 2 (KWh)",
             borderColor: gradientStroke3,
             pointBorderColor: gradientStroke3,
             pointBackgroundColor: "rgba(255, 255, 255, 1)",
