@@ -66,6 +66,21 @@ body{
     background-color: #b446f4 !important;
     font-size: 12px;
   }
+
+  .performance_card{
+    /* display: inline-block; */
+    font-size: 60px;
+  }
+
+  .arrow_up {
+    height: 15px;
+    width: 15px;
+    font-size: 45px !important;
+  };
+
+  /* .smaller_text { */
+      font-size: 45px !important;
+  };
   
   /* box-shadow: 0 1px 6px rgba(0,0,0,0.20); */
   

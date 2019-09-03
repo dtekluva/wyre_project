@@ -30,6 +30,7 @@ urlpatterns = [
     path('fetch_vals_period/', views.fetch_vals_period, name='fetch_vals_period'),
     path('fetch_device_vals/', views.fetch_vals_period_per_device, name='fetch_vals_period_per_device'),
     path('load_readings/', views.load_readings, name='load_readings'),
+    path('get_yesterday_today_usage/', views.get_yesterday_today_usage, name='get_yesterday_today_usage'),
     path('get_line_readings_log/', views.get_line_readings_log, name='get_line_readings_log')
     # path('detail_view', views.detail_view, name='detail_view'),
     # path('locationpost', views.locationpost, name='locationpost'),

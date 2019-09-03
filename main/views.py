@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.conf import settings
 from main.models import Reading, Branch, Device
-from main.helpers.snippets import total_energy, get_reading_stats, js_total_energy, js_get_reading_stats, format_date,js_get_readings
+from main.helpers.snippets import total_energy, get_reading_stats, js_total_energy, js_get_reading_stats, format_date, js_get_readings, get_energy_usage
 from main.helpers.datalogs import utility_vs_gen, daily_utility_vs_gen_kwh, get_last_readings
 import json, datetime, calendar
 from django.core.serializers.json import DjangoJSONEncoder
@@ -259,6 +259,17 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
         except:
                 return HttpResponse(json.dumps({"response": "failure"}))
+
+def get_yesterday_today_usage(request):
+        user = User.objects.get(pk = request.user.id)
+        device_id = request.POST.get("device", "None")
+        devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(id = device_id)
+        print(type(device_id))
+        
+        today_energy, yesterday_energy = get_energy_usage(devices)
+
+
+        return HttpResponse(json.dumps({"response": "success", "data":{"today_energy":today_energy, "yesterday_energy": yesterday_energy}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 
 #URL FOR POPULATING DATABASE
 def load_readings(request):

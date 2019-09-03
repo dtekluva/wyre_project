@@ -110,7 +110,12 @@ var ActivityChart = new Chart(chartactivity, {
                 gridLines: {
                     drawTicks: false,
                     display: false
-                }
+                },
+                scaleLabel : {
+                    display: true,
+                    labelString: "Kilowatt-Hour values"
+                },
+                stacked: true // this also..
 
             }],
             xAxes: [{
@@ -122,11 +127,12 @@ var ActivityChart = new Chart(chartactivity, {
                     fontColor: "rgba(0,0,0,0.5)",
                     fontStyle: "bold"
                 },
+                scaleLabel : {
+                    display: true,
+                    labelString: "Days of the month"
+                },
                 stacked: true // this should be set to make the bars stacked
-            }],
-            yAxes: [{
-                stacked: true // this also..
-             }]
+            }]
         },
         tooltips: {
             mode: "index"
@@ -142,7 +148,7 @@ var chartdiseases = document.getElementById('DiseasesChart').getContext("2d");
 var DiseasesChart = new Chart(chartdiseases, {
     type: 'doughnut',
     data: {
-        labels: ["GEN1-HRS", "GEN2-HRS", "PHCN-HRS"],
+        labels: ["GEN-1", "GEN-2", "PHCN"],
         datasets: [{
             label: "Data",
             fill: true,

@@ -2,36 +2,42 @@ var host = window.location.hostname == 'localhost'
     ? 'http://localhost:8000/'
     : 'http://' + window.location.hostname + '/'
     
-var endpoint = "fetch_vals_period/"
+var endpoint = "fetch_vals_period/";
+var usage_difference = "get_yesterday_today_usage/"
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////                                     ///////////////////
 /////////////////  JAVASCRIPT FILTER BY device AND TIME  //////////////////
 ///////////////////                                     ///////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-total_kw = document.getElementById("total_kw")
-min_kw = document.getElementById("min_kw")
-peak_kw = document.getElementById("peak_kw")
-avg_kw = document.getElementById("avg_kw")
+total_kw = document.getElementById("total_kw");
+min_kw = document.getElementById("min_kw");
+peak_kw = document.getElementById("peak_kw");
+avg_kw = document.getElementById("avg_kw");
+today_usage = document.getElementById("today_usage");
+yesterday_usage = document.getElementById("yesterday_usage");
 
 
 $(window).on('load', function() {
   let device = $("#device")[0].value;
   // console.log(device)
   let period = $("#default_range")[0].innerHTML;
+  get_usage_difference("None");
   post(device, period);
-})
+});
     
 $('#device').on('change', async e => {
-    let device = $("#device")[0].value
-    let period = $("#time_period")[0].value
+    let device = $("#device")[0].value;
+    let period = $("#time_period")[0].value;
+    get_usage_difference(device);
     post(device, period);
-})
+});
+
 $('#time_period').on('apply.daterangepicker', async e => {
-    let device = $("#device")[0].value
-    let period = $("#time_period")[0].value
+    let device = $("#device")[0].value;
+    let period = $("#time_period")[0].value;
     post(device, period);
-})
+});
 
 const post = (device, period)=>{
   let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
@@ -101,7 +107,58 @@ const post = (device, period)=>{
             text: "Please check your internet connection.!!",
           });
         }) // post data
+};
+
+const get_usage_difference = (device)=>{
+  let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
+  // console.log(period)
+
+  function csrfSafeMethod (method) {
+        // these HTTP methods do not require CSRF protection
+    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method)
+  }
+
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader('X-CSRFToken', csrftoken)
+      }
+    }
+  })
+  let data = {
+    "device": device
+    };
+  
+  $.post(host + usage_difference, data)
+        .then(resp => {
+          resp = JSON.parse(resp)
+          console.log(resp);
+
+          if (resp.response == 'success') {
+
+            yesterday_usage.innerHTML = resp.data.yesterday_energy;
+            today_usage.innerHTML = resp.data.today_energy;
+
+          } else if (resp.response == 'failure') {
+            swal({
+                  title: "Error fetching data!!",
+                  text: "An error occurred",
+                });
+          }
+        })
+        .catch(() => {
+          text = {
+            title: "Network Error",
+            text: `Please check your internet connection.!!`,
+            icon: "error"
+          };
+          swal({
+            title: "Network Error",
+            text: "Please check your internet connection.!!",
+          });
+        }) // post data
 }
+
 
 function addData(chart, utility, gen1, gen2) {
   chart.data.datasets.forEach((dataset) => {

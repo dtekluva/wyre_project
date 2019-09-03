@@ -1,7 +1,7 @@
 from main.models import Reading, Customer, Location, Reading, Device
 import requests
 from requests.auth import HTTPBasicAuth
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 import json
 
@@ -158,3 +158,47 @@ def get_js_power():
     last_readings = hourly_data.tail(read_qty)
     last_readings_as_tuples = [tuple(reading) for reading in last_readings.values]
 
+def get_energy_usage(devices):
+        #TODAY READINGS STARTS TODAY AND ENDS TOMMORROW, WHILE YESTERDAY STARTS YESTERDAY AND ENDS TODAY.
+        today_total = 0
+        yesterday_total = 0
+
+        today_start_date = datetime.now().date()
+        today_end_date = today_start_date + timedelta(days = 1)
+        
+        yesterday_start_date = today_start_date  - timedelta(days = 1)
+        yesterday_end_date = today_start_date
+        print(yesterday_start_date, yesterday_end_date)
+
+        for device in devices:
+            
+            today_readings = list(Reading.objects.filter(device__id = devices[0].id, post_datetime__range = (today_start_date, today_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
+
+            yesterday_readings = list(Reading.objects.filter(device__id = devices[0].id, post_datetime__range = (yesterday_start_date, yesterday_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
+
+            today_start = today_readings[0]["kwh_import"]
+            today_end = today_readings[-1]["kwh_import"]
+
+            yesterday_start = yesterday_readings[0]["kwh_import"]
+            yesterday_end = yesterday_readings[-1]["kwh_import"]
+
+            today_usage = today_end - today_start
+            yesterday_usage = yesterday_end - yesterday_start
+
+            today_total += today_usage
+            yesterday_total += yesterday_usage
+        
+        return today_total, yesterday_total
+
+
+# def get_energy_usage(device, start, end):
+#     data = r.json()["data"]
+# #     print(data, "\n\n\n")
+#     start = [i for i in data[-1]["data"] if i["description"] == "kWh import"][0]["value"]
+#     end = [i for i in data[0]["data"] if i["description"] == "kWh import"][0]["value"]
+#     usage = end - start
+#     print(start, "\n\n\n\n\n\n\n\n", end)
+#     print(usage)
+    
+
+# get_energy_usage(1,2,3)

@@ -78,37 +78,11 @@
 
 			<div class="grid grid--margin mb0">
 				<div class="grid__row">
-					<div class="grid__col grid__col--24 grid__col--margin grid__col--padding bg-white">
-						<canvas id="ActivityChart" width="100%" height="40px !important"></canvas>
+					<div class="grid__col grid__col--12 grid__col--margin grid__col--padding bg-white mb0">
+						<canvas id="ActivityChart" width="100%" height="40"></canvas>
 					</div>
-					
-					<div class="grid__col grid__col--26 grid__col--margin grid__col--padding bg-white">
-						<canvas id="DiseasesChart" width="100%" height="60px !important"></canvas>
-					</div>
-					<div class="grid__col grid__col--16 grid__col--margin grid__col--padding bg-gray10" style="display: flex; flex-direction: column">
-							<div class="grid__col grid__col--13 grid__col--margin grid__col-- bg-gray10 mb0">
-									<div class="d-flex align-c">
-											<div class="blue_text smaller_text" style="font-size: 15px; text-align: center; margin-bottom: 5px; ">Today Usage(kWH)</div>
-									</div>
-									<div class="d-flex align-c">
-										
-										<div class="blue_text smaller_text" style="font-size: 45px;" ><span id="today_usage">0000</span>&nbsp;</div>
-										<div class="info-details">
-										<p><img class="arrow_up" src="{% static 'images/arrow-up.svg' %}" alt="increase" srcset=""></p>
-										</div>
-									</div>
-								
-									<div class="d-flex align-c">
-											<div class="blue_text smaller_text" style="font-size: 15px; text-align: center;  margin: 20px 0px 10px; ">Yesterday(kWH)</div>
-									</div>
-									<div class="d-flex align-c">
-											<div class="blue_text smaller_text" style="font-size: 45px;"><span id="yesterday_usage">0000</span>&nbsp;</div>
-											<div class="info-details">
-												<p><img class="arrow_up" src="{% static 'images/arrow-down.svg' %}" alt="" srcset=""></p>
-											</div>
-										</div>
-								</div>
-							</div>
+					<div class="grid__col grid__col--12 grid__col--margin grid__col--padding bg-white mb0">
+						<canvas id="DiseasesChart" width="100%" height="40"></canvas>
 					</div>
 				</div>
 				<!-- <div class="grid__col  grid__col--padding bg-white mt20">
