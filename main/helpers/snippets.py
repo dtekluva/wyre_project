@@ -168,13 +168,12 @@ def get_energy_usage(devices):
         
         yesterday_start_date = today_start_date  - timedelta(days = 1)
         yesterday_end_date = today_start_date
-        print(yesterday_start_date, yesterday_end_date)
 
         for device in devices:
             
-            today_readings = list(Reading.objects.filter(device__id = devices[0].id, post_datetime__range = (today_start_date, today_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
+            today_readings = list(Reading.objects.filter(device__id = device.id, post_datetime__range = (today_start_date, today_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
 
-            yesterday_readings = list(Reading.objects.filter(device__id = devices[0].id, post_datetime__range = (yesterday_start_date, yesterday_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
+            yesterday_readings = list(Reading.objects.filter(device__id = device.id, post_datetime__range = (yesterday_start_date, yesterday_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
 
             today_start = today_readings[0]["kwh_import"]
             today_end = today_readings[-1]["kwh_import"]

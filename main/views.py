@@ -264,7 +264,7 @@ def get_yesterday_today_usage(request):
         user = User.objects.get(pk = request.user.id)
         device_id = request.POST.get("device", "None")
         devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(id = device_id)
-        print(type(device_id))
+        print(devices)
         
         today_energy, yesterday_energy = get_energy_usage(devices)
 

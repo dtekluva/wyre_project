@@ -15,7 +15,12 @@ min_kw = document.getElementById("min_kw");
 peak_kw = document.getElementById("peak_kw");
 avg_kw = document.getElementById("avg_kw");
 today_usage = document.getElementById("today_usage");
+
 yesterday_usage = document.getElementById("yesterday_usage");
+increase_today = document.getElementById("increase_today");
+decrease_today = document.getElementById("decrease_today");
+increase_yesterday = document.getElementById("increase_yesterday");
+decrease_yesterday = document.getElementById("decrease_yesterday");
 
 
 $(window).on('load', function() {
@@ -139,6 +144,22 @@ const get_usage_difference = (device)=>{
             yesterday_usage.innerHTML = resp.data.yesterday_energy;
             today_usage.innerHTML = resp.data.today_energy;
 
+            if (resp.data.yesterday_energy > resp.data.today_energy){
+              increase_yesterday.className = "arrow_up"
+              increase_today.className = "arrow_up hide"
+              decrease_yesterday.className = "arrow_up hide"
+              decrease_today.className = "arrow_up"
+            }
+            else if (resp.data.yesterday_energy < resp.data.today_energy){
+              increase_yesterday.className = "arrow_up hide"
+              increase_today.className = "arrow_up"
+              decrease_yesterday.className = "arrow_up"
+              decrease_today.className = "arrow_up hide"
+            }
+            else if(resp.data.yesterday_energy > resp.data.today_energy){
+
+            }
+
           } else if (resp.response == 'failure') {
             swal({
                   title: "Error fetching data!!",
@@ -170,7 +191,6 @@ function addData(chart, utility, gen1, gen2) {
 function update_bar_chart(chart, days, utility, gen1, gen2) {
   chart.data.labels = days;
   chart.data.datasets[0].data = utility;
-  console.log(sum(gen2))
   chart.data.datasets[1].data = gen1;
   chart.data.datasets[2].data = gen2;
   chart.update();
