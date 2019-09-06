@@ -37,7 +37,7 @@ body{
 @media screen and (max-width :400px){
     #dash-second {
         /* margin-left: 20px; */
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
     }
     
