@@ -5,7 +5,7 @@
 <head>
 	<meta http-equiv="Content-Type"
 				content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1" />
+	<!-- <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1" /> -->
 
 	<meta name="viewport" content="width=1050, initial-scale=1">
 	<meta name="author"
@@ -60,16 +60,6 @@
 							<li>
 								<a href="/readings">Charts & Logs</a>
 							</li>
-							<!-- <li>
-								<a href="/power">Power</a>
-							</li>
-							<li>
-								<a href="/voltage">Voltage</a>
-							</li>
-							
-							<li><a href="/current">Current</a></li>
-							
-							<li><a href="/max_demand">Max demands</a></li> -->
 						</ul>
 					</li>
 		
@@ -177,17 +167,22 @@
 			</header>
 			<div class="content-subheader">
 				<div class="content-subheader__titles">
-					<h2 class="content-subheader__title">Home</h2>
+					<!-- <h2 class="content-subheader__title">Home</h2> -->
+					<nav class="content-subheader__breadcrumb-menu">
+						<ul>
+							<li><a href="/">Home</a></li>
+						</ul>
+					</nav>
 					{% if page != "Dashboard" %}
 					<nav class="content-subheader__breadcrumb-menu">
 						<ul>
-							<li><a href="/">Parameters</a></li>
+							<li><a href="#">Parameters</a></li>
 						</ul>
 					</nav>
 					{% endif %}
 					<nav class="content-subheader__breadcrumb-menu">
 						<ul>
-							<li><a href="/">{{page}}</a></li>
+							<li><a href="#">{{page}}</a></li>
 						</ul>
 					</nav>
 				</div>
@@ -512,6 +507,8 @@
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>	
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>	
 	{% endif %}
+	<script src="{% static 'js/progressbar.js' %}"></script>
+	<script src="{% static 'js/progress_bar_control.js' %}"></script>
 </body>
 
 </html>

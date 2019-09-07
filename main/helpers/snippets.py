@@ -175,8 +175,8 @@ def get_energy_usage(devices):
 
             yesterday_readings = list(Reading.objects.filter(device__id = device.id, post_datetime__range = (yesterday_start_date, yesterday_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
 
-            today_start = today_readings[0]["kwh_import"]
-            today_end = today_readings[-1]["kwh_import"]
+            today_start = 0 if len(today_readings) < 1 else today_readings[0]["kwh_import"]
+            today_end = 0 if len(today_readings) < 1 else today_readings[-1]["kwh_import"]
 
             yesterday_start = yesterday_readings[0]["kwh_import"]
             yesterday_end = yesterday_readings[-1]["kwh_import"]

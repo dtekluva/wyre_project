@@ -93,6 +93,7 @@ def current(request):
         user = User.objects.get(pk = request.user.id)
 
         return render(request, 'current.html', {'user':user, "page": page})
+
 @login_required
 def readings(request):
         page = "Readings"
@@ -108,6 +109,15 @@ def max_demand(request):
         user = User.objects.get(pk = request.user.id)
 
         return render(request, 'max_demand.html', {'user':user, "page": page})
+
+def score_card(request):
+        page = "Score Card"
+        user = User.objects.get(pk = request.user.id)
+        device_id = request.POST.get("device", "")
+        devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(user = user)
+
+
+        return render(request, 'score_card.html', {'user':user, "page": page, "devices": devices})
 
 def fetch_vals_period(request):
         #THIS IS SIMILAR TO THE (fetch_vals_period_per_device) FUNCTION ONLY THAT THIS FUNCTION ONLY FETCHES FOR ALL THE DEVICES I.E GETS OVERALL TOTAL FOR ALL DEVICES OF A CUSTOMER
@@ -270,6 +280,7 @@ def get_yesterday_today_usage(request):
 
 
         return HttpResponse(json.dumps({"response": "success", "data":{"today_energy":today_energy, "yesterday_energy": yesterday_energy}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+
 
 #URL FOR POPULATING DATABASE
 def load_readings(request):

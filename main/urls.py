@@ -22,6 +22,7 @@ urlpatterns = [
     path('power/', views.power, name='power'),
     path('last_read/', views.last_read, name='last_read'),
     path('get_last_read/', views.get_last_read, name='get_last_read'),
+    path('score_card/', views.score_card, name='score_card'),
     path('voltage/', views.voltage, name='voltage'),
     path('current/', views.current, name='current'),
     path('readings/', views.readings, name='readings'),
