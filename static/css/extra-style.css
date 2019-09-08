@@ -121,3 +121,28 @@ top {
     transform: scaley(1.4);
     color: #716e7a;
 }
+
+.content-header__menu ul {
+    height: 53px !important;
+}
+
+#device {
+    background-image: url(../images/icons/icons-20-blue/reports.png);
+    background-repeat: no-repeat;
+    background-position: right 12px top 55%;
+    padding: 10px 28px 10px 15px;
+    color: #4e525e;
+}
+
+#time_period {
+    background-image: url(../images/icons/icons-20-blue/appointment.png);
+    background-repeat: no-repeat;
+    background-position: right 12px top 55%;
+    padding: 6px 10px 6px 10px;
+    color: #4e525e;
+}
+
+.no_outline:focus  {
+    outline:none;
+   }
+
