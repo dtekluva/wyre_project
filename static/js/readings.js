@@ -70,6 +70,7 @@ $(window).on('load', function() {
                 dom: 'Bfrtip',
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf', 'print'
+                    
                 ],
                 "columnDefs": [
                   {"className": "dt-center", "targets": "_all"}
@@ -78,8 +79,7 @@ $(window).on('load', function() {
               } );
   post(device);
   get_logs(device, period);
-})
-
+});
 
 const post = (device)=>{
   let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
@@ -87,7 +87,6 @@ const post = (device)=>{
               "device": device,
               "date": _date.value
               }; // add lives_in select value to post data
-  // console.log(data);
   
   function csrfSafeMethod (method) {
         // these HTTP methods do not require CSRF protection
@@ -177,7 +176,8 @@ const get_logs = (device, period)=>{
 
   Swal.fire({
     title: 'PROCCESSING PLEASE WAIT !!!',
-    html: '<strong>FETCHING READINGS FOR SELECTED PERIOD</strong>.'
+    html: '<strong>FETCHING READINGS FOR SELECTED PERIOD</strong>.', 
+    allowOutsideClick: false
   });
   Swal.showLoading();
   
