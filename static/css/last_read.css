@@ -270,7 +270,8 @@
 
   #lastReadWrp {
     position: relative;
-    width: 950px;
+    width: 100%;
+    margin-left: calc(100% - 95%);
     height: auto;
   }
 

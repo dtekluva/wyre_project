@@ -25,6 +25,10 @@
 				href=" {% static 'css/dashboard.min.css' %}" />
 	<link rel="stylesheet"
 				href=" {% static 'css/extra-style.css' %}" />
+	{% if page == "Last Readings" %}
+	<link rel="stylesheet"
+				href=" {% static 'css/last_read.css' %}" />
+	{% endif %}
 	<!-- <link rel="stylesheet"
 				href=" {% static 'css/extra-style-copy.css' %}" /> -->
 	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,900"
