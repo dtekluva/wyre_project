@@ -178,8 +178,8 @@ def get_energy_usage(devices):
             today_start = 0 if len(today_readings) < 1 else today_readings[0]["kwh_import"]
             today_end = 0 if len(today_readings) < 1 else today_readings[-1]["kwh_import"]
 
-            yesterday_start = yesterday_readings[0]["kwh_import"]
-            yesterday_end = yesterday_readings[-1]["kwh_import"]
+            yesterday_start = 0 if len(today_readings) < 1 else yesterday_readings[0]["kwh_import"]
+            yesterday_end = 0 if len(today_readings) < 1 else yesterday_readings[-1]["kwh_import"]
 
             today_usage = today_end - today_start
             yesterday_usage = yesterday_end - yesterday_start

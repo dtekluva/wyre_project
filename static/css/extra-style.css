@@ -1,6 +1,8 @@
 /* EXTRA COMPENSATION STYLINGS */
 body{
-    min-width:1366px !important;
+    min-width:100vw !important;
+    max-width:100vw !important;
+    width:100vw !important;
  };
 .table__cell{
     text-align: center !important;
