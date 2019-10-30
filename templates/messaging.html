@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+
+		{% block content %}
+
+<div class="section section--content" id="content">
+	
+	<div class="messages">					  
+		<div class="messages__sidebar">
+			<div class="messages__header">
+				<form action="">
+					<input type="text" name="searchinbox" class="form__input form__input--sm" value="" placeholder="Search in messages" />
+				</form>
+			</div>
+			<div class="messages__all scrollbar-macosx" id="message_list">
+				<div class="message__short new selected">
+					<div class="message__short-header">
+						<div class="messages__short-thumb"><img src="{{customer.image.url}}" alt="" title=""/><span class="status status--online"></span></div>
+						<div class="messages__short-name">Gracie Morris</div>
+						<div class="messages__short-date">today</div>	
+					</div>
+					<div class="message__short-content">
+						<h4 class="messages__short-title">Medical consultation</h4>
+						<p class="messages__short-text">If you are interested in knowing which treatment has the most evidence ...</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="messages__details" style="height: 70vh;" id="message_box">
+			<div class="messages__header messages__header--details" >
+					<div class="messages__header-thumb"><img src="{{customer.image.url}}" alt="" title=""/><span class="status status--online"></span></div>
+				<div class="messages__header-user">Gracie Morris</div>
+				<div class="messages__header-buttons">
+					<button class="button button--round"><img src="{% static 'images/icons/icons-20-gray/refresh.png' %}" alt="" title=""/></button>
+					<button class="button button--round"><img src="{% static 'images/icons/icons-20-gray/checked.png' %}" alt="" title=""/></button>
+					<button class="button button--round"><img src="{% static 'images/icons/icons-20-gray/delete.png' %}" alt="" title=""/></button>
+				</div>
+			</div>
+			<div class="messages__detailed scrollbar-macosx">
+
+			  <ul class="conversation">
+
+				  <li class="conversation__row conversation__row--received">
+					  <div class="conversation__avatar"><img src="images/avatar-2.jpg" alt="" title="" /></div>
+					  
+					  <div class="conversation__content">
+							<p>Hi Dr. Oliver, just wanted to let you know about my eczema. Small, raised bumps, which may leak fluid and crust over when scratched </p>
+						<span class="conversation__time">10:21 am</span>
+					  </div>
+					  
+				  </li>
+				  <li class="conversation__row conversation__row--sent">
+					  <div class="conversation__content">
+							<p>Hi Gracie!</p>
+						   <span class="conversation__time">8:32 am</span>
+					  </div>
+					  <div class="conversation__avatar"></span><img src="images/avatar-1.jpg" alt="" title="" /></div>
+				  </li>  
+				  <li class="conversation__row conversation__row--sent">
+					  <div class="conversation__content">
+							<p>No cure has been found for atopic dermatitis. But treatments and self-care measures can relieve itching and prevent new outbreaks. For example, it helps to avoid harsh soaps, moisturize your skin regularly, and apply medicated creams or ointments.</p>
+						   <span class="conversation__time">8:20 am</span>
+					  </div>
+					  <div class="conversation__avatar"></span><img src="images/avatar-1.jpg" alt="" title="" /></div>
+				  </li>  	  
+				  <li class="conversation__row conversation__row--received">
+					  <div class="conversation__avatar"></span><img src="images/avatar-2.jpg" alt="" title="" /></div>
+					  
+					  <div class="conversation__content">
+							<p>Red to brownish-gray patches, especially on the hands, feet, ankles, wrists, neck, upper chest, eyelids, inside the bend of the elbows and knees, and in infants, the face and scalp</p>
+						<span class="conversation__time">7:21 am</span>
+					  </div>
+					  
+				  </li>
+				  <li class="conversation__row conversation__row--received">
+					  <div class="conversation__avatar"><img src="images/avatar-2.jpg" alt="" title="" /></div>
+					  
+					  <div class="conversation__content">
+							<p>Thickened, cracked, scaly skin</p>
+						<span class="conversation__time">7:20 am</span>
+					  </div>
+					  
+				  </li>
+				  <li class="conversation__row conversation__row--sent">
+					  <div class="conversation__content">
+							<p>Atopic dermatitis most often begins before age 5 and may persist into adolescence and adulthood. For some people, it flares periodically and then clears up for a time, even for several years.</p>
+						   <span class="conversation__time">7:00 am</span>
+					  </div>
+					  <div class="conversation__avatar"><img src="images/avatar-1.jpg" alt="" title="" /></div>
+				  </li> 
+				  <li class="conversation__row conversation__row--received  conversation__row--undread">
+					  <div class="conversation__avatar"><img src="images/avatar-2.jpg" alt="" title="" /></div>
+					  
+					  <div class="conversation__content">
+							<p>Healthy skin helps retain moisture and protects you from bacteria, irritants and allergens. Eczema is related to a gene variation that affects the skin's ability to provide this protection. This allows your skin to be affected by environmental factors, irritants and allergens.</p>
+						<span class="conversation__time">7:21 am</span>
+					  </div>
+					  
+				  </li>  
+			  </ul>
+				
+				
+			</div>
+			<div class="messages__footer">
+		
+					<form action="" class="messages__footer-form">
+						<textarea type="textarea" class="messages__footer-textarea" id="" name="" placeholder="Type your message..."></textarea>
+						<a href="#" class="messages__footer-submit"><img src="images/send.png" alt="" title="" /></a>
+					</form>
+	
+			</div>
+		</div>
+	</div>
+
+
+
+
+</div>
+
+{% endblock %} 

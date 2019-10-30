@@ -19,7 +19,7 @@ data = json.loads(x)
 readings = (data['data'][0]['data'])
 
 for value in readings:
-    # print(value["description"], end= '*')
+    print(value["description"], end= '*')
 
 
 readings = (data['data'][0]['data'])

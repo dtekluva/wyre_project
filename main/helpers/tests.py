@@ -25,6 +25,28 @@
 
 # data = response.json()
 
-x = [{"a":23},{"b":32}]
+import os
 
-y = map(lambda x: x["a"] = x["a"] *8 )
+cwd = os.getcwd()
+
+x = [{"a":23}, {"b":32}]
+
+# y = map(lambda x: x["a"] = x["a"] *8 )
+
+code = '''
+def myfunc():
+    return "hello works"
+
+print("yeah")
+dee = "bla"
+'''
+
+file = open(cwd+"\\main\helpers\code.py", "w")
+file.write(code)
+file.close()
+
+import code
+
+# print(cwd)
+code.dee
+print(code.myfunc())

@@ -23,6 +23,10 @@ body{
     width: 60%;
 }
 
+#message_box {
+    height: 70vh !important;
+}
+
 #total_kw{
     font-weight: lighter !important;
 }

@@ -81,7 +81,7 @@
 						</ul>
 					</li>
 					<li class="inbox">
-						<a href="dashboard__messages.html"><b>Messages<span class="submenu-bubble">3</span></b></a>
+						<a href="/messaging"><b>Messages<span class="submenu-bubble">3</span></b></a>
 					</li>
 					<li class="settings">
 						<a href="#"><b>Access Control</b></a>
@@ -95,6 +95,25 @@
 				 id="content">
 			<header class="content-header">
 				<div class="sidebar-resize"></div>
+				<div class="content-header__notifications content-header__dropdown">  
+						<div class="content-header__notifications-icon content-header__icon content-header__dropdown-activate" data-dropdown="notificationsdropdown">
+							<img src="{% static 'images/icons/icons-24-gray/notifications.png' %}" alt="" title="">
+							<span class="content-header__icon-bubble">6</span>
+						</div>  
+						<nav class="dropdown-menu dropdown-menu--header dropdown-menu--notifications-menu" id="notificationsdropdown"> 			
+						<h3 class="dropdown-menu__subtitle">You have <strong>6</strong> notifications</h3>
+						<ul>    
+							<li class="d-flex justify-sb"><span class="important">NOTIFICATION</span>Eco friendly Gens available <b class="task-time">today</b></li>
+							<li class="d-flex justify-sb"><span class="important">IMPORTANT</span>Subscription ending soon <b class="task-time">today</b></li>
+							<li class="d-flex justify-sb"><span class="important">MESSAGE</span>If you are interested   ... <b class="task-time">today</b></li>
+							<li class="d-flex justify-sb"><span class="important">MESSAGE</span>If you are interested   ... <b class="task-time">today</b></li>
+							<li class="d-flex justify-sb"><span class="important">MESSAGE</span>If you are interested   ... <b class="task-time">today</b></li>
+							
+							
+							<li class="view-all"><a href="../messaging" class="button button--general button--blue-border">View all</a></li>
+						</ul>
+						</nav>
+				</div>
 				<div class="mobile-menu">
 					<div class="st-burger-icon st-burger-icon--medium">
 						<span></span>
@@ -105,7 +124,7 @@
 					<div class="content-header__user-avatar content-header__dropdown-activate"
 							 data-dropdown="userdropdown">
 						<div class="content-header__user-thumb">
-							<img src="images/avatar-2.jpg"
+							<img src="{{customer.image.url}}"
 									 alt=""
 									 title="" />
 						</div>
@@ -494,6 +513,9 @@
 	{% endif %}
 	{% if page == "Last Readings" %}
 	<script src="{% static 'js/last_read.js' %}"></script>
+	{% endif %}
+	{% if page == "Messaging" %}
+	<script src="{% static 'js/messaging.js' %}"></script>
 	{% endif %}
 	{% if page == "Readings" %}
 	<script src="{% static 'js/readings.js' %}"></script>

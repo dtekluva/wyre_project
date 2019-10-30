@@ -7,6 +7,7 @@ class Customer(models.Model):
     company_name    = models.CharField(max_length=256, default = " ",null=True, blank = True)
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address         = models.TextField(max_length=400, null=True, blank = True)
+    image           = models.FileField(upload_to='customer_imgs/', null=True, blank = True)
 
     def __str__(self):
         return f"{self.company_name} id-({self.id})"
@@ -57,12 +58,12 @@ class Device(models.Model):
     
 
 class Reading(models.Model):
-    customer        = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'reading_customer', default = 1)
-    device          = models.ForeignKey(Device, on_delete=models.CASCADE, related_name = 'reading_device', default = 1)
+    customer      = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'reading_customer', default = 1)
+    device        = models.ForeignKey(Device, on_delete=models.CASCADE, related_name = 'reading_device', default = 1)
     user          = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'reading_user', default = 1)
-    post_datetime= models.DateTimeField(blank = True)
-    post_date    = models.DateField(blank = True)
-    post_time    = models.TimeField(blank=True)
+    post_datetime = models.DateTimeField(blank = True)
+    post_date     = models.DateField(blank = True)
+    post_time     = models.TimeField(blank=True)
     voltage_l1_l12  = models.FloatField(null=True, blank=True, default=None)
     voltage_l2_l23  = models.FloatField(null=True, blank=True, default=None)
     voltage_l3_l31  = models.FloatField(null=True, blank=True, default=None)
@@ -113,3 +114,9 @@ class Reading(models.Model):
 
     def __str__(self):
         return f"{self.post_date} customer-({self.customer})"
+
+
+class Document(models.Model):
+    description = models.CharField(max_length=255, blank=True)
+    document = models.FileField(upload_to='documents/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
