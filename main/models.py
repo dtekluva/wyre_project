@@ -1,5 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db.models import Avg, Max, Min
+from wyre.settings import lagos_tz
+from main.helpers import get_baseline, make_request, datalogs
+import datetime
+
 
 # Create your models here.
 class Customer(models.Model):
@@ -8,10 +15,23 @@ class Customer(models.Model):
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address         = models.TextField(max_length=400, null=True, blank = True)
     image           = models.FileField(upload_to='customer_imgs/', null=True, blank = True)
+    is_main_admin   = models.BooleanField(default = False)
 
     def __str__(self):
-        return f"{self.company_name} id-({self.id})"
+        return f"{self.company_name} {self.id}"
 
+    def get_conversation_partners(self):
+        sent = self.message_sender.all() | self.message_receiver.all()
+        # recieved = Message.objects.filter(receiver = self)
+
+        conversations = []
+        for message in sent:
+            if message.receiver != self and message.receiver not in conversations:
+                conversations.append(message.receiver)
+            elif message.sender != self and message.sender not in conversations:
+                conversations.append(message.sender)
+
+        return conversations
 
 class Branch(models.Model):
     customer  = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'branch_customer')
@@ -19,6 +39,8 @@ class Branch(models.Model):
     name      = models.CharField(max_length=256, default = " ",null=True, blank = True)
     phone     = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address   = models.TextField(max_length=400, null=True, blank = True)
+    gen1_val  = models.IntegerField(null=True, blank=True, default=0)
+    gen2_val  = models.IntegerField(null=True, blank=True, default=0)
 
     class Meta:
         verbose_name_plural = "Branches"
@@ -43,8 +65,8 @@ class Location(models.Model):
 class Device(models.Model):
     customer        = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'device_customer')
     location        = models.ForeignKey(Location, on_delete=models.CASCADE, related_name = 'device_location')
-    branch        = models.ForeignKey(Branch, on_delete=models.CASCADE, default = 1, related_name = 'device_branch')
-    user        = models.ForeignKey(User, on_delete=models.CASCADE, default = 1, related_name = 'device_user')
+    branch          = models.ForeignKey(Branch, on_delete=models.CASCADE, default = 1, related_name = 'device_branch')
+    user            = models.ForeignKey(User, on_delete=models.CASCADE, default = 1, related_name = 'device_user')
     device_id       = models.CharField(max_length=40, null=True, blank = True)
     device_type     = models.CharField(max_length=40, null=True, blank = True)
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
@@ -53,9 +75,273 @@ class Device(models.Model):
     previous_day_energy = models.IntegerField(null=True, blank=True, default=None)
     previous_day_energy_post_datetime = models.DateTimeField(auto_now = True)
 
+
+    def get_logs(self, start_date = False, end_date = False):
+        result = {'resultCode': 200,
+                    'message': None,
+                    'data': []}
+
+        print(start_date, end_date)
+        now = datetime.datetime.now(tz = lagos_tz)
+        start_date = start_date or (now - datetime.timedelta(days = now.day))
+        end_date = end_date or now
+
+        logs = self.datalog_set.filter(post_datetime__range = (start_date, end_date))
+        
+
+        for log in logs:
+
+            post_datetime = log.post_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+            digital_input_1 = log.digital_input_1
+            digital_input_2 = log.digital_input_2
+            digital_input_3 = log.digital_input_3
+            digital_input_4 = log.digital_input_4
+            summary_energy_register_1 = log.summary_energy_register_1
+            summary_energy_register_2 = log.summary_energy_register_2
+            total_kw = log.total_kw
+            pulse_counter = log.pulse_counter
+
+            log_dict = {'deviceID': self.device_id,
+                    'recordTime': post_datetime,
+                    'data': [{'description': 'Digital Input #1',
+                        'value': digital_input_1,
+                        'units': '&nbsp;'},
+                        {'description': 'Digital Input #2',
+                        'value': digital_input_2,
+                        'units': '&nbsp;'},
+                        {'description': 'Digital Input #3',
+                        'value': digital_input_3,
+                        'units': '&nbsp;'},
+                        {'description': 'Digital Input #4',
+                        'value': digital_input_4,
+                        'units': '&nbsp;'},
+                        {'description': 'Summary Energy Register #1',
+                        'value': summary_energy_register_1,
+                        'units': ''},
+                        {'description': 'Summary Energy Register #2',
+                        'value': summary_energy_register_2,
+                        'units': ''},
+                        {'description': 'Total kW', 'value': total_kw, 'units': 'kW'},
+                        {'description': 'Pulse counter #1', 'value': pulse_counter, 'units': '&nbsp;'}]}
+            result['data'].append(log_dict)
+
+        return result
+
+    def get_min_max_power(self, start_date = False, end_date = False):
+
+        now = datetime.datetime.now(tz = lagos_tz)
+        start_date = start_date or (now - datetime.timedelta(days = now.day))
+        end_date = end_date or now
+
+        aggregates_gen1 = self.datalog_set.filter(post_datetime__range = (start_date, end_date), digital_input_1 = 1).aggregate(
+                avg_read=Avg('total_kw'),
+                max_read=Max('total_kw'),
+                min_read=Max('total_kw')
+        )
+        aggregates_gen2 = self.datalog_set.filter(post_datetime__range = (start_date, end_date), digital_input_1 = 2).aggregate(
+                avg_read=Avg('total_kw'),
+                max_read=Max('total_kw'),
+                min_read=Max('total_kw')
+        )
+        print(aggregates_gen1, aggregates_gen2)
+
+        return aggregates_gen1, aggregates_gen2
+
+    def get_capacity_factor(self):
+
+        avg_load_gen_1 = self.get_min_max_power(start_date = False, end_date = False, )[0]['avg_read']
+        avg_load_gen_2 = self.get_min_max_power(start_date = False, end_date = False, )[1]['avg_read']
+
+        gen1_size = self.branch.gen1_val
+        gen2_size = self.branch.gen2_val
+
+        capacity_factor_gen1 = 0 if not gen1_size or not avg_load_gen_1 else avg_load_gen_1 / gen1_size
+        capacity_factor_gen2 = 0 if not gen2_size or not avg_load_gen_2 else avg_load_gen_2 / gen2_size
+
+        verdict_gen_1 = "overloaded" if capacity_factor_gen1 > 0.7 else "perfect"
+        verdict_gen_2 = "overloaded" if capacity_factor_gen2 > 0.7 else "perfect"
+
+        response =  {
+                        "gen1_capacity" : gen1_size,
+                        "gen2_capacity" : gen2_size,
+                        "avg_load_gen_1": avg_load_gen_1,
+                        "avg_load_gen_2": avg_load_gen_2,
+                        "capacity_factor_gen_1": capacity_factor_gen1,
+                        "capacity_factor_gen_2": capacity_factor_gen2,
+                        "verdict_gen_1": verdict_gen_1,
+                        "verdict_gen_2": verdict_gen_2
+                    }
+        return response
+    
+    def get_facility_energy_load_factor(self, start_date = False, end_date = False):
+
+        avg_load_gen1, max_load_gen1 = self.get_min_max_power(start_date = False, end_date = False)[0]['avg_read'], self.get_min_max_power()[0]['max_read']
+
+        avg_load_gen2, max_load_gen2 = self.get_min_max_power(start_date = False, end_date = False)[1]['avg_read'], self.get_min_max_power()[1]['max_read']
+        
+        factor_gen1 = avg_load_gen1/max_load_gen1 if max_load_gen1 and avg_load_gen1 else 0
+        factor_gen2 = avg_load_gen2/max_load_gen2 if max_load_gen2 and avg_load_gen2 else 0
+
+        response =  {"facility_energy_load_factor" : {"factor_gen1" : factor_gen1, "factor_gen2" : factor_gen2}}
+        
+        return response
+
+    def base_line_energy(self, start_date = False, end_date = False):
+
+        now = datetime.datetime.now(tz = lagos_tz)
+        start_date = start_date or (now - datetime.timedelta(days = 30*10))
+        end_date = end_date or (now - datetime.timedelta(days = datetime.datetime.now().day))
+        
+        cdd = [(object.date.strftime("%Y-%m-%d"), object.value) for  object in list(Degree_Day.objects.all())]
+
+        months_kwh_data = self.reading_device.filter(post_datetime__range = (start_date, end_date))
+         
+        rearranged_months_kwh_data = []
+
+        for data in months_kwh_data:
+                rearranged_months_kwh_data.append((data.post_datetime.strftime('%m/%d/%Y'), data.kwh_import))
+
+        prediction = get_baseline.predict_usage( rearranged_months_kwh_data, cdd)
+
+        current_usage_this_month = self.get_energy_this_month()
+        current_usage_this_month["forcasted_kwh_usage"] = prediction
+
+        statistics = current_usage_this_month
+        
+
+        return statistics
+
+    def get_energy_this_month(self):
+
+        now = datetime.datetime.now(tz = lagos_tz)
+
+        start_date = now - datetime.timedelta(days = now.day)
+        end_date = now
+        
+
+        current_month_kwh_data = self.reading_device.filter(post_datetime__range = (start_date, end_date)).order_by("kwh_import")
+        
+        # print(current_month_kwh_data)
+        start_kwh = current_month_kwh_data[0].kwh_import  #["kwh_import"]
+        # print(start_kwh)
+        end_kwh = current_month_kwh_data[len(current_month_kwh_data)-1].kwh_import
+        # print(end_kwh)
+
+        kwh_usage = end_kwh - start_kwh
+
+        response = dict( kwh_usage_so_far = kwh_usage, number_of_days_so_far = now.day)
+        print("-----------------------------------------")
+        print("-----------------------------------------")
+        print("-----------------------------------------")
+        print(self.check_load_balance())
+
+        return response
+
+    def check_load_balance(self):
+
+        now = datetime.datetime.now(tz = lagos_tz)
+
+        start_date = now - datetime.timedelta(days = 1)
+        end_date = now
+        
+
+        current_month_kw = self.reading_device.filter(post_datetime__range = (start_date, end_date)).order_by("post_datetime")
+
+        count = 0
+        last_percentage_kw = 0
+
+        for reading in current_month_kw:
+            l1 = reading.kw_l1
+            l2 = reading.kw_l2
+            l3 = reading.kw_l3
+
+            max_line_kw = max(l1, l2, l3)
+            min_line_kw = min(l1, l2, l3)
+
+            if not max_line_kw and not min_line_kw:
+                continue
+
+            percentage_kw = (max_line_kw - min_line_kw)/max_line_kw
+            
+            if percentage_kw > 0.14:
+                count += 1
+
+                if percentage_kw > last_percentage_kw:
+                    imbalance_l1, imbalance_l2, imbalance_l3 = l1, l2, l3
+                    last_percentage_kw = percentage_kw
+
+                # print(reading.post_datetime, percentage_kw*100, "%")
+
+        # print(count)
+        
+        message = f"{count} cases of imbalance occured today. /nWorst case L1: {imbalance_l1}kw, L2: {imbalance_l2}kw, L3: {imbalance_l3}kw. {round(last_percentage_kw*100)}% Imbalance."
+        customer = self.customer
+        admin    = Customer.objects.get(is_main_admin = True)
+        # Message(sender = admin, receiver = customer, description = "", content = message ).save()
+        
+    def fuel_consumption(self, start_date = False, end_date = False):
+        
+        now = datetime.datetime.now(tz = lagos_tz)
+        start_date = start_date or (now - datetime.timedelta(days = now.day))
+        end_date = end_date or now
+
+        consumption_table = {
+                            "0-10"   :  [0.9, 1.2, 1.7, 2.1], 
+                            "11-12"  :  [1.0, 1.4, 2.1, 2.6], 
+                            "13-15"  :  [1.3, 1.8, 2.6, 3.2], 
+                            "16-20"  :  [1.7, 2.4, 3.5, 4.3], 
+                            "21-25"  :  [2.1, 3.0, 4.3, 5.4], 
+                            "26-30"  :  [2.6, 3.6, 5.2, 6.4], 
+                            "31-40"  :  [3.4, 4.8, 7.0, 8.6], 
+                            "41-50"  :  [4.3, 6.0, 8.6, 10.7], 
+                            "51-75"  :  [6.4, 9.0, 12.7, 16.1], 
+                            "76-100" : [8.3, 11.9, 16.1, 21.4], 
+                            "101-150": [10.9, 17.3, 24.1, 32.1], 
+                            "151-200": [14.1, 22.9, 32.7, 42.8], 
+                            "200-250": [17.4, 28.6, 40.8, 53.5], 
+                            "251-350": [23.7, 39.3, 56.0, 74.9], 
+                            "351-500": [33.3, 55.6, 79.6, 107.0]
+                            }
+
+        keys = list(consumption_table.keys())
+
+        print(consumption_table)
+        print(keys)
+        # logs = self.get_logs(start_date, end_date)
+
+        # i = 0#len(logs['data'])
+        # raw_data = logs['data']
+
+        # while i < len(raw_data):
+            
+        #     data = raw_data[i] 
+        #     digital_input = data['data'][0]['value']
+        #     total_kw = data['data'][4]['value']
+        #     time = data['recordTime']
+
+        #     print(time, digital_input, total_kw)
+
+        #     i += 1
+        energy_factor = self.get_facility_energy_load_factor(start_date, end_date)
+
+        usage = datalogs.process_usage(self.device_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
+        print(energy_factor)
+        print(usage)
+        
     def __str__(self):
         return self.device_id
+
+@receiver(post_save, sender = Device)
+def alert_customer(sender, **kwargs):
+    device = kwargs['instance']
     
+
+    date_time_str = '2018-01-01'
+    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d')
+    customer = Customer.objects.get(user = device.user)
+
+    Reading.objects.create(customer = customer, device = device, user = device.user, post_datetime =  date_time_obj, post_date = date_time_obj, post_time = date_time_obj)
+
 
 class Reading(models.Model):
     customer      = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'reading_customer', default = 1)
@@ -116,7 +402,124 @@ class Reading(models.Model):
         return f"{self.post_date} customer-({self.customer})"
 
 
+class Datalog(models.Model):
+    customer      = models.ForeignKey(Customer, on_delete=models.CASCADE, default = 1)
+    device        = models.ForeignKey(Device, on_delete=models.CASCADE, default = 1)
+    user          = models.ForeignKey(User, on_delete=models.CASCADE, default = 1)
+    post_datetime = models.DateTimeField(blank = True)
+    post_date     = models.DateField(blank = True)
+    post_time     = models.TimeField(blank=True)
+    digital_input_1 = models.FloatField(null=True, blank=True, default=None)
+    digital_input_2 = models.FloatField(null=True, blank=True, default=None)
+    digital_input_3 = models.FloatField(null=True, blank=True, default=None)
+    digital_input_4 = models.FloatField(null=True, blank=True, default=None)
+    summary_energy_register_1 = models.FloatField(null=True, blank=True, default=None)
+    summary_energy_register_2 = models.FloatField(null=True, blank=True, default=None)
+    total_kw = models.FloatField(null=True, blank=True, default=None)
+    pulse_counter = models.FloatField(null=True, blank=True, default=None)
+
+    @staticmethod
+    def filter_dict_from_list(data, value):
+        
+        for i in data['data']:
+            # print(i)
+            if i['description'] == value:
+                return (i['value'])
+        return 0
+
+    def populate(self):
+        devices = Device.objects.all()
+
+        for device in devices:
+            # print(device.device_id)
+            device_last_read = Datalog.objects.filter(device = device).order_by("-post_datetime")
+
+            if device_last_read:
+                device_last_read_date = device_last_read[0].post_datetime
+                device_last_read_date_str = device_last_read_date.strftime("%Y-%m-%d")
+            else:
+                device_last_read_date = datetime.datetime.strptime("2018-01-01", "%Y-%m-%d")
+                device_last_read_date_str = device_last_read_date.strftime("%Y-%m-%d")
+
+            end_date  = (device_last_read_date + datetime.timedelta(days = 15))
+            end_date_str =  end_date.strftime("%Y-%m-%d")
+
+            # print(device_last_read_date_str, end_date_str)
+
+            logs = False
+
+            while not logs:
+
+                
+                logs = make_request.make_request(device_id = device.device_id, start_date = device_last_read_date_str, end_date = end_date_str)["data"]
+
+                device_last_read_date = end_date
+                device_last_read_date_str = device_last_read_date.strftime("%Y-%m-%d")
+
+                end_date  = (end_date + datetime.timedelta(days = 15))
+                end_date_str =  end_date.strftime("%Y-%m-%d")
+
+                # print(device_last_read_date_str, end_date_str)
+
+
+            for data in reversed(logs):
+                
+                time = data['recordTime']
+                time = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S")
+                
+                d_i1 = self.filter_dict_from_list(data, "Digital Input #1")
+                d_i2 = self.filter_dict_from_list(data, "Digital Input #2")
+                d_i3 = self.filter_dict_from_list(data, "Digital Input #3")
+                d_i4 = self.filter_dict_from_list(data, "Digital Input #4")
+                summary_energy_register1 = self.filter_dict_from_list(data, "Summary Energy Register #1")
+                summary_energy_register2 = self.filter_dict_from_list(data, "Summary Energy Register #3")
+                summary_energy_register3 = self.filter_dict_from_list(data, "Summary Energy Register #2")
+                total_kW = self.filter_dict_from_list(data, "Total kW")
+                pulse_counter = self.filter_dict_from_list(data, "Pulse counter #1")
+ 
+                if not Datalog.objects.filter(post_datetime = time.strftime("%Y-%m-%d %H:%M:%S"), device__device_id = device.device_id):
+                    print('adding', device.device_id)
+
+                    Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = time, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
+
+                else:
+                    print('skipping', device.device_id)
+                    continue
+
+    def __str__(self):
+        return f"{self.post_date} customer-({self.customer})"
+
+
+class Message(models.Model):
+    sender      = models.ForeignKey(Customer, on_delete=models.CASCADE, default = 1, related_name= "message_sender")
+    receiver    = models.ForeignKey(Customer, on_delete=models.CASCADE, default = 2, related_name= "message_receiver")
+    description = models.CharField(max_length=255, blank=True)
+    has_new_message = models.BooleanField(default = True)
+    content     = models.TextField(max_length=2000, blank=True)
+    document    = models.FileField(upload_to='message_files/', null=True, blank=True, default=None)
+    uploaded_at = models.DateTimeField(auto_now_add= datetime.datetime.now)
+    has_been_read = models.BooleanField(default = False)
+
+    # def get_conversations(self, participant1):
+
+    #     return None if not self.message_set.all().order_by("-id") else self.message_set.all().order_by("-id")[0]
+    
+
+class Degree_Day(models.Model):
+    date   = models.DateField(null=True, blank=True)
+    value  = models.FloatField(null=True, blank=True, default=0)
+
+
 class Document(models.Model):
     description = models.CharField(max_length=255, blank=True)
     document = models.FileField(upload_to='documents/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
+def filter_dict_from_list(data, value):
+    
+    for i in data['data']:
+        # print(i)
+        if i['description'] == value:
+            return (i['value'])
+    return 0

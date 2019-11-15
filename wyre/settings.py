@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os
-
+import os, pytz
 import socket
+
+
+
 
 try:
     HOSTNAME = socket.gethostname()
@@ -40,8 +42,7 @@ CACHE_EXPIRY = 1800
 SECRET_KEY = 'hdhw*b6jko0m!@8@j8ufk+1ybj8u#gc@4ov0_xec((exhar=io'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True if HOSTNAME == "DESKTOP-U00EROM" else False
-DEBUG = False
+DEBUG = True  if HOSTNAME == "DESKTOP-U00EROM" else False
 
 ALLOWED_HOSTS = ['wyre.pythonanywhere.com',
                 'localhost'
@@ -147,3 +148,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+lagos_tz = pytz.timezone("Africa/Lagos")

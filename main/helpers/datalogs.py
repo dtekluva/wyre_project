@@ -4,6 +4,7 @@ import json
 import datetime
 from dateutil import parser
 import numpy as np
+# from main.models import *
 
 
 def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
@@ -22,7 +23,11 @@ def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", 
     url = url_data_logs if url == "logs" else url_last_read
 
     r = requests.get(url, cookies=cookie)
+    
     return r.json()
+    # device = Device.objects.get(device_id = device_id)
+    # data = (device.get_logs(start_date, end_date))
+    # return data
 
 def get_time_dif(a, b):
     
@@ -47,10 +52,12 @@ def process_usage(device_id, start_date, end_date):
 
     for readings in reversed(data['data']):
         record_time = readings["recordTime"]
-        digital_in = readings["data"][0]["value"]
-        energy_1 = readings["data"][1]["value"]
-        energy_2 = readings["data"][2]["value"]
-        total_energy = readings["data"][3]["value"]
+        digital_in = filter_dict_from_list(readings, "Digital Input #1")
+        energy_1 = filter_dict_from_list(readings, "Summary Energy Register #1")
+        energy_2 = filter_dict_from_list(readings, "Summary Energy Register #3")
+        total_energy = filter_dict_from_list(readings, "Total kW")
+
+        # print(record_time, digital_in, energy_1, energy_2, total_energy)        
         
         if digital_in == 0:
             utility_times.append(record_time)
@@ -99,6 +106,8 @@ def process_usage(device_id, start_date, end_date):
             
         
     return(sum(utility_hrs), sum(gen1_hrs), sum(gen2_hrs))
+
+
         
 def utility_vs_gen(device_ids, start_date, end_date):
     utility_times = 0
@@ -190,10 +199,12 @@ def get_daily_usage(data):
 def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
     daily_data = {}
     daily_usage = {"days":[], "gen1":[], "gen2":[], "utility":[]}
+
     for device_id in device_ids:
         old_data = daily_data.copy()
         data = make_request(device_id, start_date, end_date)
         df_data = rearrange_data(data["data"])
+
         
         for day in df_data:
             if daily_data.get(day,False):
@@ -211,7 +222,7 @@ def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
         daily_usage["gen2"].append(daily_data[key][2])
 
     daily_usage["days"], daily_usage["utility"], daily_usage["gen1"], daily_usage["gen2"] = sort_multiple_lists(daily_usage["days"], daily_usage["utility"], daily_usage["gen1"], daily_usage["gen2"]) #rearrange daily day accending
-    
+    # print(daily_usage)
 
     return daily_usage
 
@@ -258,3 +269,12 @@ def sort_multiple_lists(i,j,k,l):
 
     return i,j,k,l
 # daily_utility_vs_gen_kwh(["125639"], "2019-07-17", "2019-08-01")
+
+
+def filter_dict_from_list(data, value):
+        
+        for i in data['data']:
+            # print(i)
+            if i['description'] == value:
+                return (i['value'])
+        return 0

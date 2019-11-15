@@ -157,6 +157,7 @@ def get_js_power():
     read_qty = 8
     last_readings = hourly_data.tail(read_qty)
     last_readings_as_tuples = [tuple(reading) for reading in last_readings.values]
+    
 
 def get_energy_usage(devices):
         #TODAY READINGS STARTS TODAY AND ENDS TOMMORROW, WHILE YESTERDAY STARTS YESTERDAY AND ENDS TODAY.
@@ -188,6 +189,8 @@ def get_energy_usage(devices):
             yesterday_total += yesterday_usage
         
         return today_total, yesterday_total
+
+
 
 
 # def get_energy_usage(device, start, end):

@@ -31,7 +31,7 @@ def make_request(cookie, device_id, start_date, end_date):
     response = request.content
     data = json.loads(response)
     readings = data['data']
-
+#     print(data)
     return readings
 
 
@@ -44,8 +44,8 @@ def populate_db(readings, device_code, last_reading):
         date = record['recordTime'][:10]
         time = record['recordTime'][11:]
         _datetime = (record['recordTime']).replace('T'," ")
-        print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
-        print(device.name, utc.localize(parse(record['recordTime'])) > last_reading)
+        # print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
+        # print(device.name, utc.localize(parse(record['recordTime'])) > last_reading)
 
         if utc.localize(parse(record['recordTime'])) > last_reading:
                 reading = reshape_data_to_dict(record["data"])
@@ -129,16 +129,17 @@ def reshape_data_to_dict(readings):
 
 def run_migrations():
         cookies = authenticate(username,password)
-
-        for device_id in device_ids:
+        device_ids = Device.objects.all()
+        
+        for device in device_ids:
                 
-                target_device = Device.objects.get(device_id = device_id)
-                last_reading = Reading.objects.filter(device = target_device).latest('post_datetime').post_datetime #GET LAST READING FOR PARTICULAR DEVICE
+                # target_device = Device.objects.get(device_id = device_id)
+                last_reading = Reading.objects.filter(device = device).latest('post_datetime').post_datetime #GET LAST READING FOR PARTICULAR DEVICE
                 tommorow = datetime.datetime.now() + datetime.timedelta(days = 1)#GET TODAYS DATE AND ADD ONE DAY
-                print(target_device.name, last_reading) 
 
                 start_date = f"{last_reading.year}-{last_reading.month}-{last_reading.day}" #"2019-08-18"
                 end_date = f"{tommorow.year}-{tommorow.month}-{tommorow.day}"
 
-                readings = make_request(cookies, device_id, start_date, end_date)
-                populate_db(readings, device_id, last_reading)
+                readings = make_request(cookies, device.device_id, start_date, end_date)
+                # print(readings)
+                populate_db(readings, device.device_id, last_reading)

@@ -98,7 +98,9 @@
 				<div class="content-header__notifications content-header__dropdown">  
 						<div class="content-header__notifications-icon content-header__icon content-header__dropdown-activate" data-dropdown="notificationsdropdown">
 							<img src="{% static 'images/icons/icons-24-gray/notifications.png' %}" alt="" title="">
-							<span class="content-header__icon-bubble">6</span>
+							{% if new_message_count  %}
+							<span class="content-header__icon-bubble">{{new_message_count}}</span>
+							{% endif  %}
 						</div>  
 						<nav class="dropdown-menu dropdown-menu--header dropdown-menu--notifications-menu" id="notificationsdropdown"> 			
 						<h3 class="dropdown-menu__subtitle">You have <strong>6</strong> notifications</h3>
@@ -153,7 +155,7 @@
 						<select class="show-more show-more--select show-more--select-gray has-dropdown" id="device">
 							{% for device in devices %}
 							{{devices}}
-								<option value="{{device.id}}">{{device.name}}</option>
+								<option value="{{device.id}}">{{device.name}}-{{device.branch.name}}</option>
 							{% endfor %}
 						</select>
 						

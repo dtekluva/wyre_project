@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.conf import settings
-from main.models import Reading, Branch, Device, Customer, Document
+from main.models import  * # Reading, Branch, Device, Customer, Document
 from main.helpers.snippets import total_energy, get_reading_stats, js_total_energy, js_get_reading_stats, format_date, js_get_readings, get_energy_usage
 from main.helpers.datalogs import utility_vs_gen, daily_utility_vs_gen_kwh, get_last_readings
 import json, datetime, calendar
@@ -115,7 +115,7 @@ def readings(request):
 def max_demand(request):
         page = "Max Demand (Amps)"
         user = User.objects.get(pk = request.user.id)
-
+        customer = Customer.objects.get(user = user)    
         return render(request, 'max_demand.html', {'user':user, "customer": customer, "page": page})
 
 def score_card(request):
@@ -128,6 +128,24 @@ def score_card(request):
 
 
         return render(request, 'score_card.html', {'user':user, "customer": customer, "page": page, "devices": devices})
+
+def messaging(request):
+
+        page = "Messaging"
+        user = User.objects.get(pk = request.user.id)
+
+        customer = Customer.objects.get(user = user)
+        conversation_partners = customer.get_conversation_partners()
+        
+        device_id = request.POST.get("device", "")
+        devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(user = user)
+
+        return render(request, 'messaging.html', {'user':user, "customer": customer, "page": page, "devices": devices, "conversation_partners": conversation_partners})
+
+
+###########################################################
+###########################################################
+#APISs SECTION
 
 def fetch_vals_period(request):
         #THIS IS SIMILAR TO THE (fetch_vals_period_per_device) FUNCTION ONLY THAT THIS FUNCTION ONLY FETCHES FOR ALL THE DEVICES I.E GETS OVERALL TOTAL FOR ALL DEVICES OF A CUSTOMER
@@ -273,7 +291,7 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
 
                 data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
-                print(data)
+                # print(data)
                 for i in range(len(data)):
                         data[i]["post_datetime"] = data[i]["post_datetime"].strftime("%b. %d, %Y, %I:%M %p.")
 
@@ -286,19 +304,49 @@ def get_yesterday_today_usage(request):
         user = User.objects.get(pk = request.user.id)
         device_id = request.POST.get("device", "None")
         devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(id = device_id)
-        print(devices)
+        # print(devices)
         
         today_energy, yesterday_energy = get_energy_usage(devices)
 
 
         return HttpResponse(json.dumps({"response": "success", "data":{"today_energy":today_energy, "yesterday_energy": yesterday_energy}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 
+def get_capacity_factors(request):
+        user = User.objects.get(pk = request.user.id)
+        device_id = request.POST.get("device", "None")
+        
+        branches = user.branch_user.all()
+        response = {}
+
+        for branch in branches:
+
+                devices = branch.device_branch.all()
+
+                if not response.get(branch.name, False): 
+                        response[branch.name] = {}
+
+                for device in devices:
+                        response[device.name] = {
+                                "capacity_factor": device.get_capacity_factor(),
+                                "facility_energy_load_factor": device.get_facility_energy_load_factor(),
+                                "baseline" : device.base_line_energy()
+                        }
+
+                        # file = open(f"{device.device_id}_MONTHLY.py", "w")
+                #         # baseline = device.base_line_energy()
+                #         print(device.name)
+                # print(response)
+                                
+
+        return HttpResponse(json.dumps({"response": "success", "data":{"base_line":response}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+
 
 #URL FOR POPULATING DATABASE
 def load_readings(request):
+        Datalog().populate()
+        run_migrations()
 
         try:
-                run_migrations()
 
                 return HttpResponse(json.dumps({"response": "success"}))
                         
@@ -306,27 +354,16 @@ def load_readings(request):
                 return HttpResponse(json.dumps({"response": "failure", "message": "Something went wrong"}))
 
 
-def messaging(request):
-
-        page = "Messaging"
-        user = User.objects.get(pk = request.user.id)
-        customer = Customer.objects.get(user = user)
-        device_id = request.POST.get("device", "")
-        devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(user = user)
-
-        return render(request, 'messaging.html', {'user':user, "customer": customer, "page": page, "devices": devices})
-
-
 ###########################################################
 ###########################################################
 def simple_upload(request):
 
-        print(type(request.FILES.get("file")))
+        # print(type(request.FILES.get("file")))
         file = request.FILES.get("file")
         doc = Document(document = file)
         doc.save()
         if request.method == 'POST':
-                print(request.POST)
+                # print(request.POST)
                 return HttpResponse(json.dumps({"response": "success", "message": doc.document.url}))
                 
         return render(request, 'upload.html')
