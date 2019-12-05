@@ -129,13 +129,16 @@ def score_card(request):
 
         return render(request, 'score_card.html', {'user':user, "customer": customer, "page": page, "devices": devices})
 
+@login_required
 def messaging(request):
 
         page = "Messaging"
         user = User.objects.get(pk = request.user.id)
 
         customer = Customer.objects.get(user = user)
+        customer.get_messages()
         conversation_partners = customer.get_conversation_partners()
+        # print(conversation_partners)
         
         device_id = request.POST.get("device", "")
         devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(user = user)
@@ -143,9 +146,54 @@ def messaging(request):
         return render(request, 'messaging.html', {'user':user, "customer": customer, "page": page, "devices": devices, "conversation_partners": conversation_partners})
 
 
+
 ###########################################################
 ###########################################################
 #APISs SECTION
+@login_required
+def fetch_messages(request):
+        user = User.objects.get(pk = request.user.id)
+        
+        customer = Customer.objects.get(user = user)
+        messages = customer.get_messages()
+        
+
+        return HttpResponse(json.dumps({"response": "success", "data": messages}))
+
+def send_message(request):
+        user = User.objects.get(pk = request.user.id)
+        
+
+        if request.method == "POST":
+                # print("REQUEST IS POST !!!")
+
+                customer = Customer.objects.get(user = user)
+                messages = customer.get_messages()
+                data = json.loads(request.body)
+                receiver = Customer.objects.get(id = data["customer_id"])
+                text = data["text"]
+                title = "no title"
+
+                Message(sender = customer, receiver = receiver, description = title, content = text ).save()
+
+                return HttpResponse(json.dumps({"response": "success", "data": messages}))
+
+@login_required
+def check_new_message(request):
+        user = User.objects.get(pk = request.user.id)
+        
+
+        if request.method == "POST":
+                # print("REQUEST IS POST !!!")
+
+                customer = Customer.objects.get(user = user)
+                conversation_partners = customer.get_conversation_partners()
+
+                # print(conversation_partners)
+
+        
+
+
 
 def fetch_vals_period(request):
         #THIS IS SIMILAR TO THE (fetch_vals_period_per_device) FUNCTION ONLY THAT THIS FUNCTION ONLY FETCHES FOR ALL THE DEVICES I.E GETS OVERALL TOTAL FOR ALL DEVICES OF A CUSTOMER
@@ -291,7 +339,7 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
 
                 data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
-                # print(data)
+                # # print(data)
                 for i in range(len(data)):
                         data[i]["post_datetime"] = data[i]["post_datetime"].strftime("%b. %d, %Y, %I:%M %p.")
 
@@ -304,7 +352,7 @@ def get_yesterday_today_usage(request):
         user = User.objects.get(pk = request.user.id)
         device_id = request.POST.get("device", "None")
         devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(id = device_id)
-        # print(devices)
+        # # print(devices)
         
         today_energy, yesterday_energy = get_energy_usage(devices)
 
@@ -334,8 +382,8 @@ def get_capacity_factors(request):
 
                         # file = open(f"{device.device_id}_MONTHLY.py", "w")
                 #         # baseline = device.base_line_energy()
-                #         print(device.name)
-                # print(response)
+                #         # print(device.name)
+                # # print(response)
                                 
 
         return HttpResponse(json.dumps({"response": "success", "data":{"base_line":response}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
@@ -356,14 +404,28 @@ def load_readings(request):
 
 ###########################################################
 ###########################################################
+############## LOAD NEW CDD ###############################
+@csrf_exempt
+def upload_cdd(request):
+
+        if request.method == 'POST':
+                file = request.FILES.get("file")
+                data = file.readlines()
+                
+                Degree_Day.add_values(data)
+
+                return HttpResponse(json.dumps({"response": "success", "message": f"added {len(data)} new cdds'"}))
+        else:
+                        return HttpResponse(json.dumps({"response": "error", "message": "Bad request"}))
+
 def simple_upload(request):
 
-        # print(type(request.FILES.get("file")))
+        # # print(type(request.FILES.get("file")))
         file = request.FILES.get("file")
         doc = Document(document = file)
         doc.save()
         if request.method == 'POST':
-                # print(request.POST)
+                # # print(request.POST)
                 return HttpResponse(json.dumps({"response": "success", "message": doc.document.url}))
                 
         return render(request, 'upload.html')

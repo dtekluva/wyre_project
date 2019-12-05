@@ -16,7 +16,7 @@ last_reading = ""
 def authenticate(username, password):#LOGIN TO EXPERT POWER PLUS
 
     req = requests.get(f'http://expertpowerplus.com:8080/api/Login?userName={username}&pass={password}')
-    # print(req.cookies)
+    # # print(req.cookies)
     auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) changed to (form_p)
     auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
 
@@ -31,7 +31,7 @@ def make_request(cookie, device_id, start_date, end_date):
     response = request.content
     data = json.loads(response)
     readings = data['data']
-#     print(data)
+#     # print(data)
     return readings
 
 
@@ -44,12 +44,12 @@ def populate_db(readings, device_code, last_reading):
         date = record['recordTime'][:10]
         time = record['recordTime'][11:]
         _datetime = (record['recordTime']).replace('T'," ")
-        # print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
-        # print(device.name, utc.localize(parse(record['recordTime'])) > last_reading)
+        # # print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
+        # # print(device.name, utc.localize(parse(record['recordTime'])) > last_reading)
 
         if utc.localize(parse(record['recordTime'])) > last_reading:
                 reading = reshape_data_to_dict(record["data"])
-                # print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
+                # # print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
 
                 Reading.objects.create(post_date = date, post_time = time, 
                         post_datetime = _datetime, 
@@ -105,14 +105,14 @@ def populate_db(readings, device_code, last_reading):
                 )
         
         # else: 
-        #         print("Done populating")
+        #         # print("Done populating")
 
 def update_user_readings(user_id):
         last_update = (Reading.objects.filter(user_id = user_id).order_by("-id")[0]).post_datetime
         
 def reshape_data_to_dict(readings):
         i = 0
-        # print(readings)
+        # # print(readings)
 
         parameters = {}
         for value in readings:
@@ -122,7 +122,7 @@ def reshape_data_to_dict(readings):
                                 .replace('/','_')\
                                 .replace('(','')\
                                 .replace(')','').lower()
-                # print(str(i).center(2), description.center(35), str(value["value"]).center(12), str(value["units"]).center(13))
+                # # print(str(i).center(2), description.center(35), str(value["value"]).center(12), str(value["units"]).center(13))
                 parameters[description] = value["value"]
                 i += 1
         return parameters
@@ -141,5 +141,5 @@ def run_migrations():
                 end_date = f"{tommorow.year}-{tommorow.month}-{tommorow.day}"
 
                 readings = make_request(cookies, device.device_id, start_date, end_date)
-                # print(readings)
+                # # print(readings)
                 populate_db(readings, device.device_id, last_reading)

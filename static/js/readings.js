@@ -1,6 +1,11 @@
-const host = window.location.hostname == 'localhost'
+var host = window.location.hostname == 'localhost'
     ? 'http://localhost:8000/'
-    : 'http://' + window.location.hostname + '/'
+    : 'http://' + window.location.hostname + '/';
+
+if (location.protocol === 'https:') {
+  // page is secure
+  host.replace("http", "https")
+}
     
 const endpoint = "get_line_readings/";
 const logs_url = "get_line_readings_log/";
@@ -69,7 +74,7 @@ $(window).on('load', function() {
                 "scrollX": true,
                 dom: 'Bfrtip',
                 buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
+                    'copy', 'csv', 'excel', 'pdf', '# print'
                     
                 ],
                 "columnDefs": [

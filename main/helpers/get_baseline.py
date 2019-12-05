@@ -5,7 +5,7 @@ import datetime
 
 
 # # SAMPLE KWATT DATA CLEANING
-def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthly kwatt-hour value is not yet ditermined
+def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthly kwatt-hour value is not yet determined
 
     #DATA ARRANGEMENT
 
@@ -23,12 +23,12 @@ def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthl
 
     monthly_kwatts["kwatts"] = (max_monthly_kwatt_hrs.raw_kw_hrs - min_monthly_kwatt_hrs.raw_kw_hrs)
 
-    # print(monthly_kwatts)
+    # # print(monthly_kwatts)
 
 
     monthly_kwatts = monthly_kwatts.reset_index()
     monthly_kwatts["week"] = monthly_kwatts.date.dt.month
-    # print(monthly_kwatts)
+    # # print(monthly_kwatts)
 
 
     # # ANALYSIS SECTION
@@ -67,9 +67,9 @@ def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthl
     r_sq = model.score(x, y)
 
 
-    print('coefficient of determination:', r_sq)
-    print('intercept:', model.intercept_)
-    print('slope:', model.coef_)
+    # print('coefficient of determination:', r_sq)
+    # print('intercept:', model.intercept_)
+    # print('slope:', model.coef_)
 
 
     predictions = model.predict(x)
@@ -108,9 +108,9 @@ def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthl
     r_sq = model.score(a, b)
 
 
-    print('coefficient of determination:', r_sq)
-    print('intercept:', model.intercept_)
-    print('slope:', model.coef_)
+    # print('coefficient of determination:', r_sq)
+    # print('intercept:', model.intercept_)
+    # print('slope:', model.coef_)
 
 
     # adjusted_predictions = model.predict(np.array(monthly_kwatts['cdd']).reshape((-1, 1)))
@@ -121,8 +121,8 @@ def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthl
 
     current_month_prediction = model.predict([[current_month_cdd]])[0]
 
-    print("Current CDD = ", current_month_cdd)
-    print(f"{current_month_prediction}kwH")
+    # print("Current CDD = ", current_month_cdd)
+    # print(f"{current_month_prediction}kwH")
 
     return current_month_prediction
 

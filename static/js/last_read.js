@@ -1,6 +1,11 @@
 var host = window.location.hostname == 'localhost'
     ? 'http://localhost:8000/'
-    : 'http://' + window.location.hostname + '/'
+    : 'http://' + window.location.hostname + '/';
+
+if (location.protocol === 'https:') {
+  // page is secure
+  host.replace("http", "https")
+}
     
 var endpoint = "get_last_read/";
 ///////////////////////////////////////////////////////////////////////////

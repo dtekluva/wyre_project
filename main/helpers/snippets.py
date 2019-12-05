@@ -195,12 +195,12 @@ def get_energy_usage(devices):
 
 # def get_energy_usage(device, start, end):
 #     data = r.json()["data"]
-# #     print(data, "\n\n\n")
+# #     # print(data, "\n\n\n")
 #     start = [i for i in data[-1]["data"] if i["description"] == "kWh import"][0]["value"]
 #     end = [i for i in data[0]["data"] if i["description"] == "kWh import"][0]["value"]
 #     usage = end - start
-#     print(start, "\n\n\n\n\n\n\n\n", end)
-#     print(usage)
+#     # print(start, "\n\n\n\n\n\n\n\n", end)
+#     # print(usage)
     
 
 # get_energy_usage(1,2,3)

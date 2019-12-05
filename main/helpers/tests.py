@@ -37,7 +37,7 @@
 # def myfunc():
 #     return "hello works"
 
-# print("yeah")
+# # print("yeah")
 # dee = "bla"
 # '''
 
@@ -47,9 +47,9 @@
 
 # import code
 
-# # print(cwd)
+# # # print(cwd)
 # code.dee
-# print(code.myfunc())
+# # print(code.myfunc())
 
 consumption_table = {
                             "0-10"   :  [0.9, 1.2, 1.7, 2.1], 
@@ -68,25 +68,25 @@ consumption_table = {
                             "251-350": [23.7, 39.3, 56.0, 74.9], 
                             "351-500": [33.3, 55.6, 79.6, 107.0]
                             }
-gen_cap = 50
-load_factor = 0.5
+gen_cap = 102
+load_factor = 0.1
 keys = list(consumption_table.keys())
-print(keys)
+# print(keys)
 
 for key in keys:
     lower_bound, upper_bound = int(key.split("-")[0]), int(key.split("-")[1])
     key_range = range(lower_bound, upper_bound+1)
 
     if gen_cap in key_range:
-        print(key_range)
+        # print(key_range)
         consumption_list = consumption_table[key]
         possibles = [0.25, 0.5, 0.75, 1]
 
-        if load_factor >= 1: consumption_key = 3 
-        elif load_factor < 1 and load_factor > 0.75:consumption_key = 2
-        elif load_factor < 0.75 and load_factor >= 0.5.:consumption_key = 1
-        elif load_factor < 0.25:consumption_key = 
+        if load_factor <= 1 and load_factor > 0.75 or load_factor > 1: consumption_key = 3 
+        elif load_factor <= 0.75 and load_factor > 0.5:consumption_key = 2
+        elif load_factor <= 0.5 and load_factor > 0.25:consumption_key = 1
+        elif load_factor < 0.25:consumption_key = 0
 
-        consumption = [value for value in possibles if not value<load_factor]
-        print(consumption)
+        consumption = consumption_list[consumption_key]
+        # print(consumption)
         

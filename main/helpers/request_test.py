@@ -10,7 +10,8 @@ auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
 
 cookie = {auth_key_name: auth_key_value}
 
-r = requests.get('http://expertpowerplus.com:8080/api/basic/133813/LastReading', cookies=cookie)
+# r = requests.get('http://expertpowerplus.com:8080/api/basic/133813/LastReading', cookies=cookie)
+r = requests.get('http://www.expertpowerplus.com:8080/api/basic/133813/Datalogs?startDate=2019-10-01&endDate=2019-10-20&datalogNum=1', cookies=cookie)
 
 
 x = (r.content)
@@ -19,7 +20,7 @@ data = json.loads(x)
 readings = (data['data'][0]['data'])
 
 for value in readings:
-    print(value["description"], end= '*')
+    # print(value["description"], end= '*')
 
 
 readings = (data['data'][0]['data'])
@@ -31,7 +32,7 @@ for value in readings:
 
 
 
-# print(data.get("data"))
+# # print(data.get("data"))
 
 
 # text = 'Voltage L1/L12*Voltage L2/L23*Voltage L3/L31*Current L1*Current L2*Current L3*kW L1*kW L2*kW L3*kvar L1*kvar L2*kvar L3*kVA L1*kVA L2*kVA L3*Power factor L1*Power factor L2*Power factor L3*Total kW*Total kvar*Total kVA*Total PF*Avg Frequency*Neutral current*Volt THD L1/L12*Volt THD L2/L23*Volt THD L3/L31*Current THD L1*Current THD L2*Current THD L3*Current TDD L1*Current TDD L2*Current TDD L3*kWh import*kWh export*kvarh import*kVAh total*Max Amp. Demand L1*Max Amp. Demand L2*Max Amp. Demand L3*Max. sliding window kW Demand*Accum. kW Demand*Max. sliding window kVA Demand*Present sliding window kW Demand*Present sliding window kVA Demand*Accum. kVA Demand*PF (import) at maximum kVA sliding window Demand'.replace(' ','_').replace('/','_')
@@ -39,7 +40,7 @@ for value in readings:
 # model = ' = models.FloatField(null=True, blank=True, default=None)'
 
 # for value in parameters:
-#     # print(value + model)
+#     # # print(value + model)
 
 
 
@@ -95,5 +96,5 @@ for value in readings:
 # for attribute in well_formatted_models.split("\n"):
 #     splitted_attribute = attribute.split("= ") 
 #     lowered_attribute_name = splitted_attribute[0].lower()
-#     # print(lowered_attribute_name + "= " + splitted_attribute[1], "/n")
+#     # # print(lowered_attribute_name + "= " + splitted_attribute[1], "/n")
 

@@ -2,6 +2,11 @@ var host = window.location.hostname == 'localhost'
     ? 'http://localhost:8000/'
     : 'http://' + window.location.hostname + '/'
 // console.log(host)
+
+if (location.protocol === 'https:') {
+  // page is secure
+  host.replace("http", "https")
+}
     
 $('#LoginForm').on('submit', async e => {
     e.preventDefault()

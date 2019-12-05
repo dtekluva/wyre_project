@@ -8,9 +8,15 @@ import numpy as np
 
 
 def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
+    
+    if not isinstance(start_date, str):
+        start_date = start_date.strftime("%Y-%m-%d")
+        end_date = end_date.strftime("%Y-%m-%d")
+        
 
     req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre1234')
 
+    # # print(req)
     auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) chnaged to (form_p)
     auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
     cookie = {auth_key_name: auth_key_value}
@@ -23,7 +29,7 @@ def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", 
     url = url_data_logs if url == "logs" else url_last_read
 
     r = requests.get(url, cookies=cookie)
-    
+    # # print(r)
     return r.json()
     # device = Device.objects.get(device_id = device_id)
     # data = (device.get_logs(start_date, end_date))
@@ -57,7 +63,7 @@ def process_usage(device_id, start_date, end_date):
         energy_2 = filter_dict_from_list(readings, "Summary Energy Register #3")
         total_energy = filter_dict_from_list(readings, "Total kW")
 
-        # print(record_time, digital_in, energy_1, energy_2, total_energy)        
+        # # print(record_time, digital_in, energy_1, energy_2, total_energy)        
         
         if digital_in == 0:
             utility_times.append(record_time)
@@ -139,9 +145,9 @@ def rearrange_data(data):#
             df_data[day.day].append(item)
 
         if previous_day != current_day and previous_day:
-            # print(previous_day != current_day)
-            # print(previous_day)
-            # print(df_data.keys(), '\n\n\n')
+            # # print(previous_day != current_day)
+            # # print(previous_day)
+            # # print(df_data.keys(), '\n\n\n')
             df_data[previous_day].append(item)
 
         previous_day = day.day
@@ -222,7 +228,7 @@ def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
         daily_usage["gen2"].append(daily_data[key][2])
 
     daily_usage["days"], daily_usage["utility"], daily_usage["gen1"], daily_usage["gen2"] = sort_multiple_lists(daily_usage["days"], daily_usage["utility"], daily_usage["gen1"], daily_usage["gen2"]) #rearrange daily day accending
-    # print(daily_usage)
+    # # print(daily_usage)
 
     return daily_usage
 
@@ -274,7 +280,7 @@ def sort_multiple_lists(i,j,k,l):
 def filter_dict_from_list(data, value):
         
         for i in data['data']:
-            # print(i)
+            # # print(i)
             if i['description'] == value:
                 return (i['value'])
         return 0

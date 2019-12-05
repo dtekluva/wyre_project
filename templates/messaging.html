@@ -14,11 +14,11 @@
 			</div>
 			<div class="messages__all scrollbar-macosx" id="message_list">
 			{% for conversation_partner in conversation_partners %}
-				<div class="message__short new">
+				<div class="message__short new" id = "{{conversation_partner.id}}">
 					<div class="message__short-header">
 						<div class="messages__short-thumb"><img src="{{conversation_partner.image.url}}" alt="" title=""/><span class="status status--online"></span></div>
 						<div class="messages__short-name">{{conversation_partner.company_name}}</div>
-						<div class="messages__short-date">today</div>	
+						<div class="messages__short-date"></div>	
 					</div>
 					<div class="message__short-content">
 						<!-- <h4 class="messages__short-title">{{conversation_partner.company_name}}</h4> -->
@@ -65,7 +65,7 @@
 			  <ul class="conversation">
 
 				  <li class="conversation__row conversation__row--received">
-					  <div class="conversation__avatar"><img src="images/avatar-2.jpg" alt="" title="" /></div>
+					  <div class="conversation__avatar"></div>
 					  
 					  <div class="conversation__content">
 							<p>Hi Dr. Oliver, just wanted to let you know about my eczema. Small, raised bumps, which may leak fluid and crust over when scratched </p>
@@ -78,7 +78,7 @@
 							<p>Hi Gracie!</p>
 						   <span class="conversation__time">8:32 am</span>
 					  </div>
-					  <div class="conversation__avatar"></span><img src="images/avatar-1.jpg" alt="" title="" /></div>
+					  <div class="conversation__avatar"></span></div>
 				  </li>  
 				  <li class="conversation__row conversation__row--sent">
 					  <div class="conversation__content">
@@ -127,9 +127,9 @@
 			</div>
 			<div class="messages__footer">
 		
-					<form action="" class="messages__footer-form">
-						<textarea type="textarea" class="messages__footer-textarea" id="" name="" placeholder="Type your message..."></textarea>
-						<a href="#" class="messages__footer-submit"><img src="images/send.png" alt="" title="" /></a>
+					<form action="" class="messages__footer-form" id="message_form">
+						<textarea type="textarea" class="messages__footer-textarea" id="message_input" name="" placeholder="Type your message..."></textarea>
+						<a href="" type="submit" id="submit_icon" class="messages__footer-submit"><img src="{% static 'images/send.png' %}" alt="" title="" id=""/></a>
 					</form>
 	
 			</div>

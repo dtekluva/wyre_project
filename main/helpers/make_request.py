@@ -23,3 +23,5 @@ def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", 
 
     r = requests.get(url, cookies=cookie)
     return r.json()
+
+# print(make_request("128166"))
