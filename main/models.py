@@ -5,20 +5,33 @@ from django.dispatch import receiver
 from django.db.models import Avg, Max, Min
 from wyre.settings import lagos_tz
 from main.helpers import get_baseline, make_request, datalogs
+from django.db.models.functions import Extract, ExtractMonth, ExtractYear
 import datetime
 
 
 # Create your models here.
 class Customer(models.Model):
-    user            = models.OneToOneField(User, on_delete=models.CASCADE, related_name = 'user')
+    user            = models.OneToOneField(User, on_delete=models.CASCADE)
     company_name    = models.CharField(max_length=256, default = " ",null=True, blank = True)
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address         = models.TextField(max_length=400, null=True, blank = True)
-    image           = models.FileField(upload_to='customer_imgs/', null=True, blank = True)
+    image           = models.FileField(upload_to='customer_imgs/', default = 'avatar-6.jpg' ,null=True, blank = True)
     is_main_admin   = models.BooleanField(default = False)
+    added           = models.DateField(auto_now= True)
 
     def __str__(self):
         return f"{self.company_name} {self.id}"
+
+    def get_device_count(self):
+        return self.device_set.all().count()
+
+    def get_branches(self):
+
+        branches = self.branch_set.all()
+
+        return branches
+
+
 
     def get_conversation_partners(self):
         customers = self.message_sender.all() | self.message_receiver.all()
@@ -52,16 +65,23 @@ class Customer(models.Model):
             messages_dict[conversation_partner.id] = formatted_messages
 
         return messages_dict
-        # # print(messages_dict)
+
 
 class Branch(models.Model):
-    customer  = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'branch_customer')
-    user     = models.ForeignKey(User, on_delete=models.CASCADE, default = 1, related_name = 'branch_user')
+    customer  = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    user     = models.ForeignKey(User, on_delete=models.CASCADE, default = 1)
     name      = models.CharField(max_length=256, default = " ",null=True, blank = True)
     phone     = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address   = models.TextField(max_length=400, null=True, blank = True)
     gen1_val  = models.IntegerField(null=True, blank=True, default=0)
     gen2_val  = models.IntegerField(null=True, blank=True, default=0)
+
+
+    def get_devices(self):
+
+        devices = self.device_set.all()
+
+        return devices
 
     class Meta:
         verbose_name_plural = "Branches"
@@ -71,9 +91,9 @@ class Branch(models.Model):
 
 
 class Location(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'location_customer')
-    branch   = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name = 'location_branch')
-    user     = models.ForeignKey(User, on_delete=models.CASCADE, default = 1, related_name = 'location_user')
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    branch   = models.ForeignKey(Branch, on_delete=models.CASCADE)
+    user     = models.ForeignKey(User, on_delete=models.CASCADE, default = 1)
     device_type = models.CharField(max_length=40, null=True, blank = True)
     name        = models.CharField(max_length=256, default = " ",null=True, blank = True)
     phone       = models.CharField(max_length=40, default = 0,null=True, blank = True)
@@ -84,17 +104,28 @@ class Location(models.Model):
 
 
 class Device(models.Model):
-    customer        = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'device_customer')
-    location        = models.ForeignKey(Location, on_delete=models.CASCADE, related_name = 'device_location')
-    branch          = models.ForeignKey(Branch, on_delete=models.CASCADE, default = 1, related_name = 'device_branch')
-    user            = models.ForeignKey(User, on_delete=models.CASCADE, default = 1, related_name = 'device_user')
+    customer        = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    location        = models.ForeignKey(Location, on_delete=models.CASCADE)
+    branch          = models.ForeignKey(Branch, on_delete=models.CASCADE, default = 1)
+    user            = models.ForeignKey(User, on_delete=models.CASCADE, default = 1)
     device_id       = models.CharField(max_length=40, null=True, blank = True)
     device_type     = models.CharField(max_length=40, null=True, blank = True)
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address         = models.TextField(max_length=400, null=True, blank = True)
     name            = models.CharField(max_length=100, null=True, blank = True)
+    added           = models.DateField(auto_now= True)
     previous_day_energy = models.IntegerField(null=True, blank=True, default=None)
     previous_day_energy_post_datetime = models.DateTimeField(auto_now = True)
+
+
+    def get_previous_score(self):
+
+        previous_scores = self.score_set.annotate(month = ExtractMonth('date'), year = ExtractYear('date')).order_by("-date").values("id", "month", "year", 'felf', "avg_load", "peak_load", "capacity_factor_gen1", "capacity_factor_gen2", "hours_gen1", "hours_gen2", "fuel_consumption_gen1", "fuel_consumption_gen2", "baseline_energy", "energy_used")
+        
+        response = list(previous_scores)
+
+        return response
+
 
 
     def get_logs(self, start_date = False, end_date = False):
@@ -105,10 +136,10 @@ class Device(models.Model):
 
         # print(start_date, end_date)
         now = datetime.datetime.now(tz = lagos_tz)
-        start_date = start_date or (now - datetime.timedelta(days = now.day))
-        end_date = end_date or now
+        start_date = start_date or (now - datetime.timedelta(days = now.day -1))
+        end_date = end_date or now - datetime.timedelta(days = 1)
 
-        logs = self.datalog_set.filter(post_datetime__range = (start_date, end_date))
+        logs = self.datalog_set.filter(post_datetime__range = (start_date, end_date)).order_by("-post_datetime")
         
 
         for log in logs:
@@ -125,17 +156,9 @@ class Device(models.Model):
 
             log_dict = {'deviceID': self.device_id,
                     'recordTime': post_datetime,
-                    'data': [{'description': 'Digital Input #1',
+                    'data': [
+                        {'description': 'Digital Input #1',
                         'value': digital_input_1,
-                        'units': '&nbsp;'},
-                        {'description': 'Digital Input #2',
-                        'value': digital_input_2,
-                        'units': '&nbsp;'},
-                        {'description': 'Digital Input #3',
-                        'value': digital_input_3,
-                        'units': '&nbsp;'},
-                        {'description': 'Digital Input #4',
-                        'value': digital_input_4,
                         'units': '&nbsp;'},
                         {'description': 'Summary Energy Register #1',
                         'value': summary_energy_register_1,
@@ -143,7 +166,16 @@ class Device(models.Model):
                         {'description': 'Summary Energy Register #2',
                         'value': summary_energy_register_2,
                         'units': ''},
+                        {'description': 'Digital Input #2',
+                        'value': digital_input_2,
+                        'units': '&nbsp;'},
                         {'description': 'Total kW', 'value': total_kw, 'units': 'kW'},
+                        {'description': 'Digital Input #3',
+                        'value': digital_input_3,
+                        'units': '&nbsp;'},
+                        {'description': 'Digital Input #4',
+                        'value': digital_input_4,
+                        'units': '&nbsp;'},
                         {'description': 'Pulse counter #1', 'value': pulse_counter, 'units': '&nbsp;'}]}
             result['data'].append(log_dict)
 
@@ -152,7 +184,7 @@ class Device(models.Model):
     def get_min_max_power(self, start_date = False, end_date = False):
 
         now = datetime.datetime.now(tz = lagos_tz)
-        start_date = start_date or (now - datetime.timedelta(days = now.day))
+        start_date = start_date or (now - datetime.timedelta(days = now.day-1))
         end_date = end_date or now
 
         aggregates_gen1 = self.datalog_set.filter(post_datetime__range = (start_date, end_date), digital_input_1 = 1).aggregate(
@@ -165,9 +197,14 @@ class Device(models.Model):
                 max_read=Max('total_kw'),
                 min_read=Max('total_kw')
         )
-        # print(aggregates_gen1, aggregates_gen2)
+        aggregates_total = self.datalog_set.filter(post_datetime__range = (start_date, end_date)).aggregate(
+                avg_read=Avg('total_kw'),
+                max_read=Max('total_kw'),
+                min_read=Max('total_kw')
+        )
+        # print(aggregates_gen1, aggregates_gen2, aggregates_total)
 
-        return aggregates_gen1, aggregates_gen2
+        return aggregates_gen1, aggregates_gen2, aggregates_total
 
     def get_capacity_factor(self, start_date = False, end_date = False):
 
@@ -175,8 +212,11 @@ class Device(models.Model):
         start_date = start_date or (now - datetime.timedelta(days = 30))
         end_date = end_date or now
 
-        avg_load_gen_1 = self.get_min_max_power(start_date = False, end_date = False, )[0]['avg_read']
-        avg_load_gen_2 = self.get_min_max_power(start_date = False, end_date = False, )[1]['avg_read']
+        min_max_power = self.get_min_max_power(start_date = False, end_date = False, )
+
+        avg_load_gen_1 = min_max_power[0]['avg_read']
+        avg_load_gen_2 = min_max_power[1]['avg_read']
+        avg_load_total = min_max_power[2]['avg_read']
 
         gen1_size = self.branch.gen1_val
         gen2_size = self.branch.gen2_val
@@ -192,6 +232,7 @@ class Device(models.Model):
                         "gen2_capacity" : gen2_size,
                         "avg_load_gen_1": avg_load_gen_1,
                         "avg_load_gen_2": avg_load_gen_2,
+                        "avg_load_total": avg_load_total,
                         "capacity_factor_gen_1": capacity_factor_gen1,
                         "capacity_factor_gen_2": capacity_factor_gen2,
                         "verdict_gen_1": verdict_gen_1,
@@ -205,10 +246,18 @@ class Device(models.Model):
 
         avg_load_gen2, max_load_gen2 = self.get_min_max_power(start_date = False, end_date = False)[1]['avg_read'], self.get_min_max_power()[1]['max_read']
         
+        avg_load_total, max_load_total = self.get_min_max_power(start_date = False, end_date = False)[2]['avg_read'], self.get_min_max_power()[2]['max_read']
+        
         factor_gen1 = avg_load_gen1/max_load_gen1 if max_load_gen1 and avg_load_gen1 else 0
         factor_gen2 = avg_load_gen2/max_load_gen2 if max_load_gen2 and avg_load_gen2 else 0
+        factor_total = avg_load_total/max_load_total if max_load_total and avg_load_total else 0
 
-        response =  {"facility_energy_load_factor" : {"factor_gen1" : factor_gen1, "factor_gen2" : factor_gen2}}
+        remarks = {0: "Bad or No usage - (Higher Is Better)", 1: "Not so efficient - (Higher Is Better)", 2: "Fairly efficient - (Higher Is Better)", 3: "Reasonably efficient - (Higher Is Better)"}
+
+        remark_sigmoid = round(factor_total/0.25)  #ROUND LOAD FACTOR TO BETWEEN 0-1-2-3
+        remark = remarks[remark_sigmoid]
+
+        response =  {"factor_gen1" : factor_gen1, "factor_gen2" : factor_gen2, "factor_total" : factor_total, "avg_load_total": avg_load_total, "max_load_total": max_load_total, "remark": remark}
         
         return response
 
@@ -220,7 +269,7 @@ class Device(models.Model):
         
         cdd = [(object.date.strftime("%Y-%m-%d"), object.value) for  object in list(Degree_Day.objects.all())]
 
-        months_kwh_data = self.reading_device.filter(post_datetime__range = (start_date, end_date))
+        months_kwh_data = self.reading_set.filter(post_datetime__range = (start_date, end_date))
          
         rearranged_months_kwh_data = []
 
@@ -242,10 +291,10 @@ class Device(models.Model):
         now = datetime.datetime.now(tz = lagos_tz)
 
         start_date = now - datetime.timedelta(days = now.day)
-        end_date = now
+        end_date = now + datetime.timedelta(days = 1)
         
 
-        current_month_kwh_data = self.reading_device.filter(post_datetime__range = (start_date, end_date)).order_by("kwh_import")
+        current_month_kwh_data = self.reading_set.filter(post_datetime__range = (start_date, end_date)).order_by("kwh_import")
         
         # # print(current_month_kwh_data)
         start_kwh = current_month_kwh_data[0].kwh_import  #["kwh_import"]
@@ -264,7 +313,7 @@ class Device(models.Model):
         now = datetime.datetime.now(tz = lagos_tz)
 
         start_date = now - datetime.timedelta(days = 1)
-        end_date = now
+        end_date = now + datetime.timedelta(days = 1)
         
 
         current_month_kw = self.reading_device.filter(post_datetime__range = (start_date, end_date)).order_by("post_datetime")
@@ -304,8 +353,8 @@ class Device(models.Model):
     def fuel_consumption(self, start_date = False, end_date = False):
 
         now = datetime.datetime.now(tz = lagos_tz)
-        start_date = start_date or (now - datetime.timedelta(days = 30))
-        end_date = end_date or now
+        start_date = start_date or (now - datetime.timedelta(days = now.day-1))
+        end_date = end_date or now + datetime.timedelta(days = 1)
 
         consumption_table = {
                             "0-10"   :  [0.9, 1.2, 1.7, 2.1], 
@@ -328,7 +377,6 @@ class Device(models.Model):
         keys = list(consumption_table.keys())
 
         capacity_factor = self.get_capacity_factor()
-        # print(capacity_factor)
 
         gen1_cap = capacity_factor['gen1_capacity']
         gen2_cap = capacity_factor['gen2_capacity']
@@ -367,15 +415,13 @@ class Device(models.Model):
          
         _, gen_1_hrs, gen_2_hrs = datalogs.process_usage(self.device_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
 
-
-        # # print(fuel_consumption["diesel_consumption"]["gen_1"] * gen_1_hrs, "ltrs")
-        # # print(fuel_consumption["diesel_consumption"]["gen_2"] * gen_2_hrs, "ltrs")
         fuel_consumption["diesel_consumption"]["gen_1"] = round(fuel_consumption["diesel_consumption"]["gen_1"] * gen_1_hrs, 2)
+        fuel_consumption["diesel_consumption"]["gen_1_hrs"] = round(gen_1_hrs, 2)
+
         fuel_consumption["diesel_consumption"]["gen_2"] = round(fuel_consumption["diesel_consumption"]["gen_2"] * gen_2_hrs, 2)
+        fuel_consumption["diesel_consumption"]["gen_2_hrs"] = round(gen_2_hrs, 2)
 
-        print(fuel_consumption)
-
-        return fuel_consumption
+        return fuel_consumption["diesel_consumption"]
 
         
     def __str__(self):
@@ -394,9 +440,9 @@ def alert_customer(sender, **kwargs):
 
 
 class Reading(models.Model):
-    customer      = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name = 'reading_customer', default = 1)
-    device        = models.ForeignKey(Device, on_delete=models.CASCADE, related_name = 'reading_device', default = 1)
-    user          = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'reading_user', default = 1)
+    customer      = models.ForeignKey(Customer, on_delete=models.CASCADE, default = 1)
+    device        = models.ForeignKey(Device, on_delete=models.CASCADE, default = 1)
+    user          = models.ForeignKey(User, on_delete=models.CASCADE, default = 1)
     post_datetime = models.DateTimeField(blank = True)
     post_date     = models.DateField(blank = True)
     post_time     = models.TimeField(blank=True)
@@ -567,6 +613,25 @@ class Degree_Day(models.Model):
             line = (line.decode()).split(",")
             date = datetime.datetime.strptime(line[0], "%d/%m/%Y")
             Degree_Day(date = date, value = line[1]).save()
+
+
+class Score(models.Model):
+    device = models.ForeignKey(Device, on_delete=models.CASCADE, default = 1)
+    date   = models.DateField(null=True, blank=True)
+    felf   = models.FloatField(null=True, blank=True, default=0)
+    avg_load   = models.FloatField(null=True, blank=True, default=0)
+    peak_load  = models.FloatField(null=True, blank=True, default=0)
+    capacity_factor_gen1  = models.FloatField(null=True, blank=True, default=0)
+    capacity_factor_gen2  = models.FloatField(null=True, blank=True, default=0)
+    fuel_consumption_gen1 = models.FloatField(null=True, blank=True, default=0)
+    fuel_consumption_gen2 = models.FloatField(null=True, blank=True, default=0)
+    hours_gen1            = models.FloatField(null=True, blank=True, default=0)
+    hours_gen2            = models.FloatField(null=True, blank=True, default=0)
+    baseline_energy       = models.FloatField(null=True, blank=True, default=0)
+    energy_used           = models.FloatField(null=True, blank=True, default=0)
+
+    def __str__(self):
+        return f"{self.device.device_id} customer-({self.date})"
 
 
 class Document(models.Model):

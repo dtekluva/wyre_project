@@ -32,7 +32,7 @@ Template:	    MEDIKIT
 /*===============================================*/
 /* 1. IMPORTS		 						 */
 /*===============================================*/
-@import url(c:\Users\Edidiong Isong\Documents\Front-End Files\Projects\medikit\medikit-html\css\reset.css);
+@import url(c:\Users\INYANG\Desktop\PERSONAL WORK\INSIGHT PHYSICS\WYRE PROJECT\wyre_webapp\static\css\reset.css);
 .color-gray5 {
   color: #fbfbfc;
 }
@@ -193,11 +193,6 @@ Template:	    MEDIKIT
   background-color: #ff5acd;
   background: -webkit-gradient(linear, left top, right top, from(#ff5acd), to(#fd86a7));
   background: linear-gradient(90deg, #ff5acd, #fd86a7);
-}
-.gradient-pop {
-  background-color: #b446f4;
-  background: -webkit-gradient(linear, left top, right top, from(#b446f4), to(#5616f5));
-  background: linear-gradient(90deg, #b446f4, #5616f5);
 }
 
 .section--sidebar {
@@ -3885,7 +3880,7 @@ select.custom-select-rendered {
   background-image: url(../images/avatar.png);
   background-repeat: no-repeat;
   background-position: 50% 50%;
-  background-size: 60%;
+  background-size: 100%;
 }
 
 .form-upload .form-upload__message {

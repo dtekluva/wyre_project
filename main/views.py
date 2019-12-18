@@ -68,6 +68,7 @@ def index(request):
 
         return render(request, 'dashboard.html', {'user':user, "customer": customer, "branches": branches,"devices": devices, "page":page, "energy_used" : energy_used, "min_kw": min_kw, "peak_kw": peak_kw, "avg_kw": avg_kw, "def_start_date":default_start_date, "def_end_date":default_end_date})
 
+@login_required
 def power(request):
         page = "Power Readings (kW)"
         user = User.objects.get(pk = request.user.id)
@@ -76,6 +77,47 @@ def power(request):
         devices = Device.objects.filter(user_id = request.user.id)
 
         return render(request, 'power.html', {'user':user, "customer": customer, "page": page, "devices":devices})
+
+@login_required
+def all_customers(request):
+        page = "Customers"
+
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+        branches = Branch.objects.filter(user_id = user.id)
+        devices = Device.objects.filter(user_id = request.user.id)
+        customers = Customer.objects.all()
+
+        return render(request, 'all_customers.html', {'user':user, "customers": customers, "customer": customer, "page": page, "devices":devices})
+
+@login_required
+def view_customer(request, id):
+
+        page = "Edit Profile"
+
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+        branches = Branch.objects.filter(user_id = user.id)
+        devices = Device.objects.filter(user_id = request.user.id)
+        customers = Customer.objects.all()
+
+        edit_customer = Customer.objects.get(id = id)
+        edit_branches = edit_customer.get_branches
+
+        return render(request, 'edit_customer.html', {'user':user, "edit_customer": edit_customer, "edit_branches": edit_branches,  "customers": customers, "customer": customer, "page": page, "devices":devices, "branches": branches})
+
+@login_required
+def view_profile(request):
+
+        page = "View Profile"
+
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+        branches = Branch.objects.filter(user_id = user.id)
+        devices = Device.objects.filter(user_id = request.user.id)
+
+        return render(request, 'view_profile.html', {'user':user, "customer": customer, "page": page, "devices":devices, "branches":branches})
+
 @login_required
 def last_read(request):
         
@@ -87,6 +129,7 @@ def last_read(request):
 
         return render(request, 'last_read.html', {'user':user, "customer": customer, "page": page, "devices":devices})
 
+@login_required
 def voltage(request):
         page = "Voltage Readings (Volts)"
         user = User.objects.get(pk = request.user.id)
@@ -94,6 +137,7 @@ def voltage(request):
 
         return render(request, 'voltage.html', {'user':user, "customer": customer, "page": page})
 
+@login_required
 def current(request):
         page = "Current Readings (Amps)"
         user = User.objects.get(pk = request.user.id)
@@ -112,12 +156,14 @@ def readings(request):
 
         return render(request, 'readings.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
 
+@login_required
 def max_demand(request):
         page = "Max Demand (Amps)"
         user = User.objects.get(pk = request.user.id)
         customer = Customer.objects.get(user = user)    
         return render(request, 'max_demand.html', {'user':user, "customer": customer, "page": page})
 
+@login_required
 def score_card(request):
         page = "Score Card"
         user = User.objects.get(pk = request.user.id)
@@ -359,32 +405,33 @@ def get_yesterday_today_usage(request):
 
         return HttpResponse(json.dumps({"response": "success", "data":{"today_energy":today_energy, "yesterday_energy": yesterday_energy}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 
+@login_required
 def get_capacity_factors(request):
         user = User.objects.get(pk = request.user.id)
-        device_id = request.POST.get("device", "None")
+        # device_id = request.POST.get("device", "None")
         
-        branches = user.branch_user.all()
-        response = {}
+        branches = user.branch_set.all()
+        response = []
 
         for branch in branches:
 
-                devices = branch.device_branch.all()
+                devices = branch.device_set.all()
 
-                if not response.get(branch.name, False): 
-                        response[branch.name] = {}
+                # if not response.get(branch.name, False): 
+                        
 
                 for device in devices:
-                        response[device.name] = {
+                        response.append({
+                                "branch_name" : branch.name,
+                                "branch_id" : branch.id,
+                                "device_id": device.id,
+                                "unique_id": device.device_id,
                                 "capacity_factor": device.get_capacity_factor(),
                                 "facility_energy_load_factor": device.get_facility_energy_load_factor(),
-                                "baseline" : device.base_line_energy()
-                        }
-
-                        # file = open(f"{device.device_id}_MONTHLY.py", "w")
-                #         # baseline = device.base_line_energy()
-                #         # print(device.name)
-                # # print(response)
-                                
+                                "baseline" : device.base_line_energy(),
+                                "fuel_consumption": device.fuel_consumption(),
+                                "previous_scores" : device.get_previous_score()
+                        })
 
         return HttpResponse(json.dumps({"response": "success", "data":{"base_line":response}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 
@@ -393,7 +440,7 @@ def get_capacity_factors(request):
 def load_readings(request):
         Datalog().populate()
         run_migrations()
-
+        
         try:
 
                 return HttpResponse(json.dumps({"response": "success"}))
@@ -417,6 +464,230 @@ def upload_cdd(request):
                 return HttpResponse(json.dumps({"response": "success", "message": f"added {len(data)} new cdds'"}))
         else:
                         return HttpResponse(json.dumps({"response": "error", "message": "Bad request"}))
+@login_required
+def upload_image(request):
+
+        print(request.user.id)
+        user = User.objects.get(id = request.user.id)
+        customer_id = request.POST.get("customer_id", False)
+
+
+        if request.method == 'POST':
+
+                file = request.FILES.get("file")
+
+                if not customer_id:
+                        customer = Customer.objects.get(user = user)
+                        customer.image = file
+                        customer.save()
+                else:
+                        customer = Customer.objects.get(id = customer_id)
+                        customer.image = file
+                        customer.save()
+
+
+        return HttpResponse(json.dumps({"response": "success", "message": customer.image.url}))
+
+@login_required
+def update_details(request):
+
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+
+        if request.method == 'POST':
+                # # print(request.POST)
+                company_name = request.POST.get("name")
+                username = request.POST.get("username")
+                phone = request.POST.get("phone")
+                address = request.POST.get("address")
+                customer.company_name = company_name
+                customer.phone = phone
+                customer.address = address
+
+                try:
+                        test_user = User.objects.get(username = username)
+
+                        if not user.username == username:
+                                return HttpResponse(json.dumps({"response": "user exists"}))
+
+                except:
+                        pass
+
+                if any(not c.isalnum() for c in username):
+                        return HttpResponse(json.dumps({"response": "failure"}))
+                else:
+                        user.username = username.lower()
+                        customer.save()
+                        user.save()
+
+                        return HttpResponse(json.dumps({"response": "success"}))
+
+        return HttpResponse(json.dumps({"response": "error"}))
+
+@login_required
+def update_branch(request):
+
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+
+        if request.method == 'POST':
+                # # print(request.POST)
+                branch_name = request.POST.get("branch_name")
+                address = request.POST.get("address")
+                gen1 = request.POST.get("gen1")
+                gen2 = request.POST.get("gen2")
+                branch_id = request.POST.get("branch_id")
+
+                branch = Branch.objects.get(id = branch_id)
+                branch.name = branch_name
+                branch.address = address
+                branch.gen1_val = gen1
+                branch.gen2_val = gen2
+
+                branch.save()
+
+                return HttpResponse(json.dumps({"response": "success"}))
+
+        return HttpResponse(json.dumps({"response": "error"}))
+
+@login_required
+def create_branch(request):
+
+        user = User.objects.get(pk = request.user.id)
+        # customer = Customer.objects.get(user = user)
+
+        if request.method == 'POST':
+                # print(request.POST)
+                branch_name = request.POST.get("branch_name")
+                address = request.POST.get("address")
+                gen1 = request.POST.get("gen1")
+                gen2 = request.POST.get("gen2")
+                customer_id = request.POST.get("customer_id")
+
+                customer = Customer.objects.get(id = customer_id)
+
+                branch = Branch(customer = customer, user = customer.user, name = branch_name, address = address, gen1_val = gen1, gen2_val = gen2)
+
+                branch.save()
+
+                return HttpResponse(json.dumps({"response": "success"}))
+
+        return HttpResponse(json.dumps({"response": "error"}))
+
+@login_required
+def update_device(request):
+
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+
+        if request.method == 'POST':
+                # # print(request.POST)
+                device_name = request.POST.get("device_name")
+                location = request.POST.get("location")
+                device_id = request.POST.get("device_id")
+                device_pk = request.POST.get("device_pk")
+
+                device = Device.objects.get(id = device_pk)
+                device.name = device_name
+                device_location = device.location
+                device_location.name = location
+                device.device_id = device_id
+
+                device_location.save()
+                device.save()
+
+                return HttpResponse(json.dumps({"response": "success"}))
+
+        return HttpResponse(json.dumps({"response": "error"}))
+
+@login_required
+def add_user(request):
+
+        page = "Add User"
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+        branches = Branch.objects.filter(user_id = user.id)
+        devices = Device.objects.filter(user_id = request.user.id)
+
+        if request.method == 'POST':
+                # # print(request.POST)
+                company_name = request.POST.get("name")
+                username = request.POST.get("username")
+                phone = request.POST.get("phone")
+                address = request.POST.get("address")
+                customer.company_name = company_name
+                customer.phone = phone
+                customer.address = address
+
+                try:
+                        test_user = User.objects.get(username = username)
+
+                        
+                        return HttpResponse(json.dumps({"response": "user exists"}))
+
+                except:
+                        pass
+
+                if any(not c.isalnum() for c in username):
+                        return HttpResponse(json.dumps({"response": "failure"}))
+                else:
+                        username = username.lower()
+                        new_user = User(username = username, email = "")
+                        new_user.save()
+                        new_user.set_password("12345678")
+                        new_user.save()
+
+                        customer = Customer(user = new_user, company_name = company_name, address = address, phone = phone)
+                        customer.save()
+                      
+
+                        return HttpResponse(json.dumps({"response": "success"}))
+
+        return render(request, 'add_user.html', {'user':user, "customer": customer, "page": page, "devices":devices})
+
+
+@login_required
+def edit_user(request):
+
+        page = "Edit User"
+
+        if request.method == 'POST':
+                # # print(request.POST)
+                company_name = request.POST.get("name")
+                username = request.POST.get("username")
+                phone = request.POST.get("phone")
+                address = request.POST.get("address")
+                customer_id = request.POST.get("customer_id")
+                print(customer_id)
+                customer = Customer.objects.get(id = customer_id)
+                user = customer.user
+
+                customer.company_name = company_name
+                customer.phone = phone
+                customer.address = address
+
+                
+                try:
+                        test_user = User.objects.get(username = username)
+
+                        if not user.username == username:
+                                return HttpResponse(json.dumps({"response": "user exists"}))
+
+                except:
+                        pass
+
+                if any(not c.isalnum() for c in username):
+                        return HttpResponse(json.dumps({"response": "failure"}))
+                else:
+                        user.username = username.lower()
+                        customer.save()
+                        user.save()
+
+                        return HttpResponse(json.dumps({"response": "success"}))
+        else:
+
+                return HttpResponse(json.dumps({"response": "failure"}))
+
 
 def simple_upload(request):
 

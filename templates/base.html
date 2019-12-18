@@ -29,6 +29,23 @@
 	<link rel="stylesheet"
 				href=" {% static 'css/last_read.css' %}" />
 	{% endif %}
+	{% if page == "Score Card" %}
+	<link rel="stylesheet"
+				href=" {% static 'scss/scoreCards.css' %}" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+	{% endif %}
+	{% if page == "Customers" %}
+	<link rel="stylesheet"
+				href=" {% static 'css/ini/allCustomers.css' %}" />
+	{% endif %}
+	{% if page == "View Profile" %}
+	<link rel="stylesheet"
+				href=" {% static 'css/ini/customerProfile.css' %}" />
+	{% endif %}
+	{% if page == "Add User" %}
+	<link rel="stylesheet"
+				href=" {% static 'css/ini/customerProfile.css' %}" />
+	{% endif %}
 	<!-- <link rel="stylesheet"
 				href=" {% static 'css/extra-style-copy.css' %}" /> -->
 	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,900"
@@ -75,9 +92,17 @@
 								<a href="dashboard__patients-add.html">Add new customers</a>
 							</li>
 							<li>
-								<a href="dashboard__patients.html">View all customers</a>
+								<a href="/all_customers">View all customers</a>
 							</li>
-							<li><a href="dashboard__patient.html">Customers profile</a></li>
+							<li>
+								<a href="../view_customer/{{customer.id}}">Customers profile</a>
+							</li>
+							<li>
+								<a href="../view_profile/">View profile</a>
+							</li>
+							<li>
+								<a href="../add_user/">Add User</a>
+							</li>
 						</ul>
 					</li>
 					<li class="inbox">
@@ -130,14 +155,14 @@
 									 alt=""
 									 title="" />
 						</div>
-						<span class="content-header__user-name">{{user.first_name}}&#32;&#32; {{user.last_name}}</span>
+						<span class="content-header__user-name">{{customer.company_name}}</span>
 					</div>
 					<nav class="dropdown-menu dropdown-menu--header dropdown-menu--user-menu "
 							 id="userdropdown">
 						<h3 class="dropdown-menu__subtitle">User menu</h3>
 						<ul>
-							<li><a href="/">View profile</a></li>
-							<li><a href="/">Edit</a></li>
+							<li><a href="/view_profile">View profile</a></li>
+							<!-- <li><a href="/">Edit</a></li> -->
 							<li class="logout">
 								<a href="../auth/logout"
 									 class="button button--general button--red-border">Logout</a>
@@ -512,27 +537,57 @@
 	<script src="{% static 'js/ion.rangeSlider.min.js' %}"></script>
 	<script src="{% static 'js/jquery.dashboard-custom.js' %}"></script>
 	{% if page == "Dashboard" %}
-	<script src="{% static 'js/dashboard.js' %}"></script>
+		<script src="{% static 'js/dashboard.js' %}"></script>
 	{% endif %}
+
 	{% if page == "Last Readings" %}
-	<script src="{% static 'js/last_read.js' %}"></script>
+		<script src="{% static 'js/last_read.js' %}"></script>
 	{% endif %}
+
 	{% if page == "Messaging" %}
-	<script src="{% static 'js/messaging.js' %}"></script>
+		<script src="{% static 'js/messaging.js' %}"></script>
 	{% endif %}
+
+	{% if page == "Score Card" %}
+		<script src="{% static 'js/by_ini/baseline-donut.js' %}"></script>
+		<script src="{% static 'js/by_ini/capacity-donut1.js' %}"></script>
+		<script src="{% static 'js/by_ini/capacity-donut2.js' %}"></script>
+		<script src="{% static 'js/by_ini/felf-donut.js' %}"></script>
+		<script src="{% static 'js/by_ini/carbon-donut.js' %}"></script>
+		<script src="{% static 'js/by_ini/random-donut.js' %}"></script>
+		<script src="{% static 'js/by_ini/modal.js' %}"></script>
+	{% endif %}
+	
+	{% if page == "Customers" %}
+		<script src="{% static 'js/by_ini/allCustomers.js' %}"></script>
+	{% endif %}
+	
+	{% if page == "View Profile" %}
+		<script src="{% static 'js/profile_view.js' %}"></script>
+	{% endif %}
+	
+	{% if page == "Add User" %}
+		<script src="{% static 'js/add_user.js' %}"></script>
+	{% endif %}
+	
+	{% if page == "Edit Profile" %}
+		<script src="{% static 'js/edit_customer.js' %}"></script>
+	{% endif %}
+	
 	{% if page == "Readings" %}
-	<script src="{% static 'js/readings.js' %}"></script>
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>	
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>	
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>	
-	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>	
-	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>	
-	<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>	
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>	
-	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.# print.min.js"></script>	
+		<script src="{% static 'js/readings.js' %}"></script>
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.# print.min.js"></script>	
 	{% endif %}
-	<script src="{% static 'js/progressbar.js' %}"></script>
-	<script src="{% static 'js/progress_bar_control.js' %}"></script>
+
+	<!-- <script src="{% static 'js/progressbar.js' %}"></script>
+	<script src="{% static 'js/progress_bar_control.js' %}"></script> -->
 </body>
 
 </html>

@@ -1607,6 +1607,9 @@ h6 {
 .content-header__user-thumb img {
   display: block;
   max-width: 100%;
+  height: 100%;
+  border-radius: 100px;
+  object-fit: cover;
 }
 
 .content-header__user-name {
@@ -3881,7 +3884,7 @@ select.custom-select-rendered {
   background-image: url(../images/avatar.png);
   background-repeat: no-repeat;
   background-position: 50% 50%;
-  background-size: 60%;
+  background-size: 100%;
 }
 
 .form-upload .form-upload__message {

@@ -12,6 +12,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('login', views.login_view, name='login'),
     path('logout', auth_views.LogoutView.as_view(template_name="/login.html"), name='logout'),
+    path('update_password/', views.update_password, name='update_password')
     # path('mobile_register',  views.mobile_register, name='mobile_register'),
     # path('mobile_signin', views.mobile_signin, name='mobile_signin'),
     # path('user', views.user, name='user'),

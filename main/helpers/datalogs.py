@@ -4,8 +4,7 @@ import json
 import datetime
 from dateutil import parser
 import numpy as np
-# from main.models import *
-
+from main import models 
 
 def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
     
@@ -14,26 +13,26 @@ def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", 
         end_date = end_date.strftime("%Y-%m-%d")
         
 
-    req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre1234')
+    # req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre1234')
 
-    # # print(req)
-    auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) chnaged to (form_p)
-    auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
-    cookie = {auth_key_name: auth_key_value}
-    # device_id = "128166" #2019-04-15
+    # # # print(req)
+    # auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) chnaged to (form_p)
+    # auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
+    # cookie = {auth_key_name: auth_key_value}
+    # # device_id = "128166" #2019-04-15
 
-    url_data_logs = f'http://www.expertpowerplus.com:8080/api/basic/{device_id}/Datalogs?startDate={start_date}&endDate={end_date}&datalogNum=1'
+    # url_data_logs = f'http://www.expertpowerplus.com:8080/api/basic/{device_id}/Datalogs?startDate={start_date}&endDate={end_date}&datalogNum=1'
 
-    url_last_read = f'http://expertpowerplus.com:8080/api/basic/{device_id}/LastReading'
+    # url_last_read = f'http://expertpowerplus.com:8080/api/basic/{device_id}/LastReading'
 
-    url = url_data_logs if url == "logs" else url_last_read
+    # url = url_data_logs if url == "logs" else url_last_read
 
-    r = requests.get(url, cookies=cookie)
-    # # print(r)
-    return r.json()
-    # device = Device.objects.get(device_id = device_id)
-    # data = (device.get_logs(start_date, end_date))
-    # return data
+    # r = requests.get(url, cookies=cookie)
+    # return r.json()
+    device = models.Device.objects.get(device_id = device_id)
+    response = device.get_logs(start_date, end_date)
+    # print(response)
+    return response
 
 def get_time_dif(a, b):
     
@@ -50,13 +49,14 @@ def format_date(date):###THIS FUNCTION CONVERTS DATE FROM DD-MM-YYY TO YYY-MM-DD
 
 
 def process_usage(device_id, start_date, end_date):
+    print(start_date, end_date)
     data = make_request(device_id, start_date, end_date)
     
     readings = data['data'][0]['data']
     utility_times = []
     gen_times = []
 
-    for readings in reversed(data['data']):
+    for readings in (data['data']):
         record_time = readings["recordTime"]
         digital_in = filter_dict_from_list(readings, "Digital Input #1")
         energy_1 = filter_dict_from_list(readings, "Summary Energy Register #1")
@@ -110,7 +110,7 @@ def process_usage(device_id, start_date, end_date):
             time_diff = get_time_dif(x_time, y_time)
             utility_hrs.append(time_diff)
             
-        
+    print(sum(utility_hrs), sum(gen1_hrs), sum(gen2_hrs))
     return(sum(utility_hrs), sum(gen1_hrs), sum(gen2_hrs))
 
 

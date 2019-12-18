@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from useraccounts.forms import LoginForm
 from django.contrib.auth.models import User
 # from useraccounts.models import UserAccount, Token_man, Session
-# from main.models import Farmland, Herdsman
+from main.models import *
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
@@ -43,3 +43,40 @@ def login_view(request):
 
         else:
                 return render(request, "login.html")
+
+def update_password(request):
+
+        user = User.objects.get(pk = request.user.id)
+
+        if request.method == 'POST':
+                # # print(request.POST)
+                old = request.POST.get("old")
+                new = request.POST.get("new")
+                customer_id = request.POST.get("customer_id", False)
+                
+                if customer_id == False:
+
+                        user = authenticate(username = user.username, password = old)
+
+                        if user:
+                                user.set_password(new)
+                                user.save()
+                                login(request, user)
+
+                                return HttpResponse(json.dumps({"response": "success"}))
+                        else:
+                                return HttpResponse(json.dumps({"response": "failure"}))
+                else:
+                        customer = Customer.objects.get(id = customer_id)
+                        print(customer)
+                        print(customer.user.username)
+                        user = authenticate(username = customer.user.username, password = old)
+                        print("----------------------------")
+
+                        if user:
+                                user.set_password(new)
+                                user.save()
+
+                                return HttpResponse(json.dumps({"response": "success"}))
+                        else:
+                                return HttpResponse(json.dumps({"response": "failure"}))
