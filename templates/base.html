@@ -56,6 +56,9 @@
 </head>
 
 <body>
+	<!-- <div class="mobile">
+		<h1 class="mobile-text">Sorry I your can't this view website on moblie screen</h1>
+	</div> -->
 	<div class="dashboard-wrap">
 		<header class="sidebar-header">
 			<img src=" {% static 'images/logo.svg' %}" alt="logo" class="sidebar-header__logo">
@@ -87,30 +90,36 @@
 					<li class="patients has-submenu">
 						<a href="#"><b>Customers<span class="submenu-arrow"></span></b></a>
 						<ul class="sidebar-menu__submenu">
-							<li><a href="dashboard__patient.html">Bills and Uploads</a></li>
+							<!-- <li>
+								<a href="dashboard__patient.html">Bills and Uploads</a>
+							</li> -->
+							{% if user.is_staff %}
 							<li>
-								<a href="dashboard__patients-add.html">Add new customers</a>
+								<a href="../add_user/">Add new customers</a>
 							</li>
 							<li>
 								<a href="/all_customers">View all customers</a>
 							</li>
 							<li>
-								<a href="../view_customer/{{customer.id}}">Customers profile</a>
+								<a href="/upload_cdd">Add degree days</a>
 							</li>
+							{% endif %}
+							
+							<!-- <li>
+								<a href="../view_customer/{{customer.id}}">Customers profile</a>
+							</li> -->
 							<li>
 								<a href="../view_profile/">View profile</a>
 							</li>
-							<li>
-								<a href="../add_user/">Add User</a>
-							</li>
+							
 						</ul>
 					</li>
 					<li class="inbox">
-						<a href="/messaging"><b>Messages<span class="submenu-bubble">3</span></b></a>
+						<a href="/messaging"><b>Messages<span class="submenu-bubble">{{customer.count_unread_messages}}</span></b></a>
 					</li>
-					<li class="settings">
+					<!-- <li class="settings">
 						<a href="#"><b>Access Control</b></a>
-					</li>
+					</li> -->
 				</ul>
 			</nav>
 		</div>
@@ -123,11 +132,11 @@
 				<div class="content-header__notifications content-header__dropdown">  
 						<div class="content-header__notifications-icon content-header__icon content-header__dropdown-activate" data-dropdown="notificationsdropdown">
 							<img src="{% static 'images/icons/icons-24-gray/notifications.png' %}" alt="" title="">
-							{% if new_message_count  %}
-							<span class="content-header__icon-bubble">{{new_message_count}}</span>
+							{% if customer.count_unread_messages  %}
+							<span class="content-header__icon-bubble">{{customer.count_unread_messages}}</span>
 							{% endif  %}
 						</div>  
-						<nav class="dropdown-menu dropdown-menu--header dropdown-menu--notifications-menu" id="notificationsdropdown"> 			
+						<!-- <nav class="dropdown-menu dropdown-menu--header dropdown-menu--notifications-menu" id="notificationsdropdown"> 			
 						<h3 class="dropdown-menu__subtitle">You have <strong>6</strong> notifications</h3>
 						<ul>    
 							<li class="d-flex justify-sb"><span class="important">NOTIFICATION</span>Eco friendly Gens available <b class="task-time">today</b></li>
@@ -139,7 +148,7 @@
 							
 							<li class="view-all"><a href="../messaging" class="button button--general button--blue-border">View all</a></li>
 						</ul>
-						</nav>
+						</nav> -->
 				</div>
 				<div class="mobile-menu">
 					<div class="st-burger-icon st-burger-icon--medium">
@@ -233,8 +242,10 @@
 				</div>
 
 			</div>
-
+			
 			{% block content %}
+
+			
 
 			{% endblock %}
 			<!-- End of Grid -->
@@ -242,6 +253,8 @@
 		
 	</div>
 	<!-- Wrap end -->
+
+
 
 	
 
@@ -564,6 +577,10 @@
 	
 	{% if page == "View Profile" %}
 		<script src="{% static 'js/profile_view.js' %}"></script>
+	{% endif %}
+	
+	{% if page == "Add Degree Days" %}
+		<script src="{% static 'js/add_cdd.js' %}"></script>
 	{% endif %}
 	
 	{% if page == "Add User" %}

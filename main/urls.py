@@ -50,6 +50,7 @@ urlpatterns = [
     path('update_branch/', views.update_branch, name='update_branch'),
     path('update_device/', views.update_device, name='update_device'),
     path('create_branch/', views.create_branch, name='create_branch'),
+    path('create_device/', views.create_device, name='create_device'),
     # path('detail_view', views.detail_view, name='detail_view'),
     # path('locationpost', views.locationpost, name='locationpost'),
     # path('incidents', views.incidents, name='incidents'),

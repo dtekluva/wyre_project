@@ -144,6 +144,8 @@ const post = (customer_id)=>{
   }, 10000); 
 };
 
+var is_first_load = true;
+
 var populate_messages = (()=>{
     let customer_id = document.getElementsByClassName("selected")[0].id;
     let values = downloaded_messages.data[customer_id]
@@ -177,7 +179,10 @@ var populate_messages = (()=>{
     var message_box = document.getElementsByClassName("conversation")[0]
     message_box.innerHTML = text;
     var messages = document.getElementsByClassName("conversation__row");
-    messages[messages.length - 1].scrollIntoView();
+    if (is_first_load){
+      messages[messages.length - 1].scrollIntoView();
+    }
+    is_first_load = false;
 })
 
 var activate_message_btn = (()=>{

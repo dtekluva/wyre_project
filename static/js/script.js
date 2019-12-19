@@ -45,6 +45,10 @@ const post = ()=>{
             window.location.replace('/')
           } else if (resp.response == 'failure') {
             $("#login_error").show()
+            swal({
+              title: "AUTHENTICATION FAILED!!",
+              text: "Incorrect Username Or Password..!!",
+            });
           }
         })
         .catch(() => {

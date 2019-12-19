@@ -31,6 +31,10 @@ class Customer(models.Model):
 
         return branches
 
+    def save(self,*args,**kwargs):
+
+        super().save(*args,**kwargs)
+        self.create_welcome_message()
 
 
     def get_conversation_partners(self):
@@ -55,16 +59,41 @@ class Customer(models.Model):
             # print(conversation_partner.company_name)
 
             messages = self.message_receiver.filter(sender = conversation_partner) | self.message_sender.filter(receiver = conversation_partner)
+            self.message_receiver.filter(has_been_read = False).update(has_been_read = True) #MAKE UNREAD MESSAGES READ 
             messages = messages.order_by("id")
 
             formatted_messages = []
             for message in messages:
+
                 formatted_messages.append({"id": message.id, "content":message.content, "read": message.has_been_read, "time":message.uploaded_at.strftime("%d %b %Y %H:%M:%S"), "outgoing": True if message.sender_id == self.id else False })
-                # print(message.content, message.sender, message.receiver)
 
             messages_dict[conversation_partner.id] = formatted_messages
 
         return messages_dict
+
+    def count_unread_messages(self):
+        conversation_partners = self.get_conversation_partners()
+
+        messages_dict = {}
+        
+        for conversation_partner in conversation_partners:
+
+            messages = self.message_receiver.filter(has_been_read = False)
+
+            num_of_messages = messages.count()
+
+            return num_of_messages
+        
+
+    def create_welcome_message(self):
+        
+        sender = Customer.objects.get(is_main_admin = True)
+        receiver = self
+        if sender != receiver:
+            text = f"Welcome {self.company_name}. !!"
+            title = "Welcome message"
+
+            Message(sender = sender, receiver = receiver, description = title, content = text ).save()
 
 
 class Branch(models.Model):
@@ -607,12 +636,20 @@ class Degree_Day(models.Model):
 
     @staticmethod
     def add_values(data):
-        data.pop(0) # REMOVE HEADING R COLUMN NAME
 
-        for line in data:
-            line = (line.decode()).split(",")
-            date = datetime.datetime.strptime(line[0], "%d/%m/%Y")
-            Degree_Day(date = date, value = line[1]).save()
+        try:
+
+            data.pop(0) # REMOVE HEADING R COLUMN NAME
+
+            for line in data:
+                line = (line.decode()).split(",")
+                date = datetime.datetime.strptime(line[0], "%d/%m/%Y")
+                Degree_Day(date = date, value = line[1]).save()
+
+            
+            return True
+        except:
+            return False
 
 
 class Score(models.Model):

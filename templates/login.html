@@ -51,7 +51,11 @@
 							<span class="form__row-border"></span>									
 						</div>
 						{% csrf_token %}
-						
+
+						<!-- ################################### -->
+						<!-- LOGIN IS BEING HANDLED BY SCRIPT.JS -->
+						<!-- ################################### -->
+
 						<div class="modal__checkbox"><input id="remember" name="remember" value="remember" checked="" type="checkbox"><label for="remember">Keep me Signed in</label></div>
 						<div class="modal__switch modal__switch--forgot" data-popup="forgot">Forgot Password?</div>
 						<div hidden class="modal__switch--forgot" id = "login_error" data-popup="forgot">Invalid username or password</div>
@@ -126,7 +130,12 @@
 	  <script src="{% static 'js/scrolla.jquery.min.js' %}"></script>
 	  <script src="{% static 'js/jquery.custom.js' %}"></script>
 	  <script src="{% static 'js/swiper.custom.js' %}"></script>
+	  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+	  <script src= "{% static '/sweetalert/sweetalert.min.js'  %}"></script>
+	  <script src="{% static '/sweetalert/jquery.sweet-alert.custom.js' %}"></script>
+	  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	  <script src="{% static 'js/script.js' %}"></script>
+
 </body>
 </html>
 

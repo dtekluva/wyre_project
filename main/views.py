@@ -456,14 +456,30 @@ def load_readings(request):
 def upload_cdd(request):
 
         if request.method == 'POST':
+                
                 file = request.FILES.get("file")
                 data = file.readlines()
                 
-                Degree_Day.add_values(data)
+                was_successful = Degree_Day.add_values(data)
 
-                return HttpResponse(json.dumps({"response": "success", "message": f"added {len(data)} new cdds'"}))
+                if was_successful:
+
+                        return HttpResponse(json.dumps({"response": "success", "message": f"added {len(data)} new cdds'"}))
+                else:
+                        return HttpResponse(json.dumps({"response": "failure", "message": f"unable to add cdds'"}))
         else:
-                        return HttpResponse(json.dumps({"response": "error", "message": "Bad request"}))
+                        # return HttpResponse(json.dumps({"response": "error", "message": "Bad request"}))
+
+                page = "Add Degree Days"
+                user = User.objects.get(pk = request.user.id)
+
+                customer = Customer.objects.get(user = user)
+                
+                device_id = request.POST.get("device", "")
+                devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(user = user)
+
+                return render(request, 'add_cdd.html', {'user':user, "customer": customer, "page": page, "devices": devices})
+
 @login_required
 def upload_image(request):
 
@@ -569,6 +585,30 @@ def create_branch(request):
                 branch = Branch(customer = customer, user = customer.user, name = branch_name, address = address, gen1_val = gen1, gen2_val = gen2)
 
                 branch.save()
+
+                return HttpResponse(json.dumps({"response": "success"}))
+
+        return HttpResponse(json.dumps({"response": "error"}))
+
+@login_required
+def create_device(request):
+
+        if request.method == 'POST':
+                # # print(request.POST)
+                device_name = request.POST.get("device_name")
+                location = request.POST.get("location")
+                device_id = request.POST.get("device_id")
+                branch_id = request.POST.get("target_branch_id")
+
+                branch = Branch.objects.get(id = branch_id)
+                customer = branch.customer
+                user = customer.user
+
+                
+                location = Location(name = location, branch = branch, customer = customer, user = user)
+                location.save()
+                device = Device(name = device_name, device_id = device_id, user = user, customer = customer, branch = branch, location = location)
+                device.save()
 
                 return HttpResponse(json.dumps({"response": "success"}))
 

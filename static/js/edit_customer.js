@@ -13,6 +13,7 @@ const password_update_url = 'auth/update_password/';
 const update_branch_url = 'update_branch/'; 
 const update_device_url = 'update_device/'; 
 const create_branch_url = 'create_branch/'; 
+const create_device_url = 'create_device/'; 
 
 var old_password = document.getElementById("old_password");
 var new_password = document.getElementById("new_password");
@@ -504,7 +505,7 @@ var create_branch = ((branch_name, address, gen1, gen2, customer_id)=>{
 
   Swal.fire({
     title: 'PROCCESSING PLEASE WAIT !!!',
-    html: '<strong>UPDATING BRANCH..</strong>.', 
+    html: '<strong>CREATING BRANCH..</strong>.', 
     allowOutsideClick: false
   });
 
@@ -616,3 +617,140 @@ add_branch.addEventListener("click", (e)=>{
     create_branch(branch_name, address, gen1, gen2, customer_id);
   })
 });
+
+
+var create_device = ((device_name, device_id, location, customer_id, target_branch_id)=>{
+
+  formData = new FormData();
+
+  formData.append('device_name', device_name);
+  formData.append('location', location);
+  formData.append('device_id', device_id);
+
+  formData.append('customer_id', customer_id);
+  formData.append('target_branch_id', target_branch_id);
+  console.log(device_name, device_id, location, customer_id, target_branch_id);
+
+  Swal.fire({
+    title: 'PROCCESSING PLEASE WAIT !!!',
+    html: '<strong>CREATING DEVICE..</strong>.', 
+    allowOutsideClick: false
+  });
+
+  Swal.showLoading();
+
+  let csrftoken = $('[name="csrfmiddlewaretoken"]')[0].value
+
+  function csrfSafeMethod (method) {
+      // these HTTP methods do not require CSRF protection
+    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method)
+  }
+
+  $.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+      xhr.setRequestHeader('X-CSRFToken', csrftoken)
+    }
+    }
+  })
+
+  $.ajax({
+    type: 'POST',
+    url: host + create_device_url,
+    data: formData,
+    contentType: false,
+    cache: false,
+    processData: false,
+    success: function (response, textStatus, jqXHR) {
+      response = JSON.parse(response);
+
+      if (response.response == "success"){
+          Swal.close()
+          swal({
+            title: "Success",
+            text: "Successfully Created Device!!",
+          });
+          window.location.reload()
+        }else{
+          Swal.close()
+          swal({
+            title: "Update Failed",
+            text: "Check your values.!!",
+          });
+      }
+    },
+    error: function(response, textStatus, jqXHR){
+      Swal.close()
+      
+      swal({
+        title: "Something went wrong",
+        text: "Please check your internet connection.!!",
+      });
+    }
+  });
+} );
+
+let add_device_btn = document.getElementsByClassName("add_device");
+let can_add_new_device = true;
+
+Array.from(add_device_btn).forEach((element)=>{
+  element.addEventListener("click", (e)=>{
+    e.preventDefault();
+
+    let target_branch_id = e.target.getAttribute('data-branch')
+    let target_branch = document.getElementById(`branch-${target_branch_id}`)
+
+    let html_text = `
+                      <form class="new_device" data-device ="{{device.id}}" id="device-{{device.id}}" action="">
+                      <div class="grid__row grid__row--margin">
+                        <div class="grid__col grid__col--37 grid__col--margin">
+                          <label class="form__label">DEVICE NAME</label>
+                          <input value="no name"  class="form__input" type="text" />
+                        </div>
+                        <div class="grid__col grid__col--37 grid__col--margin">
+                          <label class="form__label">DEVICE ID</label>
+                          <input value="111111"  class="form__input" type="text" />
+                        </div>
+                        <div class="grid__col grid__col--37 grid__col--margin">
+                          <label class="form__label">LOCATION</label>
+                          <input value="no location set"  class="form__input" type="text" />
+                        </div>
+                        <div class="grid__col grid__col--37 grid__col--margin">
+                          <label class="form__label">DATE ADDED</label>
+                          <input style="background-color: #f2f4f8;" none; readonly value="AUTO GENERATED"  class="readonly form__input" type="text" />
+                        </div>
+                      </div>
+                      <div class="grid__row grid__row--margin">
+                        <div class="grid__col grid__col--margin">
+                          <input  type="submit" class="device button button--submit button--blue-bg"  value="CREATE DEVICE" style="margin:auto;" />					
+                        </div>
+                      </div>
+                    </form>
+                    `
+
+    if (can_add_new_device){
+      target_branch.insertAdjacentHTML("afterend", html_text);
+    };
+
+    can_add_new_device = false;
+    let new_device_form = document.getElementsByClassName("new_device");
+
+    Array.from(new_device_form).forEach((e)=>{
+
+      e.addEventListener("submit", (e)=>{
+        e.preventDefault();
+    
+        let form_data = e.target.elements;
+    
+        let device_name = form_data[0].value;
+        let device_id = form_data[1].value;
+        let location = form_data[2].value;
+    
+        // console.log(device_name, device_id, location, customer_id, target_branch_id);
+        create_device(device_name, device_id, location, customer_id, target_branch_id);
+        
+      })
+    })
+  })
+})
+
