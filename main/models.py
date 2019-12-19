@@ -370,9 +370,6 @@ class Device(models.Model):
                     imbalance_l1, imbalance_l2, imbalance_l3 = l1, l2, l3
                     last_percentage_kw = percentage_kw
 
-                # # print(reading.post_datetime, percentage_kw*100, "%")
-
-        # # print(count)
         
         message = f"{count} cases of imbalance occured today. /nWorst case L1: {imbalance_l1}kw, L2: {imbalance_l2}kw, L3: {imbalance_l3}kw. {round(last_percentage_kw*100)}% Imbalance."
         customer = self.customer
