@@ -7,4 +7,4 @@ try:
     # print(response.json())
 
 except:
-    # print("Error: Site might be down")
+    print("Error: Site might be down")

@@ -4,9 +4,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Avg, Max, Min
 from wyre.settings import lagos_tz
-from main.helpers import get_baseline, make_request, datalogs
+from main.helpers import get_baseline, remote_request, datalogs
 from django.db.models.functions import Extract, ExtractMonth, ExtractYear
 import datetime
+from django.conf import settings
+from django.utils.timezone import make_aware
 
 
 # Create your models here.
@@ -166,7 +168,7 @@ class Device(models.Model):
         # print(start_date, end_date)
         now = datetime.datetime.now(tz = lagos_tz)
         start_date = start_date or (now - datetime.timedelta(days = now.day -1))
-        end_date = end_date or now - datetime.timedelta(days = 1)
+        end_date = (end_date or now - datetime.timedelta(days = 1))
 
         logs = self.datalog_set.filter(post_datetime__range = (start_date, end_date)).order_by("-post_datetime")
         
@@ -458,11 +460,13 @@ def alert_customer(sender, **kwargs):
     device = kwargs['instance']
     
 
-    date_time_str = '2018-01-01'
+    date_time_str = '2017-01-01'
     date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d')
     customer = Customer.objects.get(user = device.user)
 
     Reading.objects.create(customer = customer, device = device, user = device.user, post_datetime =  date_time_obj, post_date = date_time_obj, post_time = date_time_obj)
+
+    Datalog.objects.create(customer = customer, device = device, user = device.user, post_datetime = date_time_obj, post_date = date_time_obj, post_time = date_time_obj, digital_input_1 = 0, digital_input_2 = 0, digital_input_3 = 0, digital_input_4 = 0, summary_energy_register_1 = 0, summary_energy_register_2 = 0, total_kw = 0, pulse_counter = 0) 
 
 
 class Reading(models.Model):
@@ -573,7 +577,7 @@ class Datalog(models.Model):
             while not logs:
 
                 
-                logs = make_request.make_request(device_id = device.device_id, start_date = device_last_read_date_str, end_date = end_date_str)["data"]
+                logs = remote_request.make_remote_request(device_id = device.device_id, start_date = device_last_read_date_str, end_date = end_date_str)["data"]
 
                 device_last_read_date = end_date
                 device_last_read_date_str = device_last_read_date.strftime("%Y-%m-%d")
@@ -587,7 +591,7 @@ class Datalog(models.Model):
             for data in reversed(logs):
                 
                 time = data['recordTime']
-                time = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S")
+                time = make_aware(datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S"))
                 
                 d_i1 = self.filter_dict_from_list(data, "Digital Input #1")
                 d_i2 = self.filter_dict_from_list(data, "Digital Input #2")
@@ -599,13 +603,14 @@ class Datalog(models.Model):
                 total_kW = self.filter_dict_from_list(data, "Total kW")
                 pulse_counter = self.filter_dict_from_list(data, "Pulse counter #1")
  
-                if not Datalog.objects.filter(post_datetime = time.strftime("%Y-%m-%d %H:%M:%S"), device__device_id = device.device_id):
+                # if not Datalog.objects.filter(post_datetime = time.strftime("%Y-%m-%d %H:%M:%S"), device__device_id = device.device_id):
+                if not Datalog.objects.filter(post_datetime = time, device__device_id = device.device_id):
                     # # print('adding', device.device_id)
 
                     Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = time, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
-
+                    print(0)
                 else:
-                    # # print('skipping', device.device_id)
+                    print('skipping', device.device_id)
                     continue
 
     def __str__(self):

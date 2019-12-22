@@ -5,8 +5,10 @@ import datetime
 from dateutil import parser
 import numpy as np
 from main import models 
+from main.helpers import remote_request
 
-def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
+
+def make_local_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
     
     if not isinstance(start_date, str):
         start_date = start_date.strftime("%Y-%m-%d")
@@ -50,9 +52,14 @@ def format_date(date):###THIS FUNCTION CONVERTS DATE FROM DD-MM-YYY TO YYY-MM-DD
 
 def process_usage(device_id, start_date, end_date):
     print(start_date, end_date)
-    data = make_request(device_id, start_date, end_date)
+    data = make_local_request(device_id, start_date, end_date)
     
-    readings = data['data'][0]['data']
+    try:
+        readings = data['data'][0]['data']
+
+    except IndexError:
+        return (0, 0, 0)
+
     utility_times = []
     gen_times = []
 
@@ -208,7 +215,7 @@ def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
 
     for device_id in device_ids:
         old_data = daily_data.copy()
-        data = make_request(device_id, start_date, end_date)
+        data = make_local_request(device_id, start_date, end_date)
         df_data = rearrange_data(data["data"])
 
         
@@ -258,7 +265,8 @@ def get_last_readings(device_id):
          'present_sliding_window_kva_demand': {"value":0}, 'accum_kva_demand': {"value":0}, 
          'pf_import_at_maximum_kva_sliding_window_demand': {"value":0}}
 
-    raw_data = make_request(device_id = device_id, url = "last_read")
+    raw_data = remote_request.make_remote_request(device_id = device_id, url = "last_read")
+
     last_read = raw_data["data"][0]['data']
     template["record_time"] = raw_data["data"][0]["recordTime"]
 

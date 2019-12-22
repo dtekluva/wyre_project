@@ -6,7 +6,7 @@ from dateutil import parser
 import numpy as np
 
 
-def make_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
+def make_remote_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
 
     req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre1234')
 
