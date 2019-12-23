@@ -608,9 +608,7 @@ class Datalog(models.Model):
                     # # print('adding', device.device_id)
 
                     Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = time, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
-                    print(0)
                 else:
-                    print('skipping', device.device_id)
                     continue
 
     def __str__(self):
