@@ -19,7 +19,7 @@ class Customer(models.Model):
     address         = models.TextField(max_length=400, null=True, blank = True)
     image           = models.FileField(upload_to='customer_imgs/', default = 'avatar-6.jpg' ,null=True, blank = True)
     is_main_admin   = models.BooleanField(default = False)
-    is_bot          = models.BooleanField(default = False)
+    is_bot          = models.BooleanField(default = False, null=True, blank = True)
     added           = models.DateField(auto_now= True)
 
     def __str__(self):
