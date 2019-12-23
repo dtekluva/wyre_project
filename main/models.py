@@ -327,11 +327,15 @@ class Device(models.Model):
 
         current_month_kwh_data = self.reading_set.filter(post_datetime__range = (start_date, end_date)).order_by("kwh_import")
         
-        # # print(current_month_kwh_data)
-        start_kwh = current_month_kwh_data[0].kwh_import  #["kwh_import"]
-        # # print(start_kwh)
-        end_kwh = current_month_kwh_data[len(current_month_kwh_data)-1].kwh_import
-        # # print(end_kwh)
+        try:
+
+            start_kwh = current_month_kwh_data[0].kwh_import  #["kwh_import"]
+            # # print(start_kwh)
+            end_kwh = current_month_kwh_data[len(current_month_kwh_data)-1].kwh_import
+            # # print(end_kwh)
+        except IndexError:
+            start_kwh = 0
+            end_kwh = 0
 
         kwh_usage = end_kwh - start_kwh
 

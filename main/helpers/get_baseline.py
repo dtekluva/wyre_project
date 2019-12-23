@@ -57,74 +57,78 @@ def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthl
 
     monthly_kwatts["cdd"] =  grouped_data["CDD"]
     monthly_kwatts =  monthly_kwatts.tail(6)
-    print(monthly_kwatts)
 
     x = np.array(monthly_kwatts.cdd).reshape((-1, 1))
     y = np.array(monthly_kwatts['kwatts'])
 
-    model = LinearRegression()
-    model = LinearRegression().fit(x, y)
+    try:
+        model = LinearRegression()
+        model = LinearRegression().fit(x, y)
 
-    r_sq = model.score(x, y)
-
-
-    # print('coefficient of determination:', r_sq)
-    # print('intercept:', model.intercept_)
-    # print('slope:', model.coef_)
+        r_sq = model.score(x, y)
 
 
-    predictions = model.predict(x)
+        # print('coefficient of determination:', r_sq)
+        # print('intercept:', model.intercept_)
+        # print('slope:', model.coef_)
 
-    intercept = model.intercept_
-    slope = model.coef_
 
-    def get_lower_points(slope, intercept, x, y): #GET ALL POINTS BENEATH THE REGRESSION LINE
-        
-        lower_points = []
-        
-        for value, actual_y in zip(x,y):
+        predictions = model.predict(x)
+
+        intercept = model.intercept_
+        slope = model.coef_
+
+        def get_lower_points(slope, intercept, x, y): #GET ALL POINTS BENEATH THE REGRESSION LINE
             
-            predicted_y = slope[0] * value + intercept
-            if predicted_y >= actual_y:
-                lower_points.append((value,actual_y))
-        
-        return lower_points
+            lower_points = []
+            
+            for value, actual_y in zip(x,y):
+                
+                predicted_y = slope[0] * value + intercept
+                if predicted_y >= actual_y:
+                    lower_points.append((value,actual_y))
+            
+            return lower_points
 
 
 
-    lower_points = get_lower_points(intercept=intercept, slope=slope, x=monthly_kwatts['cdd'], y = monthly_kwatts['kwatts'])
+        lower_points = get_lower_points(intercept=intercept, slope=slope, x=monthly_kwatts['cdd'], y = monthly_kwatts['kwatts'])
 
 
 
-    adjusted_baseline = pd.DataFrame(lower_points, columns=["cdd", "kwatts"])
+        adjusted_baseline = pd.DataFrame(lower_points, columns=["cdd", "kwatts"])
 
 
 
-    a = np.array(adjusted_baseline["cdd"]).reshape((-1, 1))
-    b = np.array(adjusted_baseline["kwatts"])
+        a = np.array(adjusted_baseline["cdd"]).reshape((-1, 1))
+        b = np.array(adjusted_baseline["kwatts"])
 
-    adjusted_model = LinearRegression()
-    adjusted_model = LinearRegression().fit(a, b)
+        adjusted_model = LinearRegression()
+        adjusted_model = LinearRegression().fit(a, b)
 
-    r_sq = model.score(a, b)
-
-
-    # print('coefficient of determination:', r_sq)
-    # print('intercept:', model.intercept_)
-    # print('slope:', model.coef_)
+        r_sq = model.score(a, b)
 
 
-    # adjusted_predictions = model.predict(np.array(monthly_kwatts['cdd']).reshape((-1, 1)))
+        # print('coefficient of determination:', r_sq)
+        # print('intercept:', model.intercept_)
+        # print('slope:', model.coef_)
 
 
-    # test = np.array(monthly_kwatts.cdd).reshape((-1, 1))
-    # test_predictions = model.predict(test)
+        # adjusted_predictions = model.predict(np.array(monthly_kwatts['cdd']).reshape((-1, 1)))
 
-    current_month_prediction = model.predict([[current_month_cdd]])[0]
 
-    # print("Current CDD = ", current_month_cdd)
-    # print(f"{current_month_prediction}kwH")
+        # test = np.array(monthly_kwatts.cdd).reshape((-1, 1))
+        # test_predictions = model.predict(test)
 
-    return current_month_prediction
+        current_month_prediction = model.predict([[current_month_cdd]])[0]
+        print(current_month_prediction)
+        # print("Current CDD = ", current_month_cdd)
+        # print(f"{current_month_prediction}kwH")
+
+        return current_month_prediction
+
+    except ValueError:
+
+        return 0
 
 

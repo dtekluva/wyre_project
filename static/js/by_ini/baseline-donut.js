@@ -140,7 +140,7 @@ const draw_baseline = ((device_data)=>{
   let used = Math.round(device_data.baseline.kwh_usage_so_far)
   let forcast = Math.round(device_data.baseline.forcasted_kwh_usage)
   let days_gone_value = Math.round(device_data.baseline.number_of_days_so_far)
-  let percentage = (used /forcast) * 100;
+  let percentage = forcast == 0 ? 0 : (used /forcast) * 100;
 
   let inbound_savings = Math.round(forcast - ((used/days_gone_value)*30));
 

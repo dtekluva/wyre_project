@@ -277,9 +277,11 @@ def get_last_readings(device_id):
 
 def sort_multiple_lists(i,j,k,l):
     """(i,j,k,l) are lists to be sorted"""
-
-    sorted_list = list(sorted(zip(i,j,k,l)))
-    i,j,k,l = zip(*sorted_list)
+    try:
+        sorted_list = list(sorted(zip(i,j,k,l)))
+        i,j,k,l = zip(*sorted_list)
+    except:
+        i,j,k,l = [],[],[],[]
 
     return i,j,k,l
 # daily_utility_vs_gen_kwh(["125639"], "2019-07-17", "2019-08-01")
