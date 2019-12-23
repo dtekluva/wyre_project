@@ -47,7 +47,6 @@ def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthl
     new_data = new_data[(len(new_data) - len(monthly_kwatts)):] ##MATCH NUMBER OF CDD TO NUMBER OF KWATTS READINGS
 
 
-
     def create_name(row):
         return f"{row.month}, {row.year}"
 
@@ -57,6 +56,7 @@ def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthl
     grouped_data = new_data.reset_index(inplace=False)
 
     monthly_kwatts["cdd"] =  grouped_data["CDD"]
+    print(monthly_kwatts)
 
     x = np.array(monthly_kwatts.cdd).reshape((-1, 1))
     y = np.array(monthly_kwatts['kwatts'])
