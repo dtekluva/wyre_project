@@ -19,6 +19,7 @@ class Customer(models.Model):
     address         = models.TextField(max_length=400, null=True, blank = True)
     image           = models.FileField(upload_to='customer_imgs/', default = 'avatar-6.jpg' ,null=True, blank = True)
     is_main_admin   = models.BooleanField(default = False)
+    is_bot          = models.BooleanField(default = False)
     added           = models.DateField(auto_now= True)
 
     def __str__(self):
@@ -147,6 +148,7 @@ class Device(models.Model):
     added           = models.DateField(auto_now= True)
     previous_day_energy = models.IntegerField(null=True, blank=True, default=None)
     previous_day_energy_post_datetime = models.DateTimeField(auto_now = True)
+    last_load_balance_check = models.DateTimeField(auto_now= True)
 
 
     def get_previous_score(self):
@@ -343,44 +345,57 @@ class Device(models.Model):
 
         return response
 
+    def time_since_last_load_balance(self):
+
+        hours = ((make_aware(datetime.datetime.now()) - self.last_load_balance_check).total_seconds())/3600
+
+        return hours
+
+
+
     def check_load_balance(self):
 
+        customer = self.customer
+        admin    = Customer.objects.filter(is_bot = True)[0]
         now = datetime.datetime.now(tz = lagos_tz)
 
-        start_date = now - datetime.timedelta(days = 1)
+        start_date = now - datetime.timedelta(days = 6)
         end_date = now + datetime.timedelta(days = 1)
-        
 
-        current_month_kw = self.reading_device.filter(post_datetime__range = (start_date, end_date)).order_by("post_datetime")
+        current_month_kw = self.reading_set.filter(post_datetime__range = (start_date, end_date)).order_by("post_datetime")
 
         count = 0
         last_percentage_kw = 0
 
-        for reading in current_month_kw:
-            l1 = reading.kw_l1
-            l2 = reading.kw_l2
-            l3 = reading.kw_l3
+        imbalance_l1, imbalance_l2, imbalance_l3 = 0, 0, 0
+        print(self.time_since_last_load_balance())
 
-            max_line_kw = max(l1, l2, l3)
-            min_line_kw = min(l1, l2, l3)
+        if self.time_since_last_load_balance() < 1:
 
-            if not max_line_kw and not min_line_kw:
-                continue
+            for reading in current_month_kw:
+                l1 = reading.kw_l1
+                l2 = reading.kw_l2
+                l3 = reading.kw_l3
 
-            percentage_kw = (max_line_kw - min_line_kw)/max_line_kw
+                max_line_kw = max(l1, l2, l3)
+                min_line_kw = min(l1, l2, l3)
+
+                if not max_line_kw and not min_line_kw:
+                    continue
+
+                percentage_kw = (max_line_kw - min_line_kw)/max_line_kw
+
+                if percentage_kw > 0.14:
+                    count += 1
+
+                    if percentage_kw > last_percentage_kw:
+                        imbalance_l1, imbalance_l2, imbalance_l3 = l1, l2, l3
+                        last_percentage_kw = percentage_kw
+
             
-            if percentage_kw > 0.14:
-                count += 1
-
-                if percentage_kw > last_percentage_kw:
-                    imbalance_l1, imbalance_l2, imbalance_l3 = l1, l2, l3
-                    last_percentage_kw = percentage_kw
-
-        
-        message = f"{count} cases of imbalance occured today. /nWorst case L1: {imbalance_l1}kw, L2: {imbalance_l2}kw, L3: {imbalance_l3}kw. {round(last_percentage_kw*100)}% Imbalance."
-        customer = self.customer
-        admin    = Customer.objects.get(is_main_admin = True)
-        Message(sender = admin, receiver = customer, description = "", content = message ).save()
+            message = f"{count} cases of imbalance occured today. /nWorst case L1: {imbalance_l1}kw, L2: {imbalance_l2}kw, L3: {imbalance_l3}kw. {round(last_percentage_kw*100)}% Imbalance."
+            Message(sender = admin, receiver = customer, description = "", content = message ).save()
+            self.save()
         
     def fuel_consumption(self, start_date = False, end_date = False):
 

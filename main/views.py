@@ -443,12 +443,13 @@ def load_readings(request):
         
         try:
                 devices = Device.objects.all()
-                acceptable_hours = [0, 6, 12, 18, 23]
+                acceptable_hours = [5, 6, 12, 18, 23]
                 
                 for device in devices:
-                        # current_hour = datetime.datetime.now().hour
-                        # if  current_hour in acceptable_hours:
-                        device.check_load_balance()
+                        current_hour = (datetime.datetime.now().hour)-12 # CONVERT TO 12 HOUR
+                        print(current_hour)
+                        if  current_hour in acceptable_hours:
+                                device.check_load_balance()
 
                 return HttpResponse(json.dumps({"response": "success"}))
                         
