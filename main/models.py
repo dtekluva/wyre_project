@@ -370,7 +370,7 @@ class Device(models.Model):
         imbalance_l1, imbalance_l2, imbalance_l3 = 0, 0, 0
         print(self.time_since_last_load_balance())
 
-        if self.time_since_last_load_balance() > 0:
+        if self.time_since_last_load_balance():
 
             for reading in current_month_kw:
                 l1 = reading.kw_l1
