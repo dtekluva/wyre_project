@@ -56,6 +56,7 @@ def predict_usage(values, cdd, reproccess = True):# Reprocess True if the monthl
     grouped_data = new_data.reset_index(inplace=False)
 
     monthly_kwatts["cdd"] =  grouped_data["CDD"]
+    monthly_kwatts =  monthly_kwatts.tail(6)
     print(monthly_kwatts)
 
     x = np.array(monthly_kwatts.cdd).reshape((-1, 1))
