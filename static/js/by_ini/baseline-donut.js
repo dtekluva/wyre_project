@@ -5,10 +5,6 @@ var host = window.location.hostname == 'localhost'
 if (location.protocol == 'https:') {
   // page is secure
   host = host.replace("http", "https")
-  console.log(host)
-  console.log(location.protocol == 'https:')
-  console.log(location.protocol , 'https:')
-
 };
     
 const endpoint = "get_capacity_factors/";

@@ -5,7 +5,7 @@ var host = window.location.hostname == 'localhost'
 
 if (location.protocol === 'https:') {
   // page is secure
-  host.replace("http", "https")
+  host = host.replace("http", "https")
 }
     
 $('#LoginForm').on('submit', async e => {
