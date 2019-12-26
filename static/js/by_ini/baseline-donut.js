@@ -5,6 +5,8 @@ var host = window.location.hostname == 'localhost'
 if (location.protocol == 'https:') {
   // page is secure
   host.replace("http", "https")
+  print(host)
+  print(location.protocol == host)
 }
 console.log(location.protocol)
 console.log(typeof(location.protocol))
