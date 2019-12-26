@@ -6,9 +6,9 @@ if (location.protocol == 'https:') {
   // page is secure
   host.replace("http", "https")
   console.log(host)
-  console.log(location.protocol == host)
-  console.log(location.protocol , host)
-  
+  console.log(location.protocol == 'https:')
+  console.log(location.protocol , 'https:')
+
 };
 console.log(location.protocol)
 console.log(typeof(location.protocol))
