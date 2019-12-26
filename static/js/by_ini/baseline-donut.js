@@ -7,6 +7,7 @@ if (location.protocol == 'https:') {
   host.replace("http", "https")
   console.log(host)
   console.log(location.protocol == host)
+  console.log(location.protocol , host)
 };
 console.log(location.protocol)
 console.log(typeof(location.protocol))
