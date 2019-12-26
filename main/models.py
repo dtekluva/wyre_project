@@ -368,9 +368,9 @@ class Device(models.Model):
         last_percentage_kw = 0
 
         imbalance_l1, imbalance_l2, imbalance_l3 = 0, 0, 0
-        print(self.time_since_last_load_balance())
+        # print(self.time_since_last_load_balance())
 
-        if self.time_since_last_load_balance() > 0:
+        if self.time_since_last_load_balance() >= 1:
 
             for reading in current_month_kw:
                 l1 = reading.kw_l1
@@ -393,7 +393,7 @@ class Device(models.Model):
                         last_percentage_kw = percentage_kw
 
             
-            message = f"{count} cases of imbalance occured today. /nWorst case L1: {imbalance_l1}kw, L2: {imbalance_l2}kw, L3: {imbalance_l3}kw. {round(last_percentage_kw*100)}% Imbalance."
+            message = f"Cases of imbalance occured today. Worst case <br>L1: {imbalance_l1}kw, <br>L2: {imbalance_l2}kw, <br>L3: {imbalance_l3}kw. <br>{round(last_percentage_kw*100)}% Imbalance."
             Message(sender = admin, receiver = customer, description = "", content = message ).save()
             self.save()
         
