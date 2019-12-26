@@ -7,7 +7,7 @@ if (location.protocol == 'https:') {
   host.replace("http", "https")
   print(host)
   print(location.protocol == host)
-}
+};
 console.log(location.protocol)
 console.log(typeof(location.protocol))
 console.log(host)
@@ -36,6 +36,14 @@ let otherModals = document.querySelector("div.modal");
 ///////////////////////////////////////////////////////////////////////////
 
 $(window).on('load', ()=> {
+
+  if (location.protocol == 'https:') {
+    // page is secure
+    host.replace("http", "https")
+    print(host)
+    print(location.protocol == host)
+  };
+
   let device = $("#device")[0].value;
   load_baseline();
 })
