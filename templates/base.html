@@ -160,6 +160,7 @@
 					<div class="content-header__user-avatar content-header__dropdown-activate"
 							 data-dropdown="userdropdown">
 						<div class="content-header__user-thumb">
+
 							<img src="{{customer.image.url}}"
 									 alt=""
 									 title="" />
@@ -549,6 +550,8 @@
 	<script src="{% static 'js/daterangepicker.min.js' %}"></script>
 	<script src="{% static 'js/ion.rangeSlider.min.js' %}"></script>
 	<script src="{% static 'js/jquery.dashboard-custom.js' %}"></script>
+	<script src="{% static 'js/tippy1.js' %}"></script>
+	<script src="{% static 'js/tippy5.js' %}"></script>
 	{% if page == "Dashboard" %}
 		<script src="{% static 'js/dashboard.js' %}"></script>
 	{% endif %}
@@ -568,7 +571,7 @@
 		<script src="{% static 'js/by_ini/felf-donut.js' %}"></script>
 		<script src="{% static 'js/by_ini/carbon-donut.js' %}"></script>
 		<script src="{% static 'js/by_ini/random-donut.js' %}"></script>
-		<script src="{% static 'js/by_ini/modal.js' %}"></script>
+		<script src="{% static 'js/by_ini/tooltip.js' %}"></script>
 	{% endif %}
 	
 	{% if page == "Customers" %}
@@ -606,5 +609,6 @@
 	<!-- <script src="{% static 'js/progressbar.js' %}"></script>
 	<script src="{% static 'js/progress_bar_control.js' %}"></script> -->
 </body>
+
 
 </html>
