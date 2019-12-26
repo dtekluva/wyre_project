@@ -2,11 +2,12 @@ var host = window.location.hostname == 'localhost'
     ? 'http://localhost:8000/'
     : 'http://' + window.location.hostname + '/';
 
-if (location.protocol === 'https:') {
+if (location.protocol == 'https:') {
   // page is secure
   host.replace("http", "https")
 }
 console.log(location.protocol)
+console.log(typeof(location.protocol))
 console.log(host)
     
 const endpoint = "get_capacity_factors/";
