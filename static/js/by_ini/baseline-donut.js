@@ -10,9 +10,6 @@ if (location.protocol == 'https:') {
   console.log(location.protocol , 'https:')
 
 };
-console.log(location.protocol)
-console.log(typeof(location.protocol))
-console.log(host)
     
 const endpoint = "get_capacity_factors/";
 var baseline_chart;
@@ -38,7 +35,6 @@ let otherModals = document.querySelector("div.modal");
 ///////////////////////////////////////////////////////////////////////////
 
 $(window).on('load', ()=> {
-
   let device = $("#device")[0].value;
   load_baseline();
 })
