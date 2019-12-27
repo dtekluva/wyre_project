@@ -16,7 +16,7 @@
 			{% for conversation_partner in conversation_partners %}
 				<div class="message__short new" id = "{{conversation_partner.id}}">
 					<div class="message__short-header">
-						<div class="messages__short-thumb"><img src="{{conversation_partner.image.url}}" alt="" title=""/><span class="status status--online"></span></div>
+						<div class="messages__short-thumb"><img src="{% if customer.image %}{{conversation_partner.image.url}}{% endif %}" alt="" title=""/><span class="status status--online"></span></div>
 						<div class="messages__short-name">{{conversation_partner.company_name}}</div>
 						<div class="messages__short-date"></div>	
 					</div>
@@ -52,7 +52,7 @@
 		</div>
 		<div class="messages__details" style="height: 70vh;" id="message_box">
 			<div class="messages__header messages__header--details" >
-					<div class="messages__header-thumb"><img src="{{customer.image.url}}" alt="" title=""/><span class="status status--online"></span></div>
+					<div class="messages__header-thumb"><img src="{% if customer.image %}{{customer.image.url}}{% endif %}" alt="" title=""/><span class="status status--online"></span></div>
 				<div class="messages__header-user"></div>
 				<div class="messages__header-buttons">
 					<button class="button button--round"><img src="{% static 'images/icons/icons-20-gray/refresh.png' %}" alt="" title=""/></button>

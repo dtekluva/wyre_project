@@ -160,8 +160,9 @@
 					<div class="content-header__user-avatar content-header__dropdown-activate"
 							 data-dropdown="userdropdown">
 						<div class="content-header__user-thumb">
-
-							<img src="{{customer.image.url}}"
+							
+							<img src="{% if customer.image %}{{customer.image.url}}{% endif %}"
+							
 									 alt=""
 									 title="" />
 						</div>

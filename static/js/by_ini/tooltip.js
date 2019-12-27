@@ -84,6 +84,16 @@ tippy('#emissions-card', {
                             For diesel - 2.68kgCO2 per liter
                             <br>
                         </li>
+                        <br>
+                        <li>
+                        Note that the Units are metric kilograms and Metric Tons (M-Tons)
+                        </li>
+                        <br>
+                        <li>
+                        A tree can absorb as much as 48 pounds of carbon dioxide per year and can sequester 1 ton of carbon dioxide by the time it reaches 40 years old.
+                        </li>
+
+
 
                     </ul>
 

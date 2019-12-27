@@ -15,7 +15,7 @@
 			<div class="grid__row grid__row--margin">
 				
 				<div class="grid__col grid__col--13 grid__col--margin">
-					<div style="background-image: url({{customer.image.url}});" class="form-upload" id="dropzone">
+					<div style="background-image: url({% if customer.image %}{{customer.image.url}}{% endif %});" class="form-upload" id="dropzone">
 						<!-- Dropzone not clickable here because javascript has been turned off for it (bottom of page) -->
 						<div class="form-upload__message dz-message needsclick">CLICK TO CHANGE</div>
 						

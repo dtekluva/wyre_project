@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.db.models import Avg, Max, Min
+from django.db.models import Avg, Max, Min, Sum
 from wyre.settings import lagos_tz
 from main.helpers import get_baseline, remote_request, datalogs
 from django.db.models.functions import Extract, ExtractMonth, ExtractYear
@@ -110,7 +110,6 @@ class Branch(models.Model):
 
 
     def get_devices(self):
-
         devices = self.device_set.all()
 
         return devices
@@ -153,15 +152,15 @@ class Device(models.Model):
 
     def get_previous_score(self):
 
-        previous_scores = self.score_set.annotate(month = ExtractMonth('date'), year = ExtractYear('date')).order_by("-date").values("id", "month", "year", 'felf', "avg_load", "peak_load", "capacity_factor_gen1", "capacity_factor_gen2", "hours_gen1", "hours_gen2", "fuel_consumption_gen1", "fuel_consumption_gen2", "baseline_energy", "energy_used")
+        previous_scores = self.score_set.annotate(month = ExtractMonth('date'), year = ExtractYear('date')).order_by("-date").values("id", "month", "year", 'felf', "avg_load", "peak_load", "capacity_factor_gen1", "capacity_factor_gen2", "hours_gen1", "hours_gen2", "fuel_consumption_gen1", "fuel_consumption_gen2", "baseline_energy", "energy_used", "utility_kwh", "gen1_kwh", "gen2_kwh")
         
         response = list(previous_scores)
 
         return response
 
 
-
     def get_logs(self, start_date = False, end_date = False):
+        
         result = {'resultCode': 200,
                     'message': None,
                     'data': []
@@ -174,7 +173,6 @@ class Device(models.Model):
 
         logs = self.datalog_set.filter(post_datetime__range = (start_date, end_date)).order_by("-post_datetime")
         
-
         for log in logs:
 
             post_datetime = log.post_datetime.strftime("%Y-%m-%dT%H:%M:%S")
@@ -213,6 +211,26 @@ class Device(models.Model):
             result['data'].append(log_dict)
 
         return result
+
+    def get_total_kwh(self, start_date = False, end_date = False):
+
+        now = datetime.datetime.now(tz = lagos_tz)
+        start_date = start_date or (now - datetime.timedelta(days = now.day-1))
+        end_date = end_date or now
+
+        data = datalogs.daily_utility_vs_gen_kwh([self.device_id], start_date, end_date)
+
+        raw_daily_utility_values = data.get("utility", [])
+        raw_daily_gen1_values = data.get("gen1", [])
+        raw_daily_gen2_values = data.get("gen2", [])
+
+        utility_kwh_sum = sum(raw_daily_utility_values)
+        gen1_kwh_sum    = sum(raw_daily_gen1_values)
+        gen2_kwh_sum    = sum(raw_daily_gen2_values)
+
+        total_kwh = dict(utility = utility_kwh_sum, gen1 = gen1_kwh_sum, gen2 = gen2_kwh_sum)
+
+        return total_kwh
 
     def get_min_max_power(self, start_date = False, end_date = False):
 
@@ -460,8 +478,9 @@ class Device(models.Model):
             # # print(fuel_consumption)
 
          
-        _, gen_1_hrs, gen_2_hrs = datalogs.process_usage(self.device_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
+        utility, gen_1_hrs, gen_2_hrs = datalogs.process_usage(self.device_id, start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"))
 
+        
         fuel_consumption["diesel_consumption"]["gen_1"] = round(fuel_consumption["diesel_consumption"]["gen_1"] * gen_1_hrs, 2)
         fuel_consumption["diesel_consumption"]["gen_1_hrs"] = round(gen_1_hrs, 2)
 
@@ -685,6 +704,9 @@ class Score(models.Model):
     hours_gen2            = models.FloatField(null=True, blank=True, default=0)
     baseline_energy       = models.FloatField(null=True, blank=True, default=0)
     energy_used           = models.FloatField(null=True, blank=True, default=0)
+    utility_kwh           = models.FloatField(null=True, blank=True, default=0)
+    gen1_kwh              = models.FloatField(null=True, blank=True, default=0)
+    gen2_kwh              = models.FloatField(null=True, blank=True, default=0)
 
     def __str__(self):
         return f"{self.device.device_id} customer-({self.date})"

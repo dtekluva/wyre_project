@@ -117,7 +117,7 @@ def process_usage(device_id, start_date, end_date):
             time_diff = get_time_dif(x_time, y_time)
             utility_hrs.append(time_diff)
             
-    print(sum(utility_hrs), sum(gen1_hrs), sum(gen2_hrs))
+    # print(sum(utility_hrs), sum(gen1_hrs), sum(gen2_hrs))
     return(sum(utility_hrs), sum(gen1_hrs), sum(gen2_hrs))
 
 

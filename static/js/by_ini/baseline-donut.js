@@ -85,6 +85,7 @@ const load_baseline = (device, period)=>{
             draw_felf(device_data[0]);
             draw_cap_fuel_consumption_gen1(device_data[0]);
             draw_cap_fuel_consumption_gen2(device_data[0]);
+            draw_emmisions(device_data[0]);
             call_modal(device_data[0]);
 
 
@@ -104,6 +105,7 @@ const load_baseline = (device, period)=>{
               draw_felf(device_data[0]);
               draw_cap_fuel_consumption_gen1(device_data[0]);
               draw_cap_fuel_consumption_gen2(device_data[0]);
+              draw_emmisions(device_data[0]);
               call_modal(device_data[0]);
           });
 
@@ -170,6 +172,7 @@ const draw_baseline = ((device_data)=>{
         type: "doughnut",
         data: data,
         options: {
+          cutoutPercentage : 80,
           responsive: true,
           legend: {
             display: false
@@ -217,6 +220,7 @@ const draw_cap_factor_gen1 = ((device_data)=>{
           type: "doughnut",
           data: data,
           options: {
+            cutoutPercentage : 80,
             responsive: true,
             legend: {
               display: false
@@ -263,6 +267,7 @@ const draw_cap_fuel_consumption_gen1 = ((device_data)=>{
           type: "doughnut",
           data: data,
           options: {
+            // cutoutPercentage : 80,
             responsive: true,
             legend: {
               display: false
@@ -309,6 +314,7 @@ const draw_cap_fuel_consumption_gen2 = ((device_data)=>{
           type: "doughnut",
           data: data,
           options: {
+            // cutoutPercentage : 80,
             responsive: true,
             legend: {
               display: false
@@ -359,6 +365,7 @@ const draw_cap_factor_gen2 = ((device_data)=>{
           type: "doughnut",
           data: data,
           options: {
+            cutoutPercentage : 80,
             responsive: true,
             legend: {
               display: false
@@ -412,6 +419,7 @@ const draw_felf = ((device_data)=>{
         type: "doughnut",
         data: data,
         options: {
+          // cutoutPercentage : 80,
           animation: false,
           responsive: true,
           legend: {
@@ -429,7 +437,95 @@ const draw_felf = ((device_data)=>{
       });
   
 
-    })
+    });
+
+  
+const draw_emmisions = ((device_data)=>{
+
+  let prev_grid_emmision = 0;
+  let prev_gen1_emmision = 0;
+  let prev_gen2_emmision = 0;
+  
+  let emissions_grid = document.getElementById("emissions-grid")
+  let emissions_gens = document.getElementById("emissions-gens")
+  let emissions_total = document.getElementById("total_emmisions")
+  let emissions_savings = document.getElementById("emissions-savings")
+
+  let grid_kwh = device_data.total_kwh.utility
+  let gen1_litres = device_data.fuel_consumption.gen_1
+  let gen2_litres = device_data.fuel_consumption.gen_2
+
+  let grid_factor = 0.562 //kgCO2 per kWh  
+  let gen_factor  = 2.68 //kgCO2 per liter
+
+  if(device_data.previous_scores.length){
+
+    prev_grid_emmision = (device_data.previous_scores[0].utility_kwh * grid_factor)/1000;
+    prev_gen1_emmision = (device_data.previous_scores[0].fuel_consumption_gen1 * gen_factor)/1000;
+    prev_gen2_emmision = (device_data.previous_scores[0].fuel_consumption_gen2 * gen_factor)/1000;
+
+  }
+  console.log(prev_grid_emmision, prev_gen1_emmision, prev_gen2_emmision)
+
+  let grid_emmisions  = ((grid_kwh * grid_factor)/1000);
+  let gen1_emmisions = ((gen1_litres * gen_factor)/1000);
+  let gen2_emmisions = ((gen2_litres * gen_factor)/1000);
+
+  console.log(grid_emmisions, gen1_emmisions, gen2_emmisions)
+
+  let previous_total_emmisions = prev_grid_emmision + prev_gen1_emmision + prev_gen2_emmision;
+  let emmision_difference = (previous_total_emmisions - (grid_emmisions + gen1_emmisions + gen2_emmisions)).toFixed(0);
+
+  emissions_grid.innerHTML = grid_emmisions.toFixed(2);
+  emissions_gens.innerHTML = (gen1_emmisions + gen2_emmisions).toFixed(2);
+  emissions_total.innerHTML= `${(grid_emmisions + gen1_emmisions + gen2_emmisions).toFixed(2)}<br>M-Tons`;
+
+  let carbon_per_tree = 3.67
+  let saved_or_extra = emmision_difference < 1 ? "more" : "less";
+  let number_of_trees = emmision_difference * carbon_per_tree;
+  let text_color = emmision_difference <= 0 ? "red" : "green";
+
+  emissions_savings.innerHTML = `${Math.abs(emmision_difference)} tons ${saved_or_extra} emitted this month. <br> (Eqivalent to ${Math.abs(number_of_trees.toFixed(0))} large trees)`;
+  emissions_savings.style.color = `${text_color}`;
+
+  
+
+  var data = {
+    labels: ["Grid Emmisions", "Gen1 Emmisions", "Gen2 Emmisions"],
+    datasets: [
+      {
+        data: [grid_emmisions.toFixed(2), gen1_emmisions.toFixed(2), gen2_emmisions.toFixed(2)],
+        backgroundColor: [`#164e44`, `#008ea5`, `#80315a`],
+        // hoverBackgroundColor: ["#af5124", "#af5124", "af5124"]
+      }
+    ]
+  };
+  
+  var emmisions_chart = new Chart(document.getElementById("carbon-donut"), {
+    type: "doughnut",
+    data: data,
+    options: {
+      cutoutPercentage : 80,
+      animation: false,
+      responsive: true,
+      legend: {
+        display: false
+      },
+      //* removes automatic chart.js border
+      elements: {
+        arc: {
+          borderWidth: 2
+        }
+      },
+  
+      tooltips: { enabled: true }
+    }
+  });
+
+
+})
+
+
 
 
 var populate_baseline_chart = ((device_data)=>{
@@ -529,6 +625,7 @@ var populate_fuel_chart = ((device_data)=>{
   table_container.insertAdjacentHTML("afterbegin", template)
 
 });
+
 
 var call_modal = ((device_data)=>{
 

@@ -430,6 +430,7 @@ def get_capacity_factors(request):
                                 "facility_energy_load_factor": device.get_facility_energy_load_factor(),
                                 "baseline" : device.base_line_energy(),
                                 "fuel_consumption": device.fuel_consumption(),
+                                "total_kwh": device.get_total_kwh(),
                                 "previous_scores" : device.get_previous_score()
                         })
 
@@ -446,6 +447,7 @@ def load_readings(request):
                 acceptable_hours = [5, 6, 12, 18, 23]
                 
                 for device in devices:
+                        device.get_total_kwh()
                         current_hour = (datetime.datetime.now().hour)-12 # CONVERT TO 12 HOUR
 
                         if  current_hour in acceptable_hours:

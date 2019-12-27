@@ -18,9 +18,9 @@ $(window).on('load', function() {
   
   conversations.addEventListener("click", (e)=>{
     // console.log(conversations.children[0].className);
-    if (e.target.className == "messages__short-name"){
-      return
-    }
+    // if (e.target.className == "messages__short-name"){
+    //   return
+    // }
     console.log(e.target.className);
     let customer_name = e.srcElement.innerText;
     let customer_img = e.srcElement.childNodes[1].childNodes[0].currentSrc;
