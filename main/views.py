@@ -438,9 +438,8 @@ def get_capacity_factors(request):
 
 
 #URL FOR POPULATING DATABASE
-def load_readings(request):
+def load_datalogs(request):
         Datalog().populate()
-        run_migrations()
         
         try:
                 devices = Device.objects.all()
@@ -452,6 +451,16 @@ def load_readings(request):
 
                         if  current_hour in acceptable_hours:
                                 device.check_load_balance()
+
+                return HttpResponse(json.dumps({"response": "success"}))
+                        
+        except:
+                return HttpResponse(json.dumps({"response": "failure", "message": "Something went wrong"}))
+
+def load_readings(request):
+        
+        try:
+                run_migrations()
 
                 return HttpResponse(json.dumps({"response": "success"}))
                         
