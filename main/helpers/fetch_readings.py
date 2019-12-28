@@ -4,8 +4,7 @@ from requests.auth import HTTPBasicAuth
 import json, datetime, pytz
 from dateutil.parser import parse
 
-utc=pytz.UTC
-
+lagos=pytz.timezone('Africa/Lagos')
 
 username = "ppl"
 password = "Wyre1234"
@@ -38,21 +37,22 @@ def make_request(cookie, device_id, start_date, end_date):
 def populate_db(readings, device_code, last_reading):
 
     device = Device.objects.get(device_id = device_code)
-#     last_reading = Reading.objects.latest('post_datetime').post_datetime
+    first_run = True
+    print(device_code)
 
     for record in reversed(readings):
-        date = record['recordTime'][:10]
-        time = record['recordTime'][11:]
-        _datetime = (record['recordTime']).replace('T'," ")
-        # # print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
-        # # print(device.name, utc.localize(parse(record['recordTime'])) > last_reading)
+        # date = record['recordTime'][:10]
+        # time = record['recordTime'][11:]
+        # _datetime = (record['recordTime']).replace('T'," ")
+        time_obj = lagos.localize(parse(record['recordTime']))
 
-        if utc.localize(parse(record['recordTime'])) > last_reading:
+        if first_run : print("-----RUNNING MIGRATION-----"); first_run = False
+        
+        if lagos.localize(parse(record['recordTime'])) > last_reading:
                 reading = reshape_data_to_dict(record["data"])
-                # # print(device.name, utc.localize(parse(record['recordTime'])), last_reading)
-
-                Reading.objects.create(post_date = date, post_time = time, 
-                        post_datetime = _datetime, 
+                
+                Reading.objects.create(post_date = time_obj, post_time = time_obj, 
+                        post_datetime = time_obj, 
                         device_id   =  device.id,
                         user_id = device.user_id,
                         voltage_l1_l12 =  reading.get("voltage_l1_l12", 0),
@@ -104,8 +104,8 @@ def populate_db(readings, device_code, last_reading):
                         pf_import_at_maximum_kva_sliding_window_demand = reading.get("pf_import_at_maximum_kva_sliding_window_demand", 0)
                 )
         
-        # else: 
-        #         # print("Done populating")
+    else: 
+        print("------Done populating------")
 
 def update_user_readings(user_id):
         last_update = (Reading.objects.filter(user_id = user_id).order_by("-id")[0]).post_datetime
