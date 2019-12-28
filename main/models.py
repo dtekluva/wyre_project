@@ -410,7 +410,7 @@ class Device(models.Model):
                         imbalance_l1, imbalance_l2, imbalance_l3 = l1, l2, l3
                         last_percentage_kw = percentage_kw
 
-            if not imbalance_l1 == imbalance_l2 == imbalance_l3 == 0:
+            if not (imbalance_l1 == imbalance_l2 == imbalance_l3 == 0):
                 message = f"Cases of imbalance occured today. Worst case <br>L1: {imbalance_l1}kw, <br>L2: {imbalance_l2}kw, <br>L3: {imbalance_l3}kw. <br>{round(last_percentage_kw*100)}% Imbalance."
                 Message(sender = admin, receiver = customer, description = "", content = message ).save()
                 self.save()
