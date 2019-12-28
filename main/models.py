@@ -248,7 +248,7 @@ class Device(models.Model):
                 max_read=Max('total_kw'),
                 min_read=Max('total_kw')
         )
-        aggregates_total = self.datalog_set.filter(post_datetime__range = (start_date, end_date)).aggregate(
+        aggregates_total = self.reading_set.filter(post_datetime__range = (start_date, end_date)).aggregate(
                 avg_read=Avg('total_kw'),
                 max_read=Max('total_kw'),
                 min_read=Max('total_kw')
