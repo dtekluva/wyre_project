@@ -51,7 +51,7 @@ def populate_db(readings, device_code, last_reading):
 
         if lagos.localize(parse(record['recordTime'])) > last_reading:
                 reading = reshape_data_to_dict(record["data"])
-                print(reading)
+                print(readings)
                 
                 Reading.objects.create(post_date = time_obj, post_time = time_obj, 
                         post_datetime = time_obj, 
