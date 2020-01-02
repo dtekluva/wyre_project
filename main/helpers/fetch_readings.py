@@ -38,20 +38,21 @@ def populate_db(readings, device_code, last_reading):
 
     device = Device.objects.get(device_id = device_code)
     first_run = True
-    print(readings)
+#     print(readings)
 
     for record in reversed(readings):
         # date = record['recordTime'][:10]
         # time = record['recordTime'][11:]
         # _datetime = (record['recordTime']).replace('T'," ")
         time_obj = lagos.localize(parse(record['recordTime']))
+        print(record)
 
         if first_run : print("-----RUNNING MIGRATION-----"); first_run = False
         print(lagos.localize(parse(record['recordTime'])) > last_reading)
 
         if lagos.localize(parse(record['recordTime'])) > last_reading:
                 reading = reshape_data_to_dict(record["data"])
-                print(readings)
+                # print(readings)
                 
                 Reading.objects.create(post_date = time_obj, post_time = time_obj, 
                         post_datetime = time_obj, 
