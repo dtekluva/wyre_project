@@ -10,11 +10,12 @@ import datetime
 from django.conf import settings
 from django.utils.timezone import make_aware
 
+number_of_months_for_base_line = 6
 
 # Create your models here.
 class Customer(models.Model):
     user            = models.OneToOneField(User, on_delete=models.CASCADE)
-    company_name    = models.CharField(max_length=256, default = " ",null=True, blank = True)
+    company_name    = models.CharField(max_length=56, default = " ",null=True, blank = True)
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address         = models.TextField(max_length=400, null=True, blank = True)
     image           = models.FileField(upload_to='customer_imgs/', default = 'avatar-6.jpg' ,null=True, blank = True)
@@ -39,10 +40,8 @@ class Customer(models.Model):
         super().save(*args,**kwargs)
         self.create_welcome_message()
 
-
     def get_conversation_partners(self):
         customers = self.message_sender.all() | self.message_receiver.all()
-        # recieved = Message.objects.filter(receiver = self)
 
         conversations = []
         for message in customers:
@@ -59,7 +58,6 @@ class Customer(models.Model):
         messages_dict = {}
         
         for conversation_partner in conversation_partners:
-            # print(conversation_partner.company_name)
 
             messages = self.message_receiver.filter(sender = conversation_partner) | self.message_sender.filter(receiver = conversation_partner)
             self.message_receiver.filter(has_been_read = False).update(has_been_read = True) #MAKE UNREAD MESSAGES READ 
@@ -145,34 +143,179 @@ class Device(models.Model):
     address         = models.TextField(max_length=400, null=True, blank = True)
     name            = models.CharField(max_length=100, null=True, blank = True)
     added           = models.DateField(auto_now= True)
+    baseline        = models.IntegerField(null=True, blank=True, default=0)
+    last_baseline_check = models.DateTimeField(default = "1999-01-01")
     previous_day_energy = models.IntegerField(null=True, blank=True, default=None)
-    previous_day_energy_post_datetime = models.DateTimeField(auto_now = True)
-    last_load_balance_check = models.DateTimeField(auto_now= True)
+    previous_day_energy_post_datetime = models.DateTimeField(default = datetime.datetime.now())
+    last_load_balance_check           = models.DateTimeField(default = "1999-01-01")
+    previous_score_last_update        = models.DateTimeField(default = "1999-01-01")
 
+
+    def populate_previous_scores(self):
+
+        scores = self.score_set.all().order_by("-date")
+        max_previous_date = "2017-01-01"
+        current_date = datetime.datetime.now()
+
+        current_year = datetime.datetime.now().year
+        current_month = datetime.datetime.now().month
+
+        if not scores: 
+            last_score = datetime.datetime.strptime(max_previous_date, '%Y-%m-%d')
+        else:
+            last_score = scores[0].date
+
+        if last_score.year == current_date.year:
+
+            date_range = [(last_score.year, month) for month in range(last_score.month, current_date.month)]
+        
+        else:
+
+            date_range = []
+
+            for year in range(last_score.year, current_year+1):
+
+                if year == current_year:
+                    new_date_range = [(current_date.year, month) for month in range(1, current_date.month)]
+
+                elif year == last_score.year:
+                    new_date_range = ([(year, month) for month in range(last_score.month, 13)])
+
+                else:
+                    new_date_range = ([(year, month) for month in range(1, 13)])
+
+                date_range.extend(new_date_range)
+        
+        for year, month in date_range:
+
+            is_already_calculated = bool(self.score_set.filter(date__year = year, date__month = month))
+
+            if is_already_calculated:
+                continue
+            
+            start_date_txt = f"{year}-{month}-01"
+            end_date_txt   = f"{year}-{month}-{last_day_of_month(month)}"
+
+            start_date = datetime.datetime.strptime(start_date_txt, '%Y-%m-%d')
+            end_date   = datetime.datetime.strptime(end_date_txt, '%Y-%m-%d')
+
+            fuel_consumption = self.fuel_consumption(start_date, end_date)
+            total_kwh   = self.get_total_kwh(start_date, end_date)
+            baseline    = self.base_line_energy_populate(start_date, end_date)
+            felf        = self.get_min_max_power(start_date, end_date)
+
+            
+            device = self
+            date   = end_date
+            avg_load   = felf[2]["avg_read"] or 0
+            peak_load  = felf[2]["max_read"] or 0
+            fuel_consumption_gen1 = fuel_consumption["gen_1"] or 0
+            fuel_consumption_gen2 = fuel_consumption["gen_2"] or 0
+            hours_gen1            = fuel_consumption["gen_1_hrs"] or 0
+            hours_gen2            = fuel_consumption["gen_2_hrs"] or 0
+            baseline_energy       = baseline["forcasted_kwh_usage"] or 0
+            energy_used           = baseline["kwh_usage_so_far"] or 0
+            utility_kwh           = total_kwh["utility"] or 0
+            gen1_kwh              = total_kwh["gen1"] or 0
+            gen2_kwh              = total_kwh["gen2"] or 0
+
+            Score(
+                    device = device, date = date, avg_load = avg_load, peak_load  = peak_load, fuel_consumption_gen1 = fuel_consumption_gen1, fuel_consumption_gen2 = fuel_consumption_gen1, hours_gen1 = hours_gen1, hours_gen2  = hours_gen2, baseline_energy = baseline_energy, energy_used = energy_used, utility_kwh = utility_kwh, gen1_kwh = gen1_kwh, gen2_kwh = gen1_kwh
+            ).save()
+
+
+
+        {'kwh_usage_so_far': 0, 'number_of_days_so_far': 31, 'forcasted_kwh_usage': 0.0}
+        {'unique_id': '128166', 
+            'capacity_factor': 
+                        { 
+                        'gen1_capacity': 275, 
+                        'gen2_capacity': 10,
+                        'avg_load_gen_1': 116.71272443181822,
+                        'avg_load_gen_2': None, 
+                        'avg_load_total': 91.56223223782894, 'capacity_factor_gen_1': 0.42440990702479353, 'capacity_factor_gen_2': 0,'verdict_gen_1': 'perfect', 
+                        'verdict_gen_2': 'perfect'
+                        }, 
+                        'facility_energy_load_factor': {
+                                'factor_gen1': 0.5906245385170625, 
+                                'factor_gen2': 0, 
+                                'factor_total': 0.44413620736439496, 
+                                'avg_load_total': 91.56223223782894, 
+                                'max_load_total': 206.158, 
+                                'remark': 'Fairly efficient - (Higher Is Better)'
+                            },
+                            'fuel_consumption': {
+                                    'gen_1': 10424.32, 
+                                    'gen_2': 0.0, 
+                                    'gen_1_hrs': 265.25, 
+                                    'gen_2_hrs': 0
+                                }, 
+                                'total_kwh': {
+                                    'utility': 28630.0, 'gen1': 30841.0, 'gen2': 0
+                                    }, 
+                                'previous_scores': [{
+                                    'id': 5, 'felf': 119.0,
+                                    'avg_load': 32.0, 
+                                    'peak_load': 68.0, 
+                                    'capacity_factor_gen1': 7687.0, 
+                                    'capacity_factor_gen2': 76.0, 
+                                    'hours_gen1': 676.0, 
+                                    'hours_gen2': 676.0, 
+                                    'fuel_consumption_gen1': 657.0, 
+                                    'fuel_consumption_gen2': 6576.0, 
+                                    'baseline_energy': 56.0, 
+                                    'energy_used': 567.0, 
+                                    'utility_kwh': 0.0, 
+                                    'gen1_kwh': 0.0, 
+                                    'gen2_kwh': 0.0, 
+                                    'month': 11, 
+                                    'year': 2019
+                                  }, {
+                                      'id': 7, 
+                                      'felf': 78.0, 
+                                      'avg_load': 54.0, 
+                                      'peak_load': 456.0, 
+                                      'capacity_factor_gen1': 894.0, 
+                                      'capacity_factor_gen2': 654.0, 
+                                      'hours_gen1': 46648.0, 
+                                      'hours_gen2': 4868.0, 
+                                      'fuel_consumption_gen1': 896.0, 
+                                      'fuel_consumption_gen2': 46870.0, 
+                                      'baseline_energy': 4648.0, 
+                                      'energy_used': 618.0, 
+                                      'utility_kwh': 6.0, 
+                                      'gen1_kwh': 4.0, 
+                                      'gen2_kwh': 3.0, 
+                                      'month': 10, 
+                                      'year': 2019
+                                      }
+                                ]
+                                }
+
+        return True
 
     def get_previous_score(self):
 
         previous_scores = self.score_set.annotate(month = ExtractMonth('date'), year = ExtractYear('date')).order_by("-date").values("id", "month", "year", 'felf', "avg_load", "peak_load", "capacity_factor_gen1", "capacity_factor_gen2", "hours_gen1", "hours_gen2", "fuel_consumption_gen1", "fuel_consumption_gen2", "baseline_energy", "energy_used", "utility_kwh", "gen1_kwh", "gen2_kwh")
         
-        response = list(previous_scores)
+        response = list(previous_scores)[:5]
 
         return response
-
 
     def get_logs(self, start_date = False, end_date = False):
         
         result = {'resultCode': 200,
                     'message': None,
                     'data': []
-                    }
+                }
 
         # print(start_date, end_date)
         now = datetime.datetime.now(tz = lagos_tz)
-        start_date = start_date or (now - datetime.timedelta(days = now.day -1))
-        end_date = (end_date or now - datetime.timedelta(days = 1))
+        start_date = start_date or (now - datetime.timedelta(days = now.day -1)-datetime.timedelta(days = now.hour))
+        end_date = end_date or now - datetime.timedelta(days = 1)
 
         logs = self.datalog_set.filter(post_datetime__range = (start_date, end_date)).order_by("-post_datetime")
-        
+
         for log in logs:
 
             post_datetime = log.post_datetime.strftime("%Y-%m-%dT%H:%M:%S")
@@ -209,7 +352,7 @@ class Device(models.Model):
                         'units': '&nbsp;'},
                         {'description': 'Pulse counter #1', 'value': pulse_counter, 'units': '&nbsp;'}]}
             result['data'].append(log_dict)
-
+            
         return result
 
     def get_total_kwh(self, start_date = False, end_date = False):
@@ -235,7 +378,7 @@ class Device(models.Model):
     def get_min_max_power(self, start_date = False, end_date = False):
 
         now = datetime.datetime.now(tz = lagos_tz)
-        start_date = start_date or (now - datetime.timedelta(days = now.day-1))
+        start_date = start_date or (now - datetime.timedelta(days = now.day-1))- datetime.timedelta(days = now.day)
         end_date = end_date or now
 
         aggregates_gen1 = self.datalog_set.filter(post_datetime__range = (start_date, end_date), digital_input_1 = 1).aggregate(
@@ -253,7 +396,6 @@ class Device(models.Model):
                 max_read=Max('total_kw'),
                 min_read=Max('total_kw')
         )
-        # print(aggregates_gen1, aggregates_gen2, aggregates_total)
 
         return aggregates_gen1, aggregates_gen2, aggregates_total
 
@@ -303,7 +445,7 @@ class Device(models.Model):
         factor_gen2 = avg_load_gen2/max_load_gen2 if max_load_gen2 and avg_load_gen2 else 0
         factor_total = avg_load_total/max_load_total if max_load_total and avg_load_total else 0
 
-        remarks = {0: "Bad or No usage - (Higher Is Better)", 1: "Not so efficient - (Higher Is Better)", 2: "Fairly efficient - (Higher Is Better)", 3: "Reasonably efficient - (Higher Is Better)"}
+        remarks = {0: "Bad or No usage - (Higher Is Better)", 1: "Not so efficient - (Higher Is Better)", 2: "Fairly efficient - (Higher Is Better)", 3: "Reasonably efficient - (Higher Is Better)", 4: "Highly efficient - (Higher Is Better)"}
 
         remark_sigmoid = round(factor_total/0.25)  #ROUND LOAD FACTOR TO BETWEEN 0-1-2-3
         remark = remarks[remark_sigmoid]
@@ -315,45 +457,158 @@ class Device(models.Model):
     def base_line_energy(self, start_date = False, end_date = False):
 
         now = datetime.datetime.now(tz = lagos_tz)
-        start_date = start_date or (now - datetime.timedelta(days = 30*10))
-        end_date = end_date or (now - datetime.timedelta(days = datetime.datetime.now().day))
-        
-        cdd = [(object.date.strftime("%Y-%m-%d"), object.value) for  object in list(Degree_Day.objects.all())]
+       
+        start_date = start_date or (now - datetime.timedelta(days = 30*number_of_months_for_base_line))
+        end_date = end_date or datetime.datetime.now()
 
-        months_kwh_data = self.reading_set.filter(post_datetime__range = (start_date, end_date))
-         
-        rearranged_months_kwh_data = []
+        if self.last_baseline_check.month != datetime.datetime.now().month:
+        # if True:
+            print("------ RECALCULATING BASELINE ------")
+            start_year = start_date.year
+            end_year = end_date.year
 
-        for data in months_kwh_data:
-                rearranged_months_kwh_data.append((data.post_datetime.strftime('%m/%d/%Y'), data.kwh_import))
+            #GET CURRENT MONTH CDD
 
-        prediction = get_baseline.predict_usage( rearranged_months_kwh_data, cdd)
+            all_cdd_for_specified_month = Degree_Day.objects.filter(date__month=end_date.month)
+            total_cdd = all_cdd_for_specified_month.count()
+            avg_num_days_month = last_day_of_month(end_date.month)
 
-        current_usage_this_month = self.get_energy_this_month()
-        current_usage_this_month["forcasted_kwh_usage"] = prediction
+            current_month_cdd = all_cdd_for_specified_month.aggregate(Sum("value")).get('value__sum')/round(total_cdd/avg_num_days_month)
+
+            cdd = []
+            months_kwh_data = []
+            
+            for year in range(start_year, end_year + 1):
+                
+                start_month = start_date.month
+                end_month = start_date.month
+
+                if start_year == end_year:
+                    start_month = start_date.month 
+                    end_month = end_date.month 
+
+                elif year == start_year:
+                    start_month = start_date.month
+                    end_month = 13
+                
+                elif year == end_year :
+                    start_month = 1
+                    end_month = end_date.month
+
+                for month in range(start_month, end_month):
+                    cdd_aggregate = Degree_Day.objects.filter( date__year=year).filter( date__month=month).aggregate(Sum("value"))
+
+                    # print(cdd_aggregate)
+                    cdd.append(cdd_aggregate.get('value__sum'))
+                    
+
+                    kwh_set = (self.reading_set.filter( post_datetime__year=year).filter( post_datetime__month=month)).values("kwh_import")
+                    
+
+                    kwh_month = kwh_set[len(kwh_set)-1].get("kwh_import", 0) - kwh_set[0].get("kwh_import", 0)
+
+                    months_kwh_data.append(kwh_month)
+
+            prediction = get_baseline.predict_usage( months_kwh_data, cdd, current_month_cdd)
+
+            current_usage_this_month = self.get_energy_this_month()
+            current_usage_this_month["forcasted_kwh_usage"] = prediction
+
+            self.baseline = prediction
+            self.last_baseline_check = datetime.datetime.now()
+            self.save()
+
+        else:
+            current_usage_this_month = self.get_energy_this_month()
+            current_usage_this_month["forcasted_kwh_usage"] = self.baseline
 
         statistics = current_usage_this_month
         
 
         return statistics
 
-    def get_energy_this_month(self):
+    def base_line_energy_populate(self, start_date = False, end_date = False):
 
         now = datetime.datetime.now(tz = lagos_tz)
+       
+        start_date = start_date 
+        end_date = end_date or datetime.datetime.now()
+        six_months_ago = (start_date - datetime.timedelta(days = 30*number_of_months_for_base_line))
 
-        start_date = now - datetime.timedelta(days = now.day)
-        end_date = now + datetime.timedelta(days = 1)
+        if six_months_ago.year == end_date.year:
+
+            date_range = [(six_months_ago.year, month) for month in range(six_months_ago.month, end_date.month)]
+        
+        else:
+
+            date_range = [(six_months_ago.year, month) for month in range(six_months_ago.month, 13)]
+            date_range2 = [(end_date.year, month) for month in range(1, end_date.month)]
+
+            date_range.extend(date_range2)
+
         
 
-        current_month_kwh_data = self.reading_set.filter(post_datetime__range = (start_date, end_date)).order_by("kwh_import")
+
+        if True:
+            print("------ RECALCULATING BASELINE ------")
+            start_year = six_months_ago.year
+            end_year = end_date.year
+
+            #GET CURRENT MONTH CDD
+
+            all_cdd_for_specified_month = Degree_Day.objects.filter(date__month=end_date.month)
+            total_cdd = all_cdd_for_specified_month.count()
+            avg_num_days_month = last_day_of_month(end_date.month)
+
+            current_month_cdd = all_cdd_for_specified_month.aggregate(Sum("value")).get('value__sum')/round(total_cdd/avg_num_days_month)
+
+        #     print(current_month_cdd, total_cdd, avg_num_days_month )
+
+            cdd = []
+            months_kwh_data = []
+            
+            for year, month in date_range:  
+                
+
+                cdd_aggregate = Degree_Day.objects.filter( date__year=year).filter( date__month=month).aggregate(Sum("value"))
+
+                cdd.append(cdd_aggregate.get('value__sum') or 0)
+                    
+
+                kwh_set = (self.reading_set.filter( post_datetime__year=year).filter( post_datetime__month=month)).values("kwh_import")
+
+                kwh_month = (kwh_set[len(kwh_set)-1].get("kwh_import", 0) or 0) - (kwh_set[0].get("kwh_import", 0) or 0) if kwh_set else 0
+
+                months_kwh_data.append(kwh_month)
+
+            # print(cdd)
+            # print(months_kwh_data)
+            prediction = get_baseline.predict_usage( months_kwh_data, cdd, current_month_cdd)
+
+            current_usage_this_month = self.get_energy_this_month(start_date , end_date)
+            current_usage_this_month["forcasted_kwh_usage"] = prediction
+            
+
+
+        statistics = current_usage_this_month
         
+
+        return statistics
+
+    def get_energy_this_month(self, start_date = False, end_date = False):
+
+        now = datetime.datetime.now(tz = lagos_tz)
+        start_date = start_date or (now - datetime.timedelta(days = now.day-1) ) - datetime.timedelta(hours = now.hour)
+        end_date = end_date or now
+
+        current_month_kwh_data = list(self.reading_set.filter(post_datetime__range = (start_date, end_date)).order_by("kwh_import"))
+
         try:
 
-            start_kwh = current_month_kwh_data[0].kwh_import  #["kwh_import"]
-            # # print(start_kwh)
-            end_kwh = current_month_kwh_data[len(current_month_kwh_data)-1].kwh_import
-            # # print(end_kwh)
-        except IndexError:
+            start_kwh = current_month_kwh_data[1].kwh_import or 0  #["kwh_import"]
+            end_kwh = current_month_kwh_data[len(current_month_kwh_data)-1].kwh_import or 0
+
+        except IndexError or AssertionError:
             start_kwh = 0
             end_kwh = 0
 
@@ -368,8 +623,6 @@ class Device(models.Model):
         hours = ((make_aware(datetime.datetime.now()) - self.last_load_balance_check).total_seconds())/3600
 
         return hours
-
-
 
     def check_load_balance(self):
 
@@ -489,7 +742,6 @@ class Device(models.Model):
 
         return fuel_consumption["diesel_consumption"]
 
-        
     def __str__(self):
         return self.device_id
 
@@ -514,53 +766,53 @@ class Reading(models.Model):
     post_datetime = models.DateTimeField(blank = True)
     post_date     = models.DateField(blank = True)
     post_time     = models.TimeField(blank=True)
-    voltage_l1_l12  = models.FloatField(null=True, blank=True, default=None)
-    voltage_l2_l23  = models.FloatField(null=True, blank=True, default=None)
-    voltage_l3_l31  = models.FloatField(null=True, blank=True, default=None)
-    current_l1      = models.FloatField(null=True, blank=True, default=None)
-    current_l2      = models.FloatField(null=True, blank=True, default=None)
-    current_l3      = models.FloatField(null=True, blank=True, default=None)
-    kw_l1   = models.FloatField(null=True, blank=True, default=None)
-    kw_l2   = models.FloatField(null=True, blank=True, default=None)
-    kw_l3   = models.FloatField(null=True, blank=True, default=None)
-    kvar_l1 = models.FloatField(null=True, blank=True, default=None)
-    kvar_l2 = models.FloatField(null=True, blank=True, default=None)
-    kvar_l3 = models.FloatField(null=True, blank=True, default=None)
-    kva_l1  = models.FloatField(null=True, blank=True, default=None)
-    kva_l2  = models.FloatField(null=True, blank=True, default=None)
-    kva_l3  = models.FloatField(null=True, blank=True, default=None)
-    power_factor_l1  = models.FloatField(null=True, blank=True, default=None)
-    power_factor_l2  = models.FloatField(null=True, blank=True, default=None)
-    power_factor_l3  = models.FloatField(null=True, blank=True, default=None)
-    total_kw    = models.FloatField(null=True, blank=True, default=None)
-    total_kvar  = models.FloatField(null=True, blank=True, default=None)
-    total_kva   = models.FloatField(null=True, blank=True, default=None)
-    total_pf    = models.FloatField(null=True, blank=True, default=None)
-    avg_frequency   = models.FloatField(null=True, blank=True, default=None)
-    neutral_current = models.FloatField(null=True, blank=True, default=None)
-    volt_thd_l1_l12 = models.FloatField(null=True, blank=True, default=None)
-    volt_thd_l2_l23 = models.FloatField(null=True, blank=True, default=None)
-    volt_thd_l3_l31 = models.FloatField(null=True, blank=True, default=None)
-    current_thd_l1  = models.FloatField(null=True, blank=True, default=None)
-    current_thd_l2  = models.FloatField(null=True, blank=True, default=None)
-    current_thd_l3  = models.FloatField(null=True, blank=True, default=None)
-    current_tdd_l1  = models.FloatField(null=True, blank=True, default=None)
-    current_tdd_l2  = models.FloatField(null=True, blank=True, default=None)
-    current_tdd_l3  = models.FloatField(null=True, blank=True, default=None)
-    kwh_import      = models.FloatField(null=True, blank=True, default=None)
-    kwh_export      = models.FloatField(null=True, blank=True, default=None)
-    kvarh_import    = models.FloatField(null=True, blank=True, default=None)
-    kvah_total      = models.FloatField(null=True, blank=True, default=None)
-    max_amp_demand_l1 = models.FloatField(null=True, blank=True, default=None)
-    max_amp_demand_l2 = models.FloatField(null=True, blank=True, default=None)
-    max_amp_demand_l3 = models.FloatField(null=True, blank=True, default=None)
-    max_sliding_window_kw_demand   = models.FloatField(null=True, blank=True, default=None)
-    accum_kw_demand    = models.FloatField(null=True, blank=True, default=None)
-    max_sliding_window_kva_demand      = models.FloatField(null=True, blank=True, default=None)
-    present_sliding_window_kw_demand    = models.FloatField(null=True, blank=True, default=None)
-    present_sliding_window_kva_demand   = models.FloatField(null=True, blank=True, default=None)
-    accum_kva_demand   = models.FloatField(null=True, blank=True, default=None)
-    pf_import_at_maximum_kva_sliding_window_demand = models.FloatField(null=True, blank=True, default=None)
+    voltage_l1_l12  = models.FloatField(null=True, blank=True, default=0)
+    voltage_l2_l23  = models.FloatField(null=True, blank=True, default=0)
+    voltage_l3_l31  = models.FloatField(null=True, blank=True, default=0)
+    current_l1      = models.FloatField(null=True, blank=True, default=0)
+    current_l2      = models.FloatField(null=True, blank=True, default=0)
+    current_l3      = models.FloatField(null=True, blank=True, default=0)
+    kw_l1   = models.FloatField(null=True, blank=True, default=0)
+    kw_l2   = models.FloatField(null=True, blank=True, default=0)
+    kw_l3   = models.FloatField(null=True, blank=True, default=0)
+    kvar_l1 = models.FloatField(null=True, blank=True, default=0)
+    kvar_l2 = models.FloatField(null=True, blank=True, default=0)
+    kvar_l3 = models.FloatField(null=True, blank=True, default=0)
+    kva_l1  = models.FloatField(null=True, blank=True, default=0)
+    kva_l2  = models.FloatField(null=True, blank=True, default=0)
+    kva_l3  = models.FloatField(null=True, blank=True, default=0)
+    power_factor_l1  = models.FloatField(null=True, blank=True, default=0)
+    power_factor_l2  = models.FloatField(null=True, blank=True, default=0)
+    power_factor_l3  = models.FloatField(null=True, blank=True, default=0)
+    total_kw    = models.FloatField(null=True, blank=True, default=0)
+    total_kvar  = models.FloatField(null=True, blank=True, default=0)
+    total_kva   = models.FloatField(null=True, blank=True, default=0)
+    total_pf    = models.FloatField(null=True, blank=True, default=0)
+    avg_frequency   = models.FloatField(null=True, blank=True, default=0)
+    neutral_current = models.FloatField(null=True, blank=True, default=0)
+    volt_thd_l1_l12 = models.FloatField(null=True, blank=True, default=0)
+    volt_thd_l2_l23 = models.FloatField(null=True, blank=True, default=0)
+    volt_thd_l3_l31 = models.FloatField(null=True, blank=True, default=0)
+    current_thd_l1  = models.FloatField(null=True, blank=True, default=0)
+    current_thd_l2  = models.FloatField(null=True, blank=True, default=0)
+    current_thd_l3  = models.FloatField(null=True, blank=True, default=0)
+    current_tdd_l1  = models.FloatField(null=True, blank=True, default=0)
+    current_tdd_l2  = models.FloatField(null=True, blank=True, default=0)
+    current_tdd_l3  = models.FloatField(null=True, blank=True, default=0)
+    kwh_import      = models.FloatField(null=True, blank=True, default=0)
+    kwh_export      = models.FloatField(null=True, blank=True, default=0)
+    kvarh_import    = models.FloatField(null=True, blank=True, default=0)
+    kvah_total      = models.FloatField(null=True, blank=True, default=0)
+    max_amp_demand_l1 = models.FloatField(null=True, blank=True, default=0)
+    max_amp_demand_l2 = models.FloatField(null=True, blank=True, default=0)
+    max_amp_demand_l3 = models.FloatField(null=True, blank=True, default=0)
+    max_sliding_window_kw_demand   = models.FloatField(null=True, blank=True, default=0)
+    accum_kw_demand    = models.FloatField(null=True, blank=True, default=0)
+    max_sliding_window_kva_demand      = models.FloatField(null=True, blank=True, default=0)
+    present_sliding_window_kw_demand    = models.FloatField(null=True, blank=True, default=0)
+    present_sliding_window_kva_demand   = models.FloatField(null=True, blank=True, default=0)
+    accum_kva_demand   = models.FloatField(null=True, blank=True, default=0)
+    pf_import_at_maximum_kva_sliding_window_demand = models.FloatField(null=True, blank=True, default=0)
 
     def __str__(self):
         return f"{self.post_date} customer-({self.customer})"
@@ -625,9 +877,9 @@ class Datalog(models.Model):
 
                 # # print(device_last_read_date_str, end_date_str)
 
-
             for data in reversed(logs):
                 
+                # print(data)
                 time = data['recordTime']
                 time = make_aware(datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S"))
                 
@@ -635,17 +887,19 @@ class Datalog(models.Model):
                 d_i2 = self.filter_dict_from_list(data, "Digital Input #2")
                 d_i3 = self.filter_dict_from_list(data, "Digital Input #3")
                 d_i4 = self.filter_dict_from_list(data, "Digital Input #4")
-                summary_energy_register1 = self.filter_dict_from_list(data, "Summary Energy Register #1")
-                summary_energy_register2 = self.filter_dict_from_list(data, "Summary Energy Register #3")
-                summary_energy_register3 = self.filter_dict_from_list(data, "Summary Energy Register #2")
-                total_kW = self.filter_dict_from_list(data, "Total kW")
+                summary_energy_register1 = self.filter_dict_from_list(data, "Summary Energy Register #1") or self.filter_dict_from_list(data, "kWh import")
+                summary_energy_register2 = self.filter_dict_from_list(data, "Summary Energy Register #2")
+                summary_energy_register3 = self.filter_dict_from_list(data, "Summary Energy Register #3")
+                total_kW = self.filter_dict_from_list(data, "Total kW") or self.filter_dict_from_list(data, "Avg Total kW")
                 pulse_counter = self.filter_dict_from_list(data, "Pulse counter #1")
+
+                # print(time, d_i1, d_i2, d_i3, d_i4, summary_energy_register1, summary_energy_register2, total_kW,pulse_counter)
  
                 # if not Datalog.objects.filter(post_datetime = time.strftime("%Y-%m-%d %H:%M:%S"), device__device_id = device.device_id):
                 if not Datalog.objects.filter(post_datetime = time, device__device_id = device.device_id):
-                    # # print('adding', device.device_id)
 
                     Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = time, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
+                    
                 else:
                     continue
 
@@ -725,3 +979,50 @@ def filter_dict_from_list(data, value):
         if i['description'] == value:
             return (i['value'])
     return 0
+
+def last_day_of_month(any_month):
+
+    date_time_str = f'2018-{any_month}-28'
+    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d')
+
+    next_month = date_time_obj.replace(day=28) + datetime.timedelta(days=4)  # this will never fail
+
+    return (next_month - datetime.timedelta(days=next_month.day)).day
+
+
+# def base_line_energy(self, start_date = False, end_date = False):
+
+#         now = datetime.datetime.now(tz = lagos_tz)
+#         start_date = start_date or (now - datetime.timedelta(days = 30*10))
+#         end_date = end_date or (now - datetime.timedelta(days = datetime.datetime.now().day))
+
+
+#         if self.last_baseline_check.month != datetime.datetime.now().month:
+#             print("------ RECALCULATING BASELINE ------")
+        
+#             cdd = [(object.date.strftime("%Y-%m-%d"), object.value) for  object in list(Degree_Day.objects.all())]
+
+#             months_kwh_data = self.reading_set.filter(post_datetime__range = (start_date, end_date))
+            
+#             rearranged_months_kwh_data = []
+
+#             for data in months_kwh_data:
+#                     rearranged_months_kwh_data.append((data.post_datetime.strftime('%m/%d/%Y'), data.kwh_import))
+
+#             prediction = get_baseline.predict_usage( rearranged_months_kwh_data, cdd)
+
+#             current_usage_this_month = self.get_energy_this_month()
+#             current_usage_this_month["forcasted_kwh_usage"] = prediction
+
+#             self.baseline = prediction
+#             self.last_baseline_check = datetime.datetime.now()
+#             self.save()
+
+#         else:
+#             current_usage_this_month = self.get_energy_this_month()
+#             current_usage_this_month["forcasted_kwh_usage"] = self.baseline
+
+#         statistics = current_usage_this_month
+        
+
+#         return statistics

@@ -51,7 +51,7 @@ def format_date(date):###THIS FUNCTION CONVERTS DATE FROM DD-MM-YYY TO YYY-MM-DD
 
 
 def process_usage(device_id, start_date, end_date):
-    print(start_date, end_date)
+    # print(start_date, end_date)
     data = make_local_request(device_id, start_date, end_date)
     
     try:

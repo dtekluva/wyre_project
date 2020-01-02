@@ -68,10 +68,10 @@ def update_password(request):
                                 return HttpResponse(json.dumps({"response": "failure"}))
                 else:
                         customer = Customer.objects.get(id = customer_id)
-                        print(customer)
-                        print(customer.user.username)
+                        # print(customer)
+                        # print(customer.user.username)
                         user = authenticate(username = customer.user.username, password = old)
-                        print("----------------------------")
+                        # print("----------------------------")
 
                         if user:
                                 user.set_password(new)

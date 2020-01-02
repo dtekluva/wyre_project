@@ -13,7 +13,6 @@ var table;
 var values = {"data":{}}
 
 let historyButtons = document.querySelectorAll("a.history-button");
-
 let historyModal = document.querySelector("div.history-modal-container");
 let cardsContainer = document.querySelector("div.cards-container");
 let sidebarSection = document.querySelector("div.section--sidebar");
@@ -455,7 +454,7 @@ const draw_emmisions = ((device_data)=>{
   let gen1_litres = device_data.fuel_consumption.gen_1
   let gen2_litres = device_data.fuel_consumption.gen_2
 
-  let grid_factor = 0.562 //kgCO2 per kWh  
+  let grid_factor = 0.559 //kgCO2 per kWh  
   let gen_factor  = 2.68 //kgCO2 per liter
 
   if(device_data.previous_scores.length){
@@ -545,9 +544,9 @@ var populate_baseline_chart = ((device_data)=>{
       table_text += `
                     <tr class="data-row1">
                     <td>${months[element.month-1]} ${element.year}</td>
-                    <td>${element.baseline_energy} </td>
-                    <td>${element.energy_used} </td>
-                    <td style = "color: ${color};" >${savings} </td>
+                    <td>${(element.baseline_energy).toFixed(0)} </td>
+                    <td>${(element.energy_used).toFixed(0)} </td>
+                    <td style = "color: ${color};" >${savings.toFixed(0)} </td>
                     <td class="unicode-dash"> &#9473 </td>
                     </tr>
                   `
@@ -555,9 +554,9 @@ var populate_baseline_chart = ((device_data)=>{
       table_text += `
                     <tr class="data-row1">
                     <td>${months[element.month-1]} ${element.year}</td>
-                    <td>${element.baseline_energy} </td>
-                    <td>${element.energy_used} </td>
-                    <td style = "color: ${color};" >${savings} </td>
+                    <td>${(element.baseline_energy).toFixed(0)} </td>
+                    <td>${(element.energy_used).toFixed(0)} </td>
+                    <td style = "color: ${color};" >${savings.toFixed(0)} </td>
                     <td> ${against_previous > 0 ? `<img class="arrowUp" src="${host}static/images/uparrow.svg" alt="arrow pointing up">` : `<img class="arrowDown" src="${host}static/images/downarrow.svg" alt="arrow pointing down">`} </td>
                     </tr>
                   `
@@ -626,6 +625,54 @@ var populate_fuel_chart = ((device_data)=>{
 
 });
 
+var populate_carbon_chart = ((device_data)=>{
+
+  let table_container = document.getElementById("table_container");
+  let table_text = "";
+  table_container.innerHTML = "";
+
+  let grid_factor = 0.559 //kgCO2 per kWh  
+  let gen_factor  = 2.68 //kgCO2 per liter
+ 
+
+  device_data.previous_scores.forEach(element => {
+      let utility = (element.utility_kwh * grid_factor)/1000
+      let gen1    = (element.fuel_consumption_gen1 * gen_factor)/1000
+      let gen2    = (element.fuel_consumption_gen2 * gen_factor)/1000
+      let total   = utility + gen1 + gen2
+      alert(element.utility_kwh)
+
+      table_text += `
+                    <tr class="data-row1">
+                    <td>${months[element.month-1]} ${element.year}</td>
+                    <td>${utility.toFixed(0)} </td>
+                    <td>${gen1.toFixed(0)} </td>
+                    <td>${gen2.toFixed(0)} </td>
+                    <td>${total.toFixed(0)} </td>
+                    </tr>
+                  `
+  });
+
+  let template = `<table class="modal-table">
+                    <tr class="title-row">
+                      <th colspan="5">Estimated Carbon History</th>
+                    </tr>
+                    <tr class="heading-row">
+                      <th>Month</th>
+                      <th>Utility <br> </th>
+                      <th>Gen-1 <br> </th>
+                      <th>Gen-2 <br> </th>
+                      <th>Total <br> </th>
+                    </tr>
+                    ${table_text}
+                    
+                </table>
+                `
+
+  table_container.insertAdjacentHTML("afterbegin", template)
+
+});
+
 
 var call_modal = ((device_data)=>{
 
@@ -644,6 +691,8 @@ var call_modal = ((device_data)=>{
       populate_fuel_chart(device_data);
     }else if(e.target.id == "baseline"){
       populate_baseline_chart(device_data);
+    }else if(e.target.id == "carbon"){
+      populate_carbon_chart(device_data);
     };
   };
 }

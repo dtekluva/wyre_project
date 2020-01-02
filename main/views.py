@@ -408,6 +408,8 @@ def get_yesterday_today_usage(request):
 @login_required
 def get_capacity_factors(request):
         user = User.objects.get(pk = request.user.id)
+        # time_then = datetime.datetime.now()
+        
         # device_id = request.POST.get("device", "None")
         
         branches = user.branch_set.all()
@@ -433,6 +435,9 @@ def get_capacity_factors(request):
                                 "total_kwh": device.get_total_kwh(),
                                 "previous_scores" : device.get_previous_score()
                         })
+        # diff = (datetime.datetime.now() - time_then).seconds
+        # print("------ TOTAL TIME TAKEN ------")
+        # print(diff)
 
         return HttpResponse(json.dumps({"response": "success", "data":{"base_line":response}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 
@@ -446,7 +451,6 @@ def load_datalogs(request):
                 acceptable_hours = [5, 6, 12, 18, 23]
                 
                 for device in devices:
-                        device.get_total_kwh()
                         current_hour = (datetime.datetime.now().hour)-12 # CONVERT TO 12 HOUR
 
                         if  current_hour in acceptable_hours:
@@ -467,10 +471,20 @@ def load_readings(request):
         except:
                 return HttpResponse(json.dumps({"response": "failure", "message": "Something went wrong"}))
 
+@csrf_exempt
+def update_historic_scores(request):
+
+        devices = Device.objects.all()                        
+
+        for device in devices:
+                device.populate_previous_scores()
+
+        return HttpResponse(json.dumps({"response": "success", "data":{"base_line":"response"}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 
 ###########################################################
 ###########################################################
 ############## LOAD NEW CDD ###############################
+
 @csrf_exempt
 def upload_cdd(request):
 
@@ -717,7 +731,7 @@ def edit_user(request):
                 phone = request.POST.get("phone")
                 address = request.POST.get("address")
                 customer_id = request.POST.get("customer_id")
-                print(customer_id)
+                # print(customer_id)
                 customer = Customer.objects.get(id = customer_id)
                 user = customer.user
 

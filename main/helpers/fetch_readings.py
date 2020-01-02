@@ -38,7 +38,7 @@ def populate_db(readings, device_code, last_reading):
 
     device = Device.objects.get(device_id = device_code)
     first_run = True
-    print(device_code)
+#     print(device_code)
 
     for record in reversed(readings):
         # date = record['recordTime'][:10]
