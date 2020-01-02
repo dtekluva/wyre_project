@@ -20,7 +20,7 @@ def login_view(request):
                 if True:
 
                         email    = request.POST.get("email", "")
-                        username = request.POST.get("username", "")
+                        username = request.POST.get("username", "").lower()
                         email = email.lower()
                         password    = request.POST.get("password", "")
 
@@ -40,6 +40,10 @@ def login_view(request):
                         except:
                                 return HttpResponse(json.dumps({"response":"failure"}))    
                                 # return render(request, 'resolute/registration/login.html', {'form' : form, 'error':'Sorry incorrect Username or Password !!!'})
+                else:
+                        return HttpResponse(json.dumps({"response":"failure"}))    
+                        # return render(request, 'resolute/registration/login.html', {'form' : form, 'error':'Sorry incorrect Username or Password !!!'})
+
 
         else:
                 return render(request, "login.html")
