@@ -54,7 +54,7 @@ def populate_db(readings, device_code, last_reading):
                 reading = reshape_data_to_dict(record["data"])
                 # print(readings)
                 
-                Reading.objects.create(post_date = time_obj, post_time = time_obj, 
+                Reading.objects.create(customer = device.customer, post_date = time_obj, post_time = time_obj, 
                         post_datetime = time_obj, 
                         device_id   =  device.id,
                         user_id = device.user_id,
