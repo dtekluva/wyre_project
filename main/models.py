@@ -87,14 +87,18 @@ class Customer(models.Model):
         
 
     def create_welcome_message(self):
-        
-        sender = Customer.objects.get(is_main_admin = True)
-        receiver = self
-        if sender != receiver:
-            text = f"Welcome {self.company_name}. !!"
-            title = "Welcome message"
 
-            Message(sender = sender, receiver = receiver, description = title, content = text ).save()
+        try:
+        
+            sender = Customer.objects.get(is_main_admin = True)
+            receiver = self
+            if sender != receiver:
+                text = f"Welcome {self.company_name}. !!"
+                title = "Welcome message"
+
+                Message(sender = sender, receiver = receiver, description = title, content = text ).save()
+        except:
+            pass
 
 
 class Branch(models.Model):
