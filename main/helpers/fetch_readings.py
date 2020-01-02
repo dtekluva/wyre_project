@@ -48,9 +48,10 @@ def populate_db(readings, device_code, last_reading):
 
         if first_run : print("-----RUNNING MIGRATION-----"); first_run = False
         print(last_reading, lagos.localize(parse(record['recordTime'])))
-        
+
         if lagos.localize(parse(record['recordTime'])) > last_reading:
                 reading = reshape_data_to_dict(record["data"])
+                print(reading)
                 
                 Reading.objects.create(post_date = time_obj, post_time = time_obj, 
                         post_datetime = time_obj, 
