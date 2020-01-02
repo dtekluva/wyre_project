@@ -397,7 +397,7 @@ class Device(models.Model):
         )
         aggregates_total = self.reading_set.filter(post_datetime__range = (start_date, end_date)).aggregate(
                 avg_read=Avg('total_kw'),
-                max_read=Max('total_kw'),
+                max_read=Max('max_sliding_window_kw_demand'),
                 min_read=Max('total_kw')
         )
 

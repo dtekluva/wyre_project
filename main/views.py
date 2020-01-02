@@ -463,8 +463,9 @@ def load_datalogs(request):
 
 def load_readings(request):
         
+        run_migrations()
         try:
-                run_migrations()
+                # run_migrations()
 
                 return HttpResponse(json.dumps({"response": "success"}))
                         
