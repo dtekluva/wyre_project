@@ -103,6 +103,7 @@ def populate_db(readings, device_code, last_reading):
                         present_sliding_window_kva_demand = reading.get("present_sliding_window_kva_demand", 0),
                         pf_import_at_maximum_kva_sliding_window_demand = reading.get("pf_import_at_maximum_kva_sliding_window_demand", 0)
                 )
+                print(0)
         
     else: 
         print("------Done populating------")
