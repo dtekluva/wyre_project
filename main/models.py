@@ -508,8 +508,14 @@ class Device(models.Model):
 
                     kwh_set = (self.reading_set.filter( post_datetime__year=year).filter( post_datetime__month=month)).values("kwh_import")
                     
+                    try:
 
-                    kwh_month = kwh_set[len(kwh_set)-1].get("kwh_import", 0) - kwh_set[0].get("kwh_import", 0)
+
+                        kwh_month = kwh_set[len(kwh_set)-1].get("kwh_import", 0) - kwh_set[0].get("kwh_import", 0)
+                    
+                    except:
+
+                        kwh_month = 0
 
                     months_kwh_data.append(kwh_month)
 
