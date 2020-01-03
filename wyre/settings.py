@@ -45,7 +45,8 @@ SECRET_KEY = 'hdhw*b6jko0m!@8@j8ufk+1ybj8u#gc@4ov0_xec((exhar=io'
 DEBUG = True  if HOSTNAME == "DESKTOP-U00EROM" else False
 
 ALLOWED_HOSTS = ['wyre.pythonanywhere.com',
-                'localhost'
+                'localhost',
+                "www.wyreng.com"
                 ]
 
 
