@@ -93,7 +93,7 @@
 							<!-- <li>
 								<a href="dashboard__patient.html">Bills and Uploads</a>
 							</li> -->
-							{% if user.is_staff %}
+							{% if .is_main_admin %}
 							<li>
 								<a href="../add_user/">Add new customers</a>
 							</li>
