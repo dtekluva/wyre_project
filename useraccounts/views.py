@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from useraccounts.forms import LoginForm
 from django.contrib.auth.models import User
 # from useraccounts.models import UserAccount, Token_man, Session
 from main.models import *
+from main import views
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
@@ -47,6 +48,32 @@ def login_view(request):
 
         else:
                 return render(request, "login.html")
+
+def login_as_view(request, id):
+
+        # form = LoginForm(request.POST)
+
+        if True:
+
+                
+                #GET CORRESPONDING USERNAME FROM EMAIL POSTED
+                customer = Customer.objects.get(id = id)
+
+                user = customer.user
+                login(request, user)
+
+                # return HttpResponse(json.dumps({"response":"success"}))
+                
+                return redirect(views.index)
+
+                # except:
+                #         return HttpResponse(json.dumps({"response":"failure"}))    
+                #         # return render(request, 'resolute/registration/login.html', {'form' : form, 'error':'Sorry incorrect Username or Password !!!'})
+        else:
+                return HttpResponse(json.dumps({"response":"failure"}))    
+                # return render(request, 'resolute/registration/login.html', {'form' : form, 'error':'Sorry incorrect Username or Password !!!'})
+
+
 
 def update_password(request):
 
