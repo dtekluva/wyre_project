@@ -105,16 +105,22 @@ WSGI_APPLICATION = 'wyre.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 if HOSTNAME !=  'DESKTOP-U00EROM':
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.mysql',
+    #         'OPTIONS': {
+    #             'sql_mode': 'traditional',
+    #         },
+    #         'NAME': 'wyre$wyre_app_db',
+    #         'USER': 'wyre',
+    #         'PASSWORD': 'wyrewebapppass',
+    #         'HOST': 'wyre.mysql.pythonanywhere-services.com',
+    #     }
+    # }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'OPTIONS': {
-                'sql_mode': 'traditional',
-            },
-            'NAME': 'wyre$wyre_app_db',
-            'USER': 'wyre',
-            'PASSWORD': 'wyrewebapppass',
-            'HOST': 'wyre.mysql.pythonanywhere-services.com',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
 else:
