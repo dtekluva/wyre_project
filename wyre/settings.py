@@ -113,7 +113,7 @@ if HOSTNAME !=  'DESKTOP-U00EROM':
             },
             'NAME': 'wyre$wyre_app_db',
             'USER': 'wyre',
-            'PASSWORD': 'wyrewebapppass',
+            'PASSWORD': 'wyre_db_password_new',
             'HOST': 'wyre.mysql.pythonanywhere-services.com',
         }
     }
