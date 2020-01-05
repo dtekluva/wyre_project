@@ -86,7 +86,7 @@ def all_customers(request):
         customer = Customer.objects.get(user = user)
         branches = Branch.objects.filter(user_id = user.id)
         devices = Device.objects.filter(user_id = request.user.id)
-        customers = Customer.objects.all()
+        customers = Customer.objects.all().order_by("-id")
 
         return render(request, 'all_customers.html', {'user':user, "customers": customers, "customer": customer, "page": page, "devices":devices})
 
