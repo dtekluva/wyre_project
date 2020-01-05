@@ -6,7 +6,7 @@ import datetime
 
 # # SAMPLE KWATT DATA CLEANING
 def predict_usage(values, cdd, test_cdd, num_of_required_months = 6, reproccess = True):# Reprocess True if the monthly kwatt-hour value is not yet determined
-
+    print(values, cdd)
     #DATA ARRANGEMENT
 
     x = np.array(cdd).reshape((-1, 1))
