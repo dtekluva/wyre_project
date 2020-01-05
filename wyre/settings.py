@@ -128,7 +128,7 @@ if HOSTNAME !=  'DESKTOP-U00EROM':
             },
             'NAME': 'wyre',
             'USER': 'root',
-            'PASSWORD': '@1happyplace',
+            'PASSWORD': '',
             'HOST': 'localhost',
         }
     }
