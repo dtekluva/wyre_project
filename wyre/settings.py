@@ -126,10 +126,10 @@ if HOSTNAME !=  'DESKTOP-U00EROM':
             'OPTIONS': {
                 'sql_mode': 'traditional',
             },
-            'NAME': 'wyre',
-            'USER': 'root',
-            'PASSWORD': '@1happyplace',
-            'HOST': 'localhost',
+            'NAME': 'wyredb',
+            'USER': 'wyreuser',
+            'PASSWORD': '11111111',
+            'HOST': '35.239.28.105',
         }
     }
 else:
