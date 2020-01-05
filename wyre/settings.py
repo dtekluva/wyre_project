@@ -129,7 +129,7 @@ if HOSTNAME !=  'DESKTOP-U00EROM':
             'NAME': 'wyredb',
             'USER': 'wyreuser',
             'PASSWORD': '11111111',
-            'HOST': '35.239.28.105',
+            'HOST': 'localhost',
         }
     }
 else:
