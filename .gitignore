@@ -24,3 +24,4 @@ media/customer_imgs/5658604-smiley-wallpaper.jpg
 main/migrations/
 migrations/
 media/
+.env/

@@ -21,6 +21,8 @@ try:
 except:
     HOSTNAME = 'localhost'
 
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
@@ -46,7 +48,8 @@ DEBUG = True  if HOSTNAME == "DESKTOP-U00EROM" else False
 
 ALLOWED_HOSTS = ['wyre.pythonanywhere.com',
                 'localhost',
-                "www.wyreng.com"
+                "www.wyreng.com",
+                "35.239.28.105"
                 ]
 
 
@@ -105,16 +108,28 @@ WSGI_APPLICATION = 'wyre.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 if HOSTNAME !=  'DESKTOP-U00EROM':
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.mysql',
+    #         'OPTIONS': {
+    #             'sql_mode': 'traditional',
+    #         },
+    #         'NAME': 'wyre$wyre_app_db',
+    #         'USER': 'wyre',
+    #         'PASSWORD': 'wyre_db_password_new',
+    #         'HOST': 'wyre.mysql.pythonanywhere-services.com',
+    #     }
+    # }
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'OPTIONS': {
                 'sql_mode': 'traditional',
             },
-            'NAME': 'wyre$wyre_app_db',
-            'USER': 'wyre',
-            'PASSWORD': 'wyre_db_password_new',
-            'HOST': 'wyre.mysql.pythonanywhere-services.com',
+            'NAME': 'wyre',
+            'USER': 'root',
+            'PASSWORD': '@1happyplace',
+            'HOST': 'localhost',
         }
     }
 else:

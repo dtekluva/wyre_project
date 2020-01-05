@@ -216,3 +216,19 @@ function sum(input){
                 }
               return total;
              }
+
+
+var expanded = false;
+  function showCheckboxes() {
+    var checkboxes = document.getElementById("checkboxes");
+    checkboxes.addEventListener("focusout", (e)=>{
+      showCheckboxes();
+    });
+    if (!expanded) {
+      checkboxes.style.display = "block";
+      expanded = true;
+    } else {
+      checkboxes.style.display = "none";
+      expanded = false;
+  }
+}
