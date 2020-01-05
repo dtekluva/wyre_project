@@ -507,6 +507,7 @@ class Device(models.Model):
                     
 
                     kwh_set = (self.reading_set.filter( post_datetime__year=year).filter( post_datetime__month=month)).values("kwh_import")
+                    print(year, month)
                     print(kwh_set)
                     
                     try:
