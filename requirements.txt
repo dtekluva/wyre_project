@@ -20,3 +20,4 @@ sklearn==0.0
 urllib3==1.24.3
 virtualenv==16.7.2
 virtualenv-clone==0.5.3
+gunicorn (20.0.4)
