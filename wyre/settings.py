@@ -49,6 +49,7 @@ DEBUG = True  if HOSTNAME == "DESKTOP-U00EROM" else True
 ALLOWED_HOSTS = ['wyre.pythonanywhere.com',
                 'localhost',
                 "www.wyreng.com",
+                "wyreng.com",
                 "35.239.28.105",
                 "34.69.115.137"
                 ]
