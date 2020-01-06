@@ -166,7 +166,7 @@
 									 alt=""
 									 title="" />
 						</div>
-						<span class="content-header__user-name">{{customer.company_name}}</span>
+						<span class="content-header__user-name">{{customer.company_name |truncatechars:23}}</span>
 					</div>
 					<nav class="dropdown-menu dropdown-menu--header dropdown-menu--user-menu "
 							 id="userdropdown">
@@ -210,7 +210,7 @@
 						<select class="show-more show-more--select show-more--select-gray has-dropdown" id="device">
 							{% for device in devices %}
 							{{devices}}
-								<option value="{{device.id}}">{{device.name}}-{{device.branch.name}}</option>
+								<option value="{{device.id}}">{{device.name |truncatechars:15}}-{{device.branch.name |truncatechars:15}}</option>
 							{% endfor %}
 						</select>
 						
