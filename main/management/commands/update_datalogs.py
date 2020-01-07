@@ -4,10 +4,22 @@ from main.helpers.fetch_readings import run_migrations
 
 
 
+class Command(BaseCommand):
+    help = 'Displays current time'
 
-for i in range(5):
+    def handle(self, *args, **kwargs):
+        try:
 
-    Datalog().populate()       
+            for i in range(5):
+
+                Datalog().populate()
+                 
+            self.stdout.write("Update Datalogs Successfull")
+
+        except:
+            
+            self.stdout.write("Update Datalogs Failed")              
+      
 
 
 # def update_historic_scores(request):
