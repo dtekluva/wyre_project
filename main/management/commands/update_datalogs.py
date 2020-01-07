@@ -3,11 +3,7 @@ from main.models import *
 from main.helpers.fetch_readings import run_migrations
 
 
-try:
 
-    run_migrations()
-except:
-    pass
 
 for i in range(5):
 
