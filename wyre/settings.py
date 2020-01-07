@@ -44,7 +44,7 @@ CACHE_EXPIRY = 1800
 SECRET_KEY = 'hdhw*b6jko0m!@8@j8ufk+1ybj8u#gc@4ov0_xec((exhar=io'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  if HOSTNAME == "DESKTOP-U00EROM" else True
+DEBUG = True  if HOSTNAME == "DESKTOP-U00EROM" else False
 
 ALLOWED_HOSTS = ['wyre.pythonanywhere.com',
                 'localhost',
@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'main',
     'useraccounts'
@@ -70,6 +71,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,11 +81,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'wyre.urls'
-
-
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, "static/"),
-# ]
 
 TEMPLATES = [
     {
@@ -178,7 +175,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+STATICILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFileStorage'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 lagos_tz = pytz.timezone("Africa/Lagos")
