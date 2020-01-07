@@ -12,12 +12,17 @@ from main.helpers.fetch_readings import run_migrations
 #         for device in devices:
 #  
 class Command(BaseCommand):
-    help = 'Displays current time'
+    help = 'alerts customers of load inbalance'
 
     def handle(self, *args, **kwargs):
         try:
 
-            run_migrations()
+            devices = Device.objects.all()
+                
+            for device in devices:
+
+                device.check_load_balance()
+
             self.stdout.write("Update Readings Successfull")
 
         except:
