@@ -19,7 +19,6 @@
 						</tr>
 						{% for customer in customers %}
 						<tr class="data-row">
-						  <!-- <td class="close-container"> <img class="close-image" title="Remove Customer" src="{% static '/images/close.svg' %}" alt="close icon"> </td> -->
 						  <td>{{customer.company_name}}</td>
 						  <td>{{customer.phone}}</td>
 						  <td>{{customer.get_device_count}}</td>

@@ -179,7 +179,7 @@ STATIC_URL = '/static/'
 
 lagos_tz = pytz.timezone("Africa/Lagos")
 
-if HOSTNAME == "DESKTOP-U00EROM":#USING WHITENOISE FOR STATIC
+if not HOSTNAME == "DESKTOP-U00EROM":#USING WHITENOISE FOR STATIC
 
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFileStorage'
@@ -194,14 +194,14 @@ else: #USING GCLOUDS STORAGE FOR BOTH MEDIA AND STATIC
     GS_PROJECT_ID = 'project-id'
     GS_DEFAULT_ACL = 'publicRead'
 
-    # GOOGLE_APPLICATION_CREDENTIALS = 'C:\\Users\\INYANG\\Desktop\\MyFirstProject-d58e02069744.json'
-    # GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-    #     GOOGLE_APPLICATION_CREDENTIALS
-    # )
-    GOOGLE_APPLICATION_CREDENTIALS = '/home/Linux/My First Project-64c9e2b7b1b2.json'
+    GOOGLE_APPLICATION_CREDENTIALS = 'C:\\Users\\INYANG\\Desktop\\MyFirstProject-d58e02069744.json'
     GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
         GOOGLE_APPLICATION_CREDENTIALS
     )
+    # GOOGLE_APPLICATION_CREDENTIALS = '/home/Linux/My First Project-64c9e2b7b1b2.json'
+    # GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    #     GOOGLE_APPLICATION_CREDENTIALS
+    # )
     
     MEDIA_URL = '/media/'
     MEDIA_ROOT = DEFAULT_FILE_STORAGE
