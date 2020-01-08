@@ -72,7 +72,8 @@ $('#image').change( (e)=>{
     processData: false,
     success: function (response, textStatus, jqXHR) {
       response = JSON.parse(response);
-      document.getElementById("dropzone").style.backgroundImage = `url('${host.slice(0, -1) + response.message}')`
+      // document.getElementById("dropzone").style.backgroundImage = `url('${host.slice(0, -1) + response.message}')`
+      document.getElementById("dropzone").style.backgroundImage = `url('${response.message}')`
       Swal.close()
       Swal.close()
       swal({
