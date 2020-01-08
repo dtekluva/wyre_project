@@ -674,8 +674,9 @@ class Device(models.Model):
                         last_percentage_kw = percentage_kw
 
             if not (imbalance_l1 == imbalance_l2 == imbalance_l3 == 0):
-                message = f"Cases of imbalance occured today. Worst case <br>L1: {imbalance_l1}kw, <br>L2: {imbalance_l2}kw, <br>L3: {imbalance_l3}kw. <br>{round(last_percentage_kw*100)}% Imbalance."
+                message = f"Cases of imbalance occured on {self.name} installed at {self.location}. Worst case <br>L1: {imbalance_l1}kw, <br>L2: {imbalance_l2}kw, <br>L3: {imbalance_l3}kw. <br>{round(last_percentage_kw*100)}% Imbalance."
                 Message(sender = admin, receiver = customer, description = "", content = message ).save()
+                print(message)
                 self.save()
         
     def fuel_consumption(self, start_date = False, end_date = False):
