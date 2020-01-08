@@ -198,6 +198,10 @@ else: #USING GCLOUDS STORAGE FOR BOTH MEDIA AND STATIC
     # GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     #     GOOGLE_APPLICATION_CREDENTIALS
     # )
+    GOOGLE_APPLICATION_CREDENTIALS = '/home/Linux/My First Project-64c9e2b7b1b2.json'
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        GOOGLE_APPLICATION_CREDENTIALS
+    )
 
     MEDIA_URL = '/media/'
     MEDIA_ROOT = DEFAULT_FILE_STORAGE
