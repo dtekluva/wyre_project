@@ -517,13 +517,12 @@ def upload_cdd(request):
 @login_required
 def upload_image(request):
 
-        print(request.user.id)
         user = User.objects.get(id = request.user.id)
         customer_id = request.POST.get("customer_id", False)
 
 
         if request.method == 'POST':
-
+                print("-------------------")
                 file = request.FILES.get("file")
 
                 if not customer_id:

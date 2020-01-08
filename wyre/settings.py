@@ -12,9 +12,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os, pytz
 import socket
-
-
-
+from google.oauth2 import service_account
 
 try:
     HOSTNAME = socket.gethostname()
@@ -26,14 +24,10 @@ except:
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/auth/login'
 LOGIN_URL = '/auth/login'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CACHE_EXPIRY = 1800
 
@@ -44,7 +38,7 @@ CACHE_EXPIRY = 1800
 SECRET_KEY = 'hdhw*b6jko0m!@8@j8ufk+1ybj8u#gc@4ov0_xec((exhar=io'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  if HOSTNAME == "DESKTOP-U00EROM" else False
+DEBUG = True  if HOSTNAME == "DESKTOP-U00EROM" else False
 
 ALLOWED_HOSTS = ['wyre.pythonanywhere.com',
                 'localhost',
@@ -179,10 +173,31 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+
 STATIC_URL = '/static/'
 
-STATICILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFileStorage'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 lagos_tz = pytz.timezone("Africa/Lagos")
+
+if HOSTNAME == "DESKTOP-U00EROM":#USING WHITENOISE FOR STATIC
+
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFileStorage'
+
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+else: #USING GCLOUDS STORAGE FOR BOTH MEDIA AND STATIC
+    DEFAULT_FILE_STORAGE = 'wyre.gcloud_storages.GoogleCloudMediaStorage'
+    STATICFILES_STORAGE = 'wyre.gcloud_storages.GoogleCloudStaticStorage'
+    GS_BUCKET_NAME = 'wyre_cdn'
+    GS_PROJECT_ID = 'project-id'
+    GS_DEFAULT_ACL = 'publicRead'
+
+    GOOGLE_APPLICATION_CREDENTIALS = 'C:\\Users\\INYANG\\Desktop\\MyFirstProject-d58e02069744.json'
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+        GOOGLE_APPLICATION_CREDENTIALS
+    )
+
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = DEFAULT_FILE_STORAGE

@@ -18,7 +18,7 @@ class Customer(models.Model):
     company_name    = models.CharField(max_length=56, default = " ",null=True, blank = True)
     phone           = models.CharField(max_length=40, default = 0,null=True, blank = True)
     address         = models.TextField(max_length=400, null=True, blank = True)
-    image           = models.FileField(upload_to='customer_imgs/', default = 'avatar-6.jpg' ,null=True, blank = True)
+    image           = models.FileField(upload_to='customer_imgs/', default = 'avatar-6.jpg' ,null=True, blank = True) 
     is_main_admin   = models.BooleanField(default = False)
     is_bot          = models.BooleanField(default = False)
     added           = models.DateField(auto_now= True)
