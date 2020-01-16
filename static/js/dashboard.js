@@ -221,9 +221,7 @@ function sum(input){
 var expanded = false;
   function showCheckboxes() {
     var checkboxes = document.getElementById("checkboxes");
-    checkboxes.addEventListener("focusout", (e)=>{
-      showCheckboxes();
-    });
+  
     if (!expanded) {
       checkboxes.style.display = "block";
       expanded = true;

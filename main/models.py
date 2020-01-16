@@ -388,17 +388,17 @@ class Device(models.Model):
         aggregates_gen1 = self.datalog_set.filter(post_datetime__range = (start_date, end_date), digital_input_1 = 1).aggregate(
                 avg_read=Avg('total_kw'),
                 max_read=Max('total_kw'),
-                min_read=Max('total_kw')
+                min_read=Min('total_kw')
         )
         aggregates_gen2 = self.datalog_set.filter(post_datetime__range = (start_date, end_date), digital_input_1 = 2).aggregate(
                 avg_read=Avg('total_kw'),
                 max_read=Max('total_kw'),
-                min_read=Max('total_kw')
+                min_read=Min('total_kw')
         )
-        aggregates_total = self.reading_set.filter(post_datetime__range = (start_date, end_date)).aggregate(
+        aggregates_total = self.reading_set.filter(post_datetime__range = (start_date, end_date), total_kw__gte = 1 ).aggregate(
                 avg_read=Avg('total_kw'),
                 max_read=Max('max_sliding_window_kw_demand'),
-                min_read=Max('total_kw')
+                min_read=Min('total_kw')
         )
 
         return aggregates_gen1, aggregates_gen2, aggregates_total

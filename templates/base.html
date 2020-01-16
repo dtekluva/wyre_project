@@ -186,39 +186,47 @@
 
 				<nav class="content-header__menu">
 
-					
-					<!-- <form>
-						<div class="multiselect">
-						  <div class="selectBox" onclick="showCheckboxes()">
-							<select class="show-more show-more--select show-more--select-gray has-dropdown">
-							  <option>Click to Select Devices</option>
-							</select>
-							<div class="overSelect"></div>
-						  </div>
-						  <div id="checkboxes">
-							{% for device in devices %}
-								<label for="{{device.id}}">
-									<input type="checkbox" id="{{device.id}}" />{{device.name}}-{{device.branch.name}}</label>
-							{% endfor %}
-							<a id="load_readings" onclick="showCheckboxes()" href="#" class="button button--blue-bg button--general button--inline">Fetch.</a>
-						  </div>
-						</div>
-					  </form> -->
 					<ul>
-
-						<li class="reports prescription modal-toggle">
-						<select class="show-more show-more--select show-more--select-gray has-dropdown" id="device">
-							{% for device in devices %}
-							{{devices}}
-								<option value="{{device.id}}">{{device.name |truncatechars:30}}-{{device.branch.name |truncatechars:30}}</option>
-							{% endfor %}
-						</select>
+						{% if page == "Dashboard" %}
 						
+						<li class="reports prescription">
+							<form>
+								<div class="multiselect">
+								  <div class="selectBox" onclick="showCheckboxes()">
+									<select class="show-more show-more--select show-more--select-gray has-dropdown">
+									  <option>Click To Filter Selected Devices</option>
+									</select>
+									<div class="overSelect"></div>
+								  </div>
+								  <div id="checkboxes">
+									{% for device in devices %}
+										<label for="{{device.id}}">
+										<input checked = "true" class="device_checkbox" type="checkbox" id="{{device.id}}" />{{device.name}}-{{device.branch.name}}</label>
+									{% endfor %}
+									<!-- <a id="load_readings" onclick="showCheckboxes()" href="#" class="button button--blue-bg button--general button--inline">Fetch.</a> -->
+								  </div>
+								</div>
+							  </form>
 						</li>
+
+						{% endif %}
+						{% if page != "Dashboard" %}
+						<li class="reports prescription modal-toggle">
+							<select class="show-more show-more--select show-more--select-gray has-dropdown" id="device">
+								{% for device in devices %}
+								{{devices}}
+									<option value="{{device.id}}">{{device.name |truncatechars:30}}-{{device.branch.name |truncatechars:30}}</option>
+								{% endfor %}
+							</select>
+							</li>
+						{% endif %}
+
+
+
 						{% if page == "Dashboard" %}
 						<li class="reports modal-toggle">		
-							<input type="text" name="dates" class="time_period form__input button no_outline" value="{{def_start_date}}-{{def_end_date}}" id = "time_period">
-							<div id = "default_range" hidden>{{def_start_date}}-{{def_end_date}}</div>
+							<input type="text" name="dates" class="time_period form__input button no_outline" value="{{def_start_date}} - {{def_end_date}}" id = "time_period">
+							<div id = "default_range" hidden>{{def_start_date}} - {{def_end_date}}</div>
 						</li>
 						{% endif%}
 						{% if page == "Readings" %}

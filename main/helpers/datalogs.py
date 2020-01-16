@@ -235,7 +235,6 @@ def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
         daily_usage["gen2"].append(daily_data[key][2])
 
     daily_usage["days"], daily_usage["utility"], daily_usage["gen1"], daily_usage["gen2"] = sort_multiple_lists(daily_usage["days"], daily_usage["utility"], daily_usage["gen1"], daily_usage["gen2"]) #rearrange daily day accending
-    # # print(daily_usage)
 
     return daily_usage
 

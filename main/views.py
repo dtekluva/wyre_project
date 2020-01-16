@@ -26,8 +26,8 @@ def get_date_range():
         today_month = today.month
         month_last_day = calendar.monthrange(today_year, today_month)[1]
 
-        default_start_date = f"{today_year}-{today_month}-01"
-        default_end_date = f"{today_year}-{today_month}-{month_last_day}"
+        default_start_date = f"{today_year}/{today_month}/01"
+        default_end_date = f"{today_year}/{today_month}/{month_last_day}"
 
         return default_start_date, default_end_date
 
@@ -237,9 +237,42 @@ def check_new_message(request):
 
                 # print(conversation_partners)
 
+
+
+# def fetch_vals_period(request):
+#         #THIS IS SIMILAR TO THE (fetch_vals_period_per_device) FUNCTION ONLY THAT THIS FUNCTION ONLY FETCHES FOR ALL THE DEVICES I.E GETS OVERALL TOTAL FOR ALL DEVICES OF A CUSTOMER
+
+#         user = User.objects.get(pk = request.user.id)
         
+#         if request.method == "POST":
 
+#                 branch_id = request.POST.get("device", "")
+#                 devices = Device.objects.filter(user_id = request.user.id)
+#                 start_date, end_date = request.POST.get("period", "").split("-")#SPLIT VALUES TO INDIVIDUAL DATES
+#                 #####REPLACE SLASHES WITH DASHES######
+#                 start_date = format_date(start_date.replace("/","-"))
+#                 end_date = format_date(end_date.replace("/","-"))
 
+#                 user_cache = cache.get(user, False)
+
+#                 if user_cache and  (datetime.datetime.now() - user_cache["lastlog"]).seconds < settings.CACHE_EXPIRY:
+#                         data = user_cache["data"]
+#                 else:
+
+#                         peak_kw, min_kw, avg_kw = js_get_reading_stats(user.id, start_date, end_date)
+#                         energy_used = js_total_energy(user.id, start_date, end_date)
+                        
+#                         utility_times, gen1_times, gen2_times = utility_vs_gen(devices, start_date, end_date)
+                        
+#                         devices = Device.objects.filter(user_id = request.user.id)
+                        
+#                         daily_device_usage = daily_utility_vs_gen_kwh(devices, start_date, end_date)
+
+#                         data = {"peak_kw": peak_kw, "min_kw": min_kw, "avg_kw":avg_kw, "energy_used": energy_used, "gen1_times":gen1_times,"gen2_times":gen2_times, "utility_times":utility_times, "daily_device_usage":daily_device_usage}
+
+#                         cache[user] = {"lastlog":datetime.datetime.now(), "data":data}
+
+#         return HttpResponse(json.dumps({"response": "success", "data": data}))
 
 def fetch_vals_period(request):
         #THIS IS SIMILAR TO THE (fetch_vals_period_per_device) FUNCTION ONLY THAT THIS FUNCTION ONLY FETCHES FOR ALL THE DEVICES I.E GETS OVERALL TOTAL FOR ALL DEVICES OF A CUSTOMER
@@ -248,34 +281,120 @@ def fetch_vals_period(request):
         
         if request.method == "POST":
 
-                branch_id = request.POST.get("device", "")
-                devices = Device.objects.filter(user_id = request.user.id)
-                start_date, end_date = request.POST.get("period", "").split("-")#SPLIT VALUES TO INDIVIDUAL DATES
+                data = json.loads(request.body)
+                device_ids = data.get("device", "")
+                devices = list(map(lambda id: Device.objects.get(id = id).device_id, device_ids))
+
+                start_date, end_date = data.get("period", "").split("-")#SPLIT VALUES TO INDIVIDUAL DATES
                 #####REPLACE SLASHES WITH DASHES######
                 start_date = format_date(start_date.replace("/","-"))
                 end_date = format_date(end_date.replace("/","-"))
 
                 user_cache = cache.get(user, False)
 
-                if user_cache and  (datetime.datetime.now() - user_cache["lastlog"]).seconds < settings.CACHE_EXPIRY:
+                if 0==7 and user_cache and  (datetime.datetime.now() - user_cache["lastlog"]).seconds < settings.CACHE_EXPIRY:
                         data = user_cache["data"]
                 else:
-
-                        peak_kw, min_kw, avg_kw = js_get_reading_stats(user.id, start_date, end_date)
-                        energy_used = js_total_energy(user.id, start_date, end_date)
                         
                         utility_times, gen1_times, gen2_times = utility_vs_gen(devices, start_date, end_date)
                         
-                        devices = Device.objects.filter(user_id = request.user.id)
                         
                         daily_device_usage = daily_utility_vs_gen_kwh(devices, start_date, end_date)
 
-                        data = {"peak_kw": peak_kw, "min_kw": min_kw, "avg_kw":avg_kw, "energy_used": energy_used, "gen1_times":gen1_times,"gen2_times":gen2_times, "utility_times":utility_times, "daily_device_usage":daily_device_usage}
+                        data = {"gen1_times":gen1_times,"gen2_times":gen2_times, "utility_times":utility_times, "daily_device_usage":daily_device_usage}
 
                         cache[user] = {"lastlog":datetime.datetime.now(), "data":data}
 
         return HttpResponse(json.dumps({"response": "success", "data": data}))
 
+def get_total_energy(request):
+
+        if request.method == "POST":
+
+                data = json.loads(request.body)
+
+                device_ids = data.get("device", "")
+                start_date, end_date = data.get("period", "").split("-")#SPLIT VALUES TO INDIVIDUAL DATES
+                #####REPLACE SLASHES WITH DASHES######
+
+                start_date = format_date(start_date.replace("/","-"))
+                end_date = format_date(end_date.replace("/","-"))
+                data = 0
+
+                try:
+                        for device_id in device_ids:
+
+                                device = Device.objects.get(id = int(device_id))
+                                raw_usage_dict = device.get_energy_this_month(start_date, end_date)  
+                                data += raw_usage_dict["kwh_usage_so_far"]
+
+                        return HttpResponse(json.dumps({"response": "success", "data": data}))
+                
+                except:
+                        return HttpResponse(json.dumps({"response": "failure"}))
+        else:
+                return HttpResponse(json.dumps({"response": "failure", "message": "Bad Request"}))
+
+def get_stats(request):
+
+        if request.method == "POST":
+
+                data = json.loads(request.body)
+
+                device_ids = data.get("device", "")
+                start_date, end_date = data.get("period", "").split("-")#SPLIT VALUES TO INDIVIDUAL DATES
+                #####REPLACE SLASHES WITH DASHES######
+
+                start_date = format_date(start_date.replace("/","-"))
+                end_date = format_date(end_date.replace("/","-"))
+                min_vals, max_vals, avg_vals = [], [], []
+
+                try:
+                        for device_id in device_ids:
+
+                                device = Device.objects.get(id = int(device_id))
+                                raw_usage_dict = device.get_min_max_power(start_date, end_date)[2] 
+                                avg_read, max_read, min_read = raw_usage_dict["avg_read"], raw_usage_dict["max_read"], raw_usage_dict["min_read"]
+                                min_vals.append(min_read)
+                                max_vals.append(max_read)
+                                avg_vals.append(avg_read)
+
+                        min_vals, max_vals, avg_vals = min(min_vals), max(max_vals), (sum(avg_vals)/len(avg_vals))      
+                        data = dict(min = min_vals, max = max_vals, avg = avg_vals)
+
+                        return HttpResponse(json.dumps({"response": "success", "data": data}))
+                
+                except:
+                        return HttpResponse(json.dumps({"response": "failure"}))
+        else:
+                return HttpResponse(json.dumps({"response": "failure"}))
+
+
+def get_yesterday_today_usage(request):
+
+        if request.method == "POST":
+
+                user = User.objects.get(pk = request.user.id)
+                data = json.loads(request.body)
+                device_ids = data.get("devices", [])
+                today_energy = yesterday_energy = 0
+
+                now = datetime.datetime.now(tz = lagos_tz)
+                yesterday_start = (now - datetime.timedelta(days = 1) ) - datetime.timedelta(hours = now.hour)
+                today_start = (now - datetime.timedelta(hours = now.hour))
+                end_date = now
+
+                for id in device_ids:
+                        device = Device.objects.get(id = id)
+                        today_energy += device.get_energy_this_month(today_start, end_date)["kwh_usage_so_far"]
+
+                        yesterday_energy += device.get_energy_this_month(yesterday_start, today_start)["kwh_usage_so_far"]
+
+                
+                return HttpResponse(json.dumps({"response": "success", "data":{"today_energy":today_energy, "yesterday_energy": yesterday_energy}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+
+        else:
+                return HttpResponse(json.dumps({"response": "failure", "messagae": "Request not Post"}))
 
 def fetch_vals_period_per_device(request):
         #THIS IS SIMILAR TO THE (fetch_vals_period) FUNCTION ONLY THAT THIS FUNCTION ONLY FETCHES FOR ALL THE DEVICES I.E GETS VALUE FOR JUST ONE DEVICE OF A CUSTOMER ALTHOUGH IT STILL HAS THE ABILITY TO FETCH OVERALL TOTAL.
@@ -321,28 +440,28 @@ def get_last_read(request):
 
 ##THIS FUNCTION GETS THE MINIMUM AND MAXIMUM VALUES FOR ALL DEVICES TO BE SHOWN ON THE BARGRAPH 
 
-def get_min_max_each_device(devices, start_date, end_date):
+# def get_min_max_each_device(devices, start_date, end_date):
         
-        result = {"devices":[],"max_reads":[], "min_reads":[]}
+#         result = {"devices":[],"max_reads":[], "min_reads":[]}
 
-        for device in devices:
+#         for device in devices:
 
-                readings = []
+#                 readings = []
 
-                readings = [x[0] for x in  list(js_get_readings(device.id, start_date, end_date, "total_kw")) if x[0] > 0]#UNWRAP TUPLES AND REMOVE INTEGER VALUES
+#                 readings = [x[0] for x in  list(js_get_readings(device.id, start_date, end_date, "total_kw")) if x[0] > 0]#UNWRAP TUPLES AND REMOVE INTEGER VALUES
 
-                if len(readings) > 0:
-                        max_read = int(max(readings))
-                        min_read = int(min(readings))
-                else:
-                        min_read = max_read = avg_read = 0
+#                 if len(readings) > 0:
+#                         max_read = int(max(readings))
+#                         min_read = int(min(readings))
+#                 else:
+#                         min_read = max_read = avg_read = 0
 
 
-                result["devices"].append(device.name)
-                result["max_reads"].append(max_read)
-                result["min_reads"].append(min_read)
+#                 result["devices"].append(device.name)
+#                 result["max_reads"].append(max_read)
+#                 result["min_reads"].append(min_read)
         
-        return result
+#         return result
 
 def get_line_readings(request): 
 
@@ -394,16 +513,15 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
         except:
                 return HttpResponse(json.dumps({"response": "failure"}))
 
-def get_yesterday_today_usage(request):
-        user = User.objects.get(pk = request.user.id)
-        device_id = request.POST.get("device", "None")
-        devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(id = device_id)
-        # # print(devices)
+# def get_yesterday_today_usage(request):
+#         user = User.objects.get(pk = request.user.id)
+#         device_id = request.POST.get("device", "None")
+#         devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(id = device_id)
         
-        today_energy, yesterday_energy = get_energy_usage(devices)
+#         today_energy, yesterday_energy = get_energy_usage(devices)
 
 
-        return HttpResponse(json.dumps({"response": "success", "data":{"today_energy":today_energy, "yesterday_energy": yesterday_energy}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+#         return HttpResponse(json.dumps({"response": "success", "data":{"today_energy":today_energy, "yesterday_energy": yesterday_energy}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 
 @login_required
 def get_capacity_factors(request):
