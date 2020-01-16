@@ -224,7 +224,7 @@ class Device(models.Model):
             gen2_kwh              = total_kwh["gen2"] or 0
 
             Score(
-                    device = device, date = date, avg_load = avg_load, peak_load  = peak_load, fuel_consumption_gen1 = fuel_consumption_gen1, fuel_consumption_gen2 = fuel_consumption_gen1, hours_gen1 = hours_gen1, hours_gen2  = hours_gen2, baseline_energy = baseline_energy, energy_used = energy_used, utility_kwh = utility_kwh, gen1_kwh = gen1_kwh, gen2_kwh = gen1_kwh
+                    device = device, date = date, avg_load = avg_load, peak_load  = peak_load, fuel_consumption_gen1 = fuel_consumption_gen1, fuel_consumption_gen2 = fuel_consumption_gen2, hours_gen1 = hours_gen1, hours_gen2  = hours_gen2, baseline_energy = baseline_energy, energy_used = energy_used, utility_kwh = utility_kwh, gen1_kwh = gen1_kwh, gen2_kwh = gen2_kwh
             ).save()
 
 
