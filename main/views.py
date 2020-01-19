@@ -152,7 +152,7 @@ def readings(request):
         customer = Customer.objects.get(user = user)
         devices = Device.objects.filter(user_id = request.user.id)
         start_date, end_date = get_raw_range_for_js(add_one_day=True)
-        parameters = ["Current (Amps)", "Voltage (Volts)", "Active-Power (kW)", "Reactive-Power (kvar)", "Energy (kWH)"]
+        parameters = ["Current (Amps)", "Voltage (Volts)", "Active-Power (kWh)", "Reactive-Power (kvar)", "Energy (kWH)"]
 
         return render(request, 'readings.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
 
