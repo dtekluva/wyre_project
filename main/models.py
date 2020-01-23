@@ -609,14 +609,15 @@ class Device(models.Model):
 
         now = datetime.datetime.now(tz = lagos_tz)
         start_date = start_date or (now - datetime.timedelta(days = now.day-1) ) - datetime.timedelta(hours = now.hour)
-        end_date = end_date or now
+        end_date = end_date or now + datetime.timedelta(hours = now.hour)
+        print("--------------------------------------", start_date, end_date)
 
-        current_month_kwh_data = list(self.reading_set.filter(post_datetime__range = (start_date, end_date)).order_by("kwh_import"))
-
+        current_month_kwh_data = list(self.datalog_set.filter(post_datetime__range = (start_date, end_date)).order_by("summary_energy_register_1"))
+        
         try:
 
-            start_kwh = current_month_kwh_data[1].kwh_import or 0  #["kwh_import"]
-            end_kwh = current_month_kwh_data[len(current_month_kwh_data)-1].kwh_import or 0
+            start_kwh = current_month_kwh_data[1].summary_energy_register_1 or 0  #["summary_energy_register_1"]
+            end_kwh = current_month_kwh_data[len(current_month_kwh_data)-1].summary_energy_register_1 or 0
 
         except IndexError or AssertionError:
             start_kwh = 0
