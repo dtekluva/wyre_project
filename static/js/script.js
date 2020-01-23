@@ -7,6 +7,8 @@ if (location.protocol === 'https:') {
   // page is secure
   host = host.replace("http", "https")
 }
+
+var route_to = window.location.href.split("=").length == 1 ? "/" : window.location.href.split("=")[1]; //NEXT PAGE TO REDIRECT TO ON LOGIN 
     
 $('#LoginForm').on('submit', async e => {
     e.preventDefault()
@@ -42,7 +44,7 @@ const post = ()=>{
           // console.log(resp)
           
           if (resp.response == 'success') {
-            window.location.replace('/')
+            window.location.replace(route_to)
           } else if (resp.response == 'failure') {
             $("#login_error").show()
             swal({
