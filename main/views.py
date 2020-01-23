@@ -395,7 +395,7 @@ def get_yesterday_today_usage(request):
 
                 now = datetime.datetime.now(tz = lagos_tz)
                 yesterday_start = (now - datetime.timedelta(days = 1) ) - datetime.timedelta(hours = now.hour)
-                today_start = (now - datetime.timedelta(hours = now.hour))
+                today_start = (now - datetime.timedelta(hours = now.hour+1))
                 end_date = now
 
                 for id in device_ids:
