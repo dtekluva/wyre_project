@@ -110,10 +110,8 @@ const post = (device)=>{
         .then(resp => {
           resp = JSON.parse(resp)
           values.data = resp.data;
-          console.log(values);
+          
           if (resp.response == 'success') {
-            // console.log(parameter.value)
-            // console.log(values)
             
             if (parameter.value == "Voltage (Volts)"){
               table.clear().draw(); 
@@ -128,11 +126,11 @@ const post = (device)=>{
 
               populate_active_power(prepare_data_active_power());
             } 
-            else if(parameter.value == "Reactive-Power (kvar)"){
+            else if(parameter.value == "Reactive-Power (kVAR)"){
 
               populate_reactive_power(prepare_data_reactive_power());
             } 
-            else if(parameter.value == "Energy (kWH)"){
+            else if(parameter.value == "Energy (kWh)"){
 
               populate_energy(prepare_data_energy());
             } 
@@ -292,11 +290,11 @@ function prepare_data_voltage(){
 function populate_active_power(data){
     
   ActivityChart.chart.data.datasets[0].data = data.l1
-  ActivityChart.chart.data.datasets[0].label = "K-watts(L1)"
+  ActivityChart.chart.data.datasets[0].label = "K-Watts(L1)"
   ActivityChart.chart.data.datasets[1].data = data.l2
-  ActivityChart.chart.data.datasets[1].label = "K-watts(L2)"
+  ActivityChart.chart.data.datasets[1].label = "K-Watts(L2)"
   ActivityChart.chart.data.datasets[2].data = data.l3
-  ActivityChart.chart.data.datasets[2].label = "K-watts(L3)"
+  ActivityChart.chart.data.datasets[2].label = "K-Watts(L3)"
   ActivityChart.chart.data.datasets[3].data = data.hz
   ActivityChart.chart.data.datasets[3].label = "Frequency"
   ActivityChart.chart.data.labels = data.time
@@ -325,11 +323,11 @@ function prepare_data_active_power(){
 function populate_reactive_power(data){
     
   ActivityChart.chart.data.datasets[0].data = data.l1
-  ActivityChart.chart.data.datasets[0].label = "K-var (L1)"
+  ActivityChart.chart.data.datasets[0].label = "K-VAR (L1)"
   ActivityChart.chart.data.datasets[1].data = data.l2
-  ActivityChart.chart.data.datasets[1].label = "K-var (L2)"
+  ActivityChart.chart.data.datasets[1].label = "K-VAR (L2)"
   ActivityChart.chart.data.datasets[2].data = data.l3
-  ActivityChart.chart.data.datasets[2].label = "K-var (L3)"
+  ActivityChart.chart.data.datasets[2].label = "K-VAR (L3)"
   ActivityChart.chart.data.datasets[3].data = data.hz
   ActivityChart.chart.data.datasets[3].label = "Frequency"
   ActivityChart.chart.data.labels = data.time
@@ -358,7 +356,7 @@ function prepare_data_reactive_power(){
 function populate_energy(data){
     
   ActivityChart.chart.data.datasets[0].data = data.energy
-  ActivityChart.chart.data.datasets[0].label = "Energy Usage (Kwh)"
+  ActivityChart.chart.data.datasets[0].label = "Energy Usage (kWh)"
   ActivityChart.chart.data.datasets[1].data = data.l2
   ActivityChart.chart.data.datasets[1].label = "-"
   ActivityChart.chart.data.datasets[2].data = data.l3

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -13,12 +13,14 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
-# x = Reading.objects.get(id = 1)
-# Reading.objects.all().delete()
-# # x.post_datetime = "2019-07-30 16:19:15+00:00"
-# x.post_datetime = "2019-07-01T03:45:05.137"
-# x.save()
 cache = {}
+
+user_login_required = user_passes_test(lambda user: user.customer.is_main_admin, login_url='/auth/login')
+
+def admin_customer_required(view_func):
+    decorated_view_func = login_required(user_login_required(view_func))
+    return decorated_view_func
+
 
 def get_date_range():
         today = datetime.datetime.now()
@@ -79,6 +81,7 @@ def power(request):
         return render(request, 'power.html', {'user':user, "customer": customer, "page": page, "devices":devices})
 
 @login_required
+@admin_customer_required
 def all_customers(request):
         page = "Customers"
 
@@ -147,6 +150,17 @@ def current(request):
 
 @login_required
 def readings(request):
+        page = "Readings"
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+        devices = Device.objects.filter(user_id = request.user.id)
+        start_date, end_date = get_raw_range_for_js(add_one_day=True)
+        parameters = ["Current (Amps)", "Voltage (Volts)", "Active-Power (kW)", "Reactive-Power (kVAR)", "Energy (kWh)"]
+
+        return render(request, 'readings.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
+
+@login_required
+def readings_from_logs(request):
         page = "Readings"
         user = User.objects.get(pk = request.user.id)
         customer = Customer.objects.get(user = user)
