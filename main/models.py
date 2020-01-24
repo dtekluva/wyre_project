@@ -925,7 +925,7 @@ class Datalog(models.Model):
             
             pseudo_end_date = end_date - datetime.timedelta(days = 16) #COMPENSATE FOR ADDED 15 DAYS IN "WHILE NOT LOGS - ABOVE" THIS DATE IS TO CREATE A ILLUSION OF THE LAST DATE FETCHED IN CASE EXPERTPOWER DID NOT RETURN ANY DATA
 
-            if time < pseudo_end_date and pseudo_end_date < datetime.datetime.now():
+            if time < pseudo_end_date and pseudo_end_date < make_aware(datetime.datetime.now()):
                 print("end_date : ", pseudo_end_date, "|\ttime : ", time)
 
                 Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = pseudo_end_date, post_date = pseudo_end_date, post_time = pseudo_end_date, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter)
