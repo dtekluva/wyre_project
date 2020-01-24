@@ -625,7 +625,7 @@ class Device(models.Model):
 
         kwh_usage = end_kwh - start_kwh
 
-        response = dict( kwh_usage_so_far = int(kwh_usage*1.005), number_of_days_so_far = now.day)
+        response = dict( kwh_usage_so_far = int(kwh_usage), number_of_days_so_far = now.day)
 
         return response
 
