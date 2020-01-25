@@ -855,16 +855,12 @@ class Datalog(models.Model):
                 return (i['value'])
         return 0
 
-    def populate(self):
+       def populate(self):
         devices = Device.objects.all()
-
 
         for device in devices:
             # # print(device.device_id)
-            # print(device.name)
             device_last_read = Datalog.objects.filter(device = device).order_by("-post_datetime")
-
-            # if device.device_id != "133929":continue
 
             if device_last_read:
                 device_last_read_date = device_last_read[0].post_datetime
@@ -876,8 +872,7 @@ class Datalog(models.Model):
             end_date  = (device_last_read_date + datetime.timedelta(days = 15))
             end_date_str =  end_date.strftime("%Y-%m-%d")
 
-            # print(device_last_read_date_str, end_date_str)
-            # print("end_date : ", end_date)
+            # # print(device_last_read_date_str, end_date_str)
 
             logs = False
 
@@ -898,7 +893,6 @@ class Datalog(models.Model):
                 
                 # print(data)
                 time = data['recordTime']
-                # print(time)
                 time = make_aware(datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S"))
                 
                 d_i1 = self.filter_dict_from_list(data, "Digital Input #1")
@@ -917,23 +911,90 @@ class Datalog(models.Model):
                 if not Datalog.objects.filter(post_datetime = time, device__device_id = device.device_id):
 
                     Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = time, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
-                    # print("adding")
                     
                 else:
-                    print("Continuing")
                     continue
-            
-            pseudo_end_date = end_date - datetime.timedelta(days = 16) #COMPENSATE FOR ADDED 15 DAYS IN "WHILE NOT LOGS - ABOVE" THIS DATE IS TO CREATE A ILLUSION OF THE LAST DATE FETCHED IN CASE EXPERTPOWER DID NOT RETURN ANY DATA
+    
+    
+    # def populate(self):
+    #     devices = Device.objects.all()
 
-            if time < pseudo_end_date and pseudo_end_date < make_aware(datetime.datetime.now()):
-                # print("end_date : ", pseudo_end_date, "|\ttime : ", time)
 
-                Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = pseudo_end_date, post_date = pseudo_end_date, post_time = pseudo_end_date, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter)
-                print("Second Adding")
+    #     for device in devices:
+    #         # # print(device.device_id)
+    #         # print(device.name)
+    #         device_last_read = Datalog.objects.filter(device = device).order_by("-post_datetime")
+
+    #         # if device.device_id != "133929":continue
+
+    #         if device_last_read:
+    #             device_last_read_date = device_last_read[0].post_datetime
+    #             device_last_read_date_str = device_last_read_date.strftime("%Y-%m-%d")
+    #         else:
+    #             device_last_read_date = datetime.datetime.strptime("2018-01-01", "%Y-%m-%d")
+    #             device_last_read_date_str = device_last_read_date.strftime("%Y-%m-%d")
+
+    #         end_date  = (device_last_read_date + datetime.timedelta(days = 15))
+    #         end_date_str =  end_date.strftime("%Y-%m-%d")
+
+    #         # print(device_last_read_date_str, end_date_str)
+    #         # print("end_date : ", end_date)
+
+    #         logs = False
+
+    #         while not logs:
+
                 
-            else:
-                print("Second continuing")
-                continue
+    #             logs = remote_request.make_remote_request(device_id = device.device_id, start_date = device_last_read_date_str, end_date = end_date_str)["data"]
+
+    #             device_last_read_date = end_date
+    #             device_last_read_date_str = device_last_read_date.strftime("%Y-%m-%d")
+
+    #             end_date  = (end_date + datetime.timedelta(days = 15))
+    #             end_date_str =  end_date.strftime("%Y-%m-%d")
+
+    #             # # print(device_last_read_date_str, end_date_str)
+
+    #         for data in reversed(logs):
+                
+    #             # print(data)
+    #             time = data['recordTime']
+    #             # print(time)
+    #             time = make_aware(datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S"))
+                
+    #             d_i1 = self.filter_dict_from_list(data, "Digital Input #1")
+    #             d_i2 = self.filter_dict_from_list(data, "Digital Input #2")
+    #             d_i3 = self.filter_dict_from_list(data, "Digital Input #3")
+    #             d_i4 = self.filter_dict_from_list(data, "Digital Input #4")
+    #             summary_energy_register1 = self.filter_dict_from_list(data, "Summary Energy Register #1") or self.filter_dict_from_list(data, "kWh import")
+    #             summary_energy_register2 = self.filter_dict_from_list(data, "Summary Energy Register #2")
+    #             summary_energy_register3 = self.filter_dict_from_list(data, "Summary Energy Register #3")
+    #             total_kW = self.filter_dict_from_list(data, "Total kW") or self.filter_dict_from_list(data, "Avg Total kW")
+    #             pulse_counter = self.filter_dict_from_list(data, "Pulse counter #1")
+
+    #             # print(time, d_i1, d_i2, d_i3, d_i4, summary_energy_register1, summary_energy_register2, total_kW,pulse_counter)
+ 
+    #             # if not Datalog.objects.filter(post_datetime = time.strftime("%Y-%m-%d %H:%M:%S"), device__device_id = device.device_id):
+    #             if not Datalog.objects.filter(post_datetime = time, device__device_id = device.device_id):
+
+    #                 Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = time, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
+    #                 # print("adding")
+                    
+    #             else:
+    #                 print("Continuing")
+    #                 continue
+            
+    #         pseudo_end_date = end_date - datetime.timedelta(days = 16) #COMPENSATE FOR ADDED 15 DAYS IN "WHILE NOT LOGS - ABOVE" THIS DATE IS TO CREATE A ILLUSION OF THE LAST DATE FETCHED IN CASE EXPERTPOWER DID NOT RETURN ANY DATA
+
+    #         if time < pseudo_end_date and pseudo_end_date < make_aware(datetime.datetime.now()):
+    #             # print("end_date : ", pseudo_end_date, "|\ttime : ", time)
+
+    #             Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = pseudo_end_date, post_date = pseudo_end_date, post_time = pseudo_end_date, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter)
+    #             print("Second Adding")
+                
+    #         else:
+    #             print("Second continuing")
+    #             continue
 
     def __str__(self):
         return f"{self.post_date} customer-({self.customer})"
