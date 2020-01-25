@@ -177,7 +177,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-lagos_tz = pytz.timezone("Africa/Lagos")
+lagos_tz = pytz.timezone("UTC")
 
 if HOSTNAME == "DESKTOP-U00EROM":#USING WHITENOISE FOR STATIC
 
