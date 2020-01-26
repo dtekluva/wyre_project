@@ -855,12 +855,13 @@ class Datalog(models.Model):
                 return (i['value'])
         return 0
 
-       def populate(self):
+    def populate(self):
         devices = Device.objects.all()
 
         for device in devices:
             # # print(device.device_id)
             device_last_read = Datalog.objects.filter(device = device).order_by("-post_datetime")
+
 
             if device_last_read:
                 device_last_read_date = device_last_read[0].post_datetime
