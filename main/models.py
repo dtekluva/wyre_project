@@ -618,12 +618,12 @@ class Device(models.Model):
             end_date = date_only(end_date)
         print("--------------------------------------", start_date, end_date)
 
-        current_month_kwh_data = list(self.datalog_set.filter(post_datetime__range = (start_date, end_date)).order_by("summary_energy_register_1"))
+        current_month_kwh_data = (self.datalog_set.filter(post_datetime__range = (start_date, end_date)).order_by("summary_energy_register_1"))
         
         try:
 
-            start_kwh = current_month_kwh_data[1].summary_energy_register_1 or 0  #["summary_energy_register_1"]
-            end_kwh = current_month_kwh_data[len(current_month_kwh_data)-1].summary_energy_register_1 or 0
+            start_kwh = current_month_kwh_data[0].summary_energy_register_1 or 0  #["summary_energy_register_1"]
+            end_kwh = current_month_kwh_data.order_by('-id')[0].summary_energy_register_1 or 0
 
         except IndexError or AssertionError:
             start_kwh = 0
