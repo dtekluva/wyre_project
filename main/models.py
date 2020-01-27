@@ -6,7 +6,7 @@ from django.db.models import Avg, Max, Min, Sum
 from wyre.settings import lagos_tz
 from main.helpers import get_baseline, remote_request, datalogs
 from django.db.models.functions import Extract, ExtractMonth, ExtractYear
-import datetime
+import datetime, math
 from django.conf import settings
 from django.utils.timezone import make_aware
 
@@ -629,9 +629,9 @@ class Device(models.Model):
             start_kwh = 0
             end_kwh = 0
 
-        kwh_usage = end_kwh - start_kwh
+        kwh_usage = math.ceil(end_kwh - start_kwh)
 
-        response = dict( kwh_usage_so_far = int(kwh_usage), number_of_days_so_far = now.day)
+        response = dict( kwh_usage_so_far = kwh_usage, number_of_days_so_far = now.day)
 
         return response
 
