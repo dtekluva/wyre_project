@@ -610,7 +610,13 @@ class Device(models.Model):
         now = datetime.datetime.now(tz = lagos_tz)
         start_date = start_date or (now - datetime.timedelta(days = now.day-1) ) - datetime.timedelta(hours = now.hour)
         end_date = end_date or now + datetime.timedelta(hours = now.hour)
-        # print("--------------------------------------", start_date, end_date)
+
+        if isinstance(start_date, type(datetime.datetime.now())):
+            start_date = date_only(start_date)
+
+        if isinstance(end_date, type(datetime.datetime.now())):
+            end_date = date_only(end_date)
+        print("--------------------------------------", start_date, end_date)
 
         current_month_kwh_data = list(self.datalog_set.filter(post_datetime__range = (start_date, end_date)).order_by("summary_energy_register_1"))
         
@@ -1083,6 +1089,9 @@ def last_day_of_month(any_month):
 
     return (next_month - datetime.timedelta(days=next_month.day)).day
 
+
+def date_only(date_object):
+    return f"{date_object.year}-{date_object.month}-{date_object.day}"
 
 # def base_line_energy(self, start_date = False, end_date = False):
 
