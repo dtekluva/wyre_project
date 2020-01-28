@@ -6,8 +6,9 @@ from django.db.models import Avg, Max, Min, Sum
 from wyre.settings import lagos_tz
 from main.helpers import get_baseline, remote_request, datalogs
 from django.db.models.functions import Extract, ExtractMonth, ExtractYear
-import datetime, math
+import datetime, math, json
 from django.conf import settings
+from wyre.settings import BASE_DIR 
 from django.utils.timezone import make_aware
 
 number_of_months_for_base_line = 6
@@ -25,7 +26,7 @@ class Customer(models.Model):
 
     def __str__(self):
         return f"{self.company_name} {self.id}"
-
+    
     def get_device_count(self):
         return self.device_set.all().count()
 
@@ -100,6 +101,11 @@ class Customer(models.Model):
         except:
             pass
 
+    def get_cached_score(self, value):
+
+        response = Cache().get(key)
+
+        return response
 
 class Branch(models.Model):
     customer  = models.ForeignKey(Customer, on_delete=models.CASCADE)
@@ -1092,6 +1098,59 @@ def last_day_of_month(any_month):
 
 def date_only(date_object):
     return f"{date_object.year}-{date_object.month}-{date_object.day}"
+
+
+class Cache():
+
+    #MAKE SURE TO IMPORT BASE_DIR FROM SETTINGS
+    CACHE_FILENAME = "cache.json"
+    CACHE_FILE_DIR = BASE_DIR.replace("\\", "/") + "/" + CACHE_FILENAME 
+    
+    def read_data(self):
+
+        try:
+            file = open(self.CACHE_FILE_DIR, "r")
+            json.loads(file.read())
+            file.close()
+        except:
+
+            file = open(self.CACHE_FILE_DIR, "w")
+            file.write(json.dumps({"key":"val"}))
+            file.close()
+
+        file = open(self.CACHE_FILE_DIR, "r")
+        data = json.loads(file.read())
+
+        return data
+    
+    def write_data(self, data):
+
+        file = open(self.CACHE_FILE_DIR, "w")
+        file.write(json.dumps(data))
+        file.close()
+
+        return True
+
+    def update(self, key, value, timed  = False):
+
+        file = open(self.CACHE_FILE_DIR, "r")
+        data = self.read_data()
+        data[key] = value
+        self.write_data(data)
+
+        print("Successfully cached")
+        return {f"cached-{key}" : True}
+
+
+    def get(self, key):
+
+        data = self.read_data().get(key, [])
+
+        return data
+
+
+
+
 
 # def base_line_energy(self, start_date = False, end_date = False):
 

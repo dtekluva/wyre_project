@@ -518,7 +518,7 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
 
                 data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
-                # # print(data)
+
                 for i in range(len(data)):
                         data[i]["post_datetime"] = data[i]["post_datetime"].strftime("%b. %d, %Y, %I:%M %p.")
 
@@ -527,32 +527,21 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
         except:
                 return HttpResponse(json.dumps({"response": "failure"}))
 
-# def get_yesterday_today_usage(request):
-#         user = User.objects.get(pk = request.user.id)
-#         device_id = request.POST.get("device", "None")
-#         devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(id = device_id)
-        
-#         today_energy, yesterday_energy = get_energy_usage(devices)
-
-
-#         return HttpResponse(json.dumps({"response": "success", "data":{"today_energy":today_energy, "yesterday_energy": yesterday_energy}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 
 @login_required
 def get_capacity_factors(request):
         user = User.objects.get(pk = request.user.id)
-        # time_then = datetime.datetime.now()
         
-        # device_id = request.POST.get("device", "None")
+        response = Cache().get(f"get_capacity_factors-{user.id}")
         
+        if response:
+                return HttpResponse(json.dumps({"response": "success", "data":{"base_line":response}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
         branches = user.branch_set.all()
         response = []
 
         for branch in branches:
 
                 devices = branch.device_set.all()
-
-                # if not response.get(branch.name, False): 
-                        
 
                 for device in devices:
                         response.append({
@@ -567,9 +556,8 @@ def get_capacity_factors(request):
                                 "total_kwh": device.get_total_kwh(),
                                 "previous_scores" : device.get_previous_score()
                         })
-        # diff = (datetime.datetime.now() - time_then).seconds
-        # print("------ TOTAL TIME TAKEN ------")
-        # print(diff)
+        
+        Cache().update(f"get_capacity_factors-{user.id}", response,)
 
         return HttpResponse(json.dumps({"response": "success", "data":{"base_line":response}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
 

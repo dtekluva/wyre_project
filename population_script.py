@@ -19,11 +19,12 @@
 #     print(buckets)
 
 # implicit()
+from main.models import *
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
 
-def load_score(device_id, User, Device):
+def load_score():
 
     device = Device.objects.get(device_id = device_id)
     user = User.objects.get(id = device.customer.user.id)
@@ -54,8 +55,5 @@ def load_score(device_id, User, Device):
                     "total_kwh": device.get_total_kwh(),
                     "previous_scores" : device.get_previous_score()
             })
-    # diff = (datetime.datetime.now() - time_then).seconds
-    # print("------ TOTAL TIME TAKEN ------")
-    # print(diff)
 
     print(json.dumps({"response": "success", "data":{"base_line":response}}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
