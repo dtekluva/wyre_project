@@ -1112,7 +1112,7 @@ class Cache():
             file = open(self.CACHE_FILE_DIR, "r")
             json.loads(file.read())
             file.close()
-        except:
+        except :
 
             file = open(self.CACHE_FILE_DIR, "w")
             file.write(json.dumps({"key":"val"}))
@@ -1133,7 +1133,6 @@ class Cache():
 
     def update(self, key, value, timed  = False):
 
-        file = open(self.CACHE_FILE_DIR, "r")
         data = self.read_data()
         data[key] = value
         self.write_data(data)
