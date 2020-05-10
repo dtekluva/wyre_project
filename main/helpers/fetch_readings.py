@@ -7,7 +7,7 @@ from dateutil.parser import parse
 lagos=pytz.timezone('Africa/Lagos')
 
 username = "ppl"
-password = "Wyre1234"
+password = "Wyre2017"
 device_ids = ["128162","125639","128166", "133813"]
 
 last_reading = ""

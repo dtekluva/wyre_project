@@ -8,7 +8,7 @@ import numpy as np
 
 def make_remote_request(device_id, start_date = "2019-08-15", end_date = "2019-08-16", url = 'logs'):
 
-    req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre1234')
+    req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre2017')
 
     auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) chnaged to (form_p)
     auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
