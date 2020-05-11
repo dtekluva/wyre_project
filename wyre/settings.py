@@ -39,11 +39,13 @@ SECRET_KEY = 'hdhw*b6jko0m!@8@j8ufk+1ybj8u#gc@4ov0_xec((exhar=io'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  if HOSTNAME == "DESKTOP-U00EROM" else False
+# DEBUG = True
 
 ALLOWED_HOSTS = ['wyre.pythonanywhere.com',
                 'localhost',
                 "www.wyreng.com",
                 "wyreng.com",
+                "104.197.70.223",
                 "35.239.28.105",
                 "34.69.115.137"
                 ]
@@ -206,3 +208,12 @@ else: #USING GCLOUDS STORAGE FOR BOTH MEDIA AND STATIC
     MEDIA_URL = '/media/'
     MEDIA_ROOT = DEFAULT_FILE_STORAGE
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+
+# importing logger settings
+try:
+    from .logger_settings import *
+except Exception as e:
+    # in case of any error, pass silently.
+    pass
