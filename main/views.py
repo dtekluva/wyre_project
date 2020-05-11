@@ -33,6 +33,7 @@ def get_date_range():
 
         return default_start_date, default_end_date
 
+
 def get_raw_range_for_js(add_one_day = False):
         if not add_one_day:
                 today = datetime.datetime.now()
