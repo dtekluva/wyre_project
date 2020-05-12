@@ -136,6 +136,7 @@ def run_migrations():
         device_ids = Device.objects.all()
         
         for device in device_ids:
+                print(device.device_id)
                 
                 # target_device = Device.objects.get(device_id = device_id)
                 last_reading = Reading.objects.filter(device = device).latest('post_datetime').post_datetime #GET LAST READING FOR PARTICULAR DEVICE
