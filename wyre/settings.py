@@ -121,9 +121,9 @@ if HOSTNAME !=  'DESKTOP-U00EROM':
                 'sql_mode': 'traditional',
             },
             'NAME': 'wyredb',
-            'USER': 'wyreuser',
-            'PASSWORD': '11111111',
-            'HOST': 'localhost',
+            'USER': 'root',
+            'PASSWORD': '@11111111',
+            'HOST': '34.66.143.135',
         }
     }
 else:
