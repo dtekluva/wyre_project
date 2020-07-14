@@ -873,6 +873,7 @@ class Datalog(models.Model):
         for device in devices:
             
             # # print(device.device_id)
+            print(device.device_id)
             device_last_read = Datalog.objects.filter(device = device).order_by("-post_datetime")
 
 

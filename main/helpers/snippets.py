@@ -9,7 +9,8 @@ def get_readings(device_id, start_date, end_date, target):
     start_date = "2019-07-01"
     end_date = "2019-07-30"
 
-    readings = Reading.objects.filter(device__id = device_id, post_datetime__range = (start_date, end_date)).values_list(target)
+    device = device.objects.get(id = device_id)
+    readings = Reading.objects.filter(device = device, post_datetime__range = (start_date, end_date)).values_list(target)
  
     return readings
 
@@ -17,8 +18,9 @@ def get_readings(device_id, start_date, end_date, target):
 def get_device_reading_for_period(start_date, end_date, device_id):#KWH_IMPORT
     start_date = "2019-07-01"
     end_date = "2019-07-30"
+    device = device.objects.get(id = device_id)
 
-    readings = Reading.objects.filter(device__id = device_id, post_datetime__range = (start_date, end_date)).order_by("post_datetime").values_list('kwh_import')
+    readings = Reading.objects.filter(device = device, post_datetime__range = (start_date, end_date)).order_by("post_datetime").values_list('kwh_import')
 
     if len(readings) != 0:
 
@@ -62,14 +64,15 @@ def get_reading_stats(user_id, start_date, end_date):
             ###########################################################################
 
 def js_get_readings(device_id, start_date, end_date, target):
-
-    readings = Reading.objects.filter(device__id = device_id, post_datetime__range = (start_date, end_date)).values_list(target)
+    device = device.objects.get(id = device_id)
+    readings = Reading.objects.filter(device = device, post_datetime__range = (start_date, end_date)).values_list(target)
  
     return readings
 
 def js_get_device_reading_for_period(start_date, end_date, device_id):
 
-    readings = Reading.objects.filter(device__id = device_id, post_datetime__range = (start_date, end_date)).order_by("post_datetime").values_list('kwh_import')
+    device = device.objects.get(id = device_id)
+    readings = Reading.objects.filter(device = device, post_datetime__range = (start_date, end_date)).order_by("post_datetime").values_list('kwh_import')
 
     if len(readings) != 0:
 
@@ -134,7 +137,7 @@ def format_date(date):###THIS FUNCTION CONVERTS DATE FROM DD-MM-YYY TO YYY-MM-DD
 
 def js_get_readings_kw(device_id, start_date, end_date, target1, target2, target3):
 
-    readings = Reading.objects.filter(device__id = device_id, post_datetime__range = (start_date, end_date)).values_list("post_datetime", target1, target2, target3)
+    readings = Reading.objects.filter(device = device, post_datetime__range = (start_date, end_date)).values_list("post_datetime", target1, target2, target3)
 
     return readings
 
@@ -172,9 +175,9 @@ def get_energy_usage(devices):
 
         for device in devices:
             
-            today_readings = list(Reading.objects.filter(device__id = device.id, post_datetime__range = (today_start_date, today_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
+            today_readings = list(Reading.objects.filter(device = device, post_datetime__range = (today_start_date, today_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
 
-            yesterday_readings = list(Reading.objects.filter(device__id = device.id, post_datetime__range = (yesterday_start_date, yesterday_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
+            yesterday_readings = list(Reading.objects.filter(device = device, post_datetime__range = (yesterday_start_date, yesterday_end_date)).values_list("post_datetime", "kwh_import").order_by("post_time").values())
 
             today_start = 0 if len(today_readings) < 1 else today_readings[0]["kwh_import"]
             today_end = 0 if len(today_readings) < 1 else today_readings[-1]["kwh_import"]

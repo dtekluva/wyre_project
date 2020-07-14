@@ -507,7 +507,7 @@ def get_line_readings(request):
 
                 end_date = date + datetime.timedelta(days = 1) #ADD ONE DAY TO DAY TO ENABLE FILTERING BY DURATION AS YOU CANNOT FILTER BY ONE DAY.
 
-                raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
+                raw_data = list(Reading.objects.filter(device = devices[0], post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
 
                 data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
 
@@ -531,7 +531,7 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
                 date = format_date(date.replace("/","-"))
                 end_date = format_date(end_date.replace("/","-"))
 
-                raw_data = list(Reading.objects.filter(device__id = device_id, post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
+                raw_data = list(Reading.objects.filter(device = devices[0], post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
 
                 data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
 
