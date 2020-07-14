@@ -266,12 +266,13 @@ def get_last_readings(device_id):
 
     raw_data = remote_request.make_remote_request(device_id = device_id, url = "last_read")
 
-    last_read = raw_data["data"][0]['data']
-    template["record_time"] = raw_data["data"][0]["recordTime"]
+    last_read = raw_data["Data"][0]['Data']
+    template["record_time"] = raw_data["Data"][0]["RecordTime"]
 
     for value in last_read:
-        template[value["description"].lower().replace('.','').replace(' ','_').replace('/','_').replace('(','').replace(')','')] = value
+        template[value["Description"].lower().replace('.','').replace(' ','_').replace('/','_').replace('(','').replace(')','')] = value["Value"]
         
+    print(template)
     return template
 
 def sort_multiple_lists(i,j,k,l):

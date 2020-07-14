@@ -861,16 +861,17 @@ class Datalog(models.Model):
     @staticmethod
     def filter_dict_from_list(data, value):
         
-        for i in data['data']:
+        for i in data['Data']:
             # # print(i)
-            if i['description'] == value:
-                return (i['value'])
+            if i['Description'] == value:
+                return (i['Value'])
         return 0
 
     def populate(self):
         devices = Device.objects.all()
 
         for device in devices:
+            
             # # print(device.device_id)
             print(device.device_id)
             device_last_read = Datalog.objects.filter(device = device).order_by("-post_datetime")
@@ -893,7 +894,7 @@ class Datalog(models.Model):
             while not logs:
 
                 
-                logs = remote_request.make_remote_request(device_id = device.device_id, start_date = device_last_read_date_str, end_date = end_date_str)["data"]
+                logs = remote_request.make_remote_request(device_id = device.device_id, start_date = device_last_read_date_str, end_date = end_date_str)["Data"]
 
                 device_last_read_date = end_date
                 device_last_read_date_str = device_last_read_date.strftime("%Y-%m-%d")
@@ -906,7 +907,7 @@ class Datalog(models.Model):
             for data in reversed(logs):
                 
                 # print(data)
-                time = data['recordTime']
+                time = data['RecordTime']
                 time = make_aware(datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S"))
                 
                 d_i1 = self.filter_dict_from_list(data, "Digital Input #1")

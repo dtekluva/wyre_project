@@ -78,7 +78,7 @@ $('#image').change( (e)=>{
       } else{
         Swal.close()
         swal({
-          title: "Success",
+          title: "Failure",
           text: "Failed To Upload CDDs.!!",
         });
       }
