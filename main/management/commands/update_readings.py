@@ -20,6 +20,6 @@ class Command(BaseCommand):
             run_migrations()
             self.stdout.write("Update Readings Successfull")
 
-        except:
+        except SyntaxError:
             
             self.stdout.write("Update Readings Failed")              

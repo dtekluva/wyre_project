@@ -29,7 +29,7 @@ def make_request(cookie, device_id, start_date, end_date):
 
     response = request.content
     data = json.loads(response)
-    readings = data['data']
+    readings = data['Data']
 #     # print(data)
     return readings
 
@@ -38,21 +38,16 @@ def populate_db(readings, device_code, last_reading):
 
     device = Device.objects.get(device_id = device_code)
     first_run = True
-#     print(readings)
 
     for record in reversed(readings):
-        # date = record['recordTime'][:10]
-        # time = record['recordTime'][11:]
-        # _datetime = (record['recordTime']).replace('T'," ")
-        time_obj = lagos.localize(parse(record['recordTime']))
-        # print(record)
+
+        time_obj = datetime.datetime.strptime(record["RecordTime"][:19], "%Y-%m-%dT%H:%M:%S")- datetime.timedelta(hours=2)
+        time_obj = pytz.timezone('Africa/Lagos').localize(time_obj)
 
         if first_run : print("-----RUNNING MIGRATION-----"); first_run = False
-        # print(lagos.localize(parse(record['recordTime'])) > last_reading)
 
-        if lagos.localize(parse(record['recordTime'])) > last_reading:
-                reading = reshape_data_to_dict(record["data"])
-                # print(readings)
+        if time_obj > last_reading:
+                reading = reshape_data_to_dict(record["Data"])
                 
                 Reading.objects.create(customer = device.customer, post_date = time_obj, post_time = time_obj, 
                         post_datetime = time_obj, 
@@ -120,14 +115,14 @@ def reshape_data_to_dict(readings):
 
         parameters = {}
         for value in readings:
-                description = (value["description"])\
+                description = (value["Description"])\
                                 .replace('.','')\
                                 .replace(' ','_')\
                                 .replace('/','_')\
                                 .replace('(','')\
                                 .replace(')','').lower()
                 # # print(str(i).center(2), description.center(35), str(value["value"]).center(12), str(value["units"]).center(13))
-                parameters[description] = value["value"]
+                parameters[description] = value["Value"]
                 i += 1
         return parameters
 
@@ -136,6 +131,7 @@ def run_migrations():
         device_ids = Device.objects.all()
         
         for device in device_ids:
+
                 
                 # target_device = Device.objects.get(device_id = device_id)
                 last_reading = Reading.objects.filter(device = device).latest('post_datetime').post_datetime #GET LAST READING FOR PARTICULAR DEVICE

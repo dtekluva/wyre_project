@@ -110,6 +110,20 @@ def view_customer(request, id):
 
         return render(request, 'edit_customer.html', {'user':user, "edit_customer": edit_customer, "edit_branches": edit_branches,  "customers": customers, "customer": customer, "page": page, "devices":devices, "branches": branches})
 
+def consumption(request):
+        pass
+
+def power_quality(request):
+        page = "Readings"
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+        devices = Device.objects.filter(user_id = request.user.id)
+        start_date, end_date = get_raw_range_for_js(add_one_day=True)
+        parameters = ["Current (Amps)", "Voltage (Volts)", "Active-Power (kW)", "Reactive-Power (kVAR)", "Energy (kWh)"]
+
+        return render(request, 'power_quality.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
+        pass
+
 @login_required
 def view_profile(request):
 
@@ -448,6 +462,7 @@ def get_last_read(request):
                 device_id = Device.objects.get(id = device)
                 
                 last_read = get_last_readings(device_id = device_id)
+                print(last_read)
 
                 return HttpResponse(json.dumps({"response": "success", "data":last_read}))
 
@@ -522,6 +537,7 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
 
                 for i in range(len(data)):
                         data[i]["post_datetime"] = data[i]["post_datetime"].strftime("%b. %d, %Y, %I:%M %p.")
+                        print(data[i]["post_datetime"])
 
         try:
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
