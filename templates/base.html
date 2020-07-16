@@ -79,7 +79,7 @@
 						<a href="#"><b>Parameters<span class="submenu-arrow"></span></b></a>
 						<ul class="sidebar-menu__submenu">
 							<li>
-								<a href="../consumption">Energy Consumption Logs</a>
+								<a href="../consumption">Energy Consumption</a>
 							</li>
 							<li>
 								<a href="../power_quality">Power Quality Logs</a>
@@ -240,6 +240,25 @@
 						</li>
 
 						<li class="reports prescription modal-toggle">
+							<select class="show-more show-more--select show-more--select-gray has-dropdown" id="parameter">
+								{% for parameter in parameters %}
+									<option value="{{parameter}}">{{parameter}}</option>
+								{% endfor %}
+							</select>
+							
+							</li>
+						{% endif%}
+						
+						{% if page == "Consumption" %}
+						<!-- <li class="reports modal-toggle">
+							<input class="single_date button form__input no_outline" type="text" name="date" value="08/11/2019" id="single_date"/>
+						</li> -->
+						<li class="reports modal-toggle">		
+							<input type="text" name="dates" class="time_period form__input button no_outline" value="{{def_start_date}} - {{def_end_date}}" id = "time_period">
+							<div id = "default_range" hidden>{{def_start_date}} - {{def_end_date}}</div>
+						</li>
+
+						<li class="reports prescription modal-toggle" style="margin-left: 35px;">
 							<select class="show-more show-more--select show-more--select-gray has-dropdown" id="parameter">
 								{% for parameter in parameters %}
 									<option value="{{parameter}}">{{parameter}}</option>
@@ -629,6 +648,17 @@
 	
 	{% if page == "Readings" %}
 		<script src="{% static 'js/readings.js' %}"></script>
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.10.16/js/buttons.html5.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.10.16/js/buttons.flash.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.10.16/js/buttons.html5.min.js"></script>	
+		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.10.16/js/buttons.# print.min.js"></script>	
+	{% endif %}
+	{% if page == "Consumption" %}
+		<script src="{% static 'js/consumption.js' %}"></script>
 		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>	
 		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.10.16/js/buttons.html5.min.js"></script>	
 		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/1.10.16/js/buttons.flash.min.js"></script>	

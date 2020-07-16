@@ -16,7 +16,7 @@ class Command(BaseCommand):
                  
             self.stdout.write("Update Datalogs Successfull")
 
-        except:
+        except SyntaxError:
             
             self.stdout.write("Update Datalogs Failed")              
       
