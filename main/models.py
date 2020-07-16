@@ -920,12 +920,12 @@ class Datalog(models.Model):
                 total_kW = self.filter_dict_from_list(data, "Total kW") or self.filter_dict_from_list(data, "Avg Total kW")
                 pulse_counter = self.filter_dict_from_list(data, "Pulse counter #1")
 
-                # print(time, d_i1, d_i2, d_i3, d_i4, summary_energy_register1, summary_energy_register2, total_kW,pulse_counter)
- 
-                # if not Datalog.objects.filter(post_datetime = time.strftime("%Y-%m-%d %H:%M:%S"), device__device_id = device.device_id):
+
                 if not Datalog.objects.filter(post_datetime = time, device__device_id = device.device_id):
 
-                    Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = time, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
+                    post_tme_offset_1hr = (time - datetime.timedelta(hours = 1))#.strftime("%H:%M:%S")
+
+                    Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = post_tme_offset_1hr, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
                     
                 else:
                     continue

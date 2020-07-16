@@ -111,7 +111,15 @@ def view_customer(request, id):
         return render(request, 'edit_customer.html', {'user':user, "edit_customer": edit_customer, "edit_branches": edit_branches,  "customers": customers, "customer": customer, "page": page, "devices":devices, "branches": branches})
 
 def consumption(request):
-        pass
+        page = "Consumption"
+        user = User.objects.get(pk = request.user.id)
+        customer = Customer.objects.get(user = user)
+        devices = Device.objects.filter(user_id = request.user.id)
+        start_date, end_date = get_raw_range_for_js(add_one_day=True)
+        parameters = ["Raw", "Hourly", "Daily", "Weekly"]
+
+        return render(request, 'power_quality.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
+
 
 def power_quality(request):
         page = "Readings"
@@ -122,7 +130,7 @@ def power_quality(request):
         parameters = ["Current (Amps)", "Voltage (Volts)", "Active-Power (kW)", "Reactive-Power (kVAR)", "Energy (kWh)"]
 
         return render(request, 'power_quality.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
-        pass
+        
 
 @login_required
 def view_profile(request):
@@ -533,11 +541,11 @@ def get_line_readings_log(request): #READINGS FOR LINE CHARTS IN READINGS PAGE
 
                 raw_data = list(Reading.objects.filter(device = devices[0], post_datetime__range = (date, end_date)).defer('post_datetime','post_date').order_by('post_datetime').values())
 
-                data = raw_data # map(lambda __date: __date.strftime("%I:%M %p"))
+                data = raw_data
 
                 for i in range(len(data)):
-                        data[i]["post_datetime"] = data[i]["post_datetime"].strftime("%b. %d, %Y, %I:%M %p.")
-                        print(data[i]["post_datetime"])
+                        data[i]["post_datetime"] = (data[i]["post_datetime"] + datetime.timedelta(hours = 1)).strftime("%b. %d, %Y, %I:%M %p.")
+                        # print(data[i]["post_datetime"])
 
         try:
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
