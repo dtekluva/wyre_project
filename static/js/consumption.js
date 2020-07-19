@@ -173,19 +173,24 @@ function add_to_tables(values){
       i,
       element[0],
       element[1],
-      "-",
-      "-",
-      "-",
-      "-",
-      "-",
-      "-",
-      "-",
-      "-",
-      "-",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
   ] )
   Swal.close()
 });
     
+
  table.draw();
 };
 
