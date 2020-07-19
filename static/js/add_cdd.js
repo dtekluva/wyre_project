@@ -79,7 +79,7 @@ $('#image').change( (e)=>{
         Swal.close()
         swal({
           title: "Failure",
-          text: "Failed To Upload CDDs.!!",
+          text: "Failed To Upload CDDs. Please Check CSV structure.!!",
         });
       }
       

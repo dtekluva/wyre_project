@@ -79,9 +79,9 @@ const post = (device)=>{
 
 function populate(_data){
   console.log(_data.data);
-  let _record_time = new Date(_data.data.record_time);
-  time_span.innerHTML = _record_time.setHours(_record_time.getHours() - 3);;
-  
+  let rec_date = new Date(_data.data.record_time)
+  rec_date.setHours(rec_date.getHours() - 2);;
+  time_span.innerHTML = rec_date;
   
   document.getElementById("vl1").innerHTML = _data.data.voltage_l1_l12 || '-';
   document.getElementById("vl2").innerHTML = _data.data.voltage_l2_l23 || '-';

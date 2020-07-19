@@ -25,7 +25,6 @@ _date = document.getElementById("single_date")
 $('#device').on('change', async e => {
   let device = $("#device")[0].value;
   let period = $("#read_time_period")[0].value
-
   post(device);
   get_logs(device, period);
 })
@@ -48,7 +47,7 @@ $(function() {
     singleDatePicker: true,
     showDropdowns: true,
     "minYear": 2017,
-    "maxYear": 2025,
+    "maxYear": 2070,
     "startDate": todays_date,
     onSelect: function() {
       $(this).data('datepicker').inline = true;                               
@@ -56,14 +55,21 @@ $(function() {
   });
 });
 
+setTimeout(() => {
+  
+  $('#device').change();
+
+}, 3000);
+
 //LOAD DATEPICKER ONCHANGE EVENT
 $('input[name="date"]').on('apply.daterangepicker', async e => {
   let device = $("#device")[0].value
   post(device);
-})
+});
+
 $(document).ready(function() {
   
-} );
+});
 
 $(window).on('load', function() {
 
@@ -72,16 +78,16 @@ $(window).on('load', function() {
 
   table = $('#reaing_table').DataTable( {
                 "scrollX": true,
-                dom: 'Bfrtip',
+                dom: 'Brtip',
                 buttons: [
-                    'copy', 'csv', 'excel', 'pdf', '# print'
+                    'copy', 'csv', 'excel', 'pdf', 'print'
                     
                 ],
                 "columnDefs": [
                   {"className": "dt-center", "targets": "_all"}
                 ],
                 "pageLength": 20
-              } );
+              });
   post(device);
   get_logs(device, period);
 });
@@ -206,6 +212,7 @@ const get_logs = (device, period)=>{
                   title: "Error fetching data!!",
                   text: "Try selecting a valid date range first",
                 });
+              Swal.close();
           }
         })
         .catch(() => {
@@ -218,6 +225,7 @@ const get_logs = (device, period)=>{
             title: "Network Error",
             text: "Please check your internet connection.!!",
           });
+          Swal.close();
         }) // post data
 }
 
@@ -399,9 +407,12 @@ function time_convert (time) {
 }
 
 function add_to_tables(readings){
+
   table.clear().draw()
+  let i = 1;
   readings.data.forEach(element => {
     table.row.add( [
+      i,
       element.post_datetime,
       element.voltage_l1_l12,
       element.voltage_l2_l23,
@@ -420,6 +431,7 @@ function add_to_tables(readings){
       element.power_factor_l3,
       element.avg_frequency
   ] )
+  i++;
   Swal.close()
 });
     

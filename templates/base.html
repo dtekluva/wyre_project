@@ -254,12 +254,12 @@
 							<input class="single_date button form__input no_outline" type="text" name="date" value="08/11/2019" id="single_date"/>
 						</li> -->
 						<li class="reports modal-toggle">		
-							<input type="text" name="dates" class="time_period form__input button no_outline" value="{{def_start_date}} - {{def_end_date}}" id = "time_period">
-							<div id = "default_range" hidden>{{def_start_date}} - {{def_end_date}}</div>
+							<input type="text" name="consumption_dates" class="time_period form__input button no_outline" value="" id = "time_period">
+							<div id = "read_time_period" hidden>{{def_start_date}} - {{def_end_date}}</div>
 						</li>
 
 						<li class="reports prescription modal-toggle" style="margin-left: 35px;">
-							<select class="show-more show-more--select show-more--select-gray has-dropdown" id="parameter">
+							<select class="show-more show-more--select show-more--select-gray has-dropdown" id="resolution">
 								{% for parameter in parameters %}
 									<option value="{{parameter}}">{{parameter}}</option>
 								{% endfor %}
@@ -647,8 +647,8 @@
 	{% endif %}
 	
 	{% if page == "Readings" %}
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>		
 		<script src="{% static 'js/readings.js' %}"></script>
-		<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>		
 	{% endif %}
 	{% if page == "Consumption" %}
 		<script src="{% static 'js/consumption.js' %}"></script>

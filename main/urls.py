@@ -37,6 +37,7 @@ urlpatterns = [
     path('load_readings/', views.load_readings, name='load_readings'),
     path('get_yesterday_today_usage/', views.get_yesterday_today_usage, name='get_yesterday_today_usage'),
     path('get_line_readings_log/', views.get_line_readings_log, name='get_line_readings_log'),
+    path('get_energy_consumption_readings/', views.get_energy_consumption_readings, name='get_energy_consumption_readings'),
     path('get_capacity_factors/', views.get_capacity_factors, name='get_capacity_factors'),
     path('messaging/', views.messaging, name='messaging'),
     path('fetch_messages/', views.fetch_messages, name='fetch_messages'),

@@ -766,6 +766,68 @@ class Device(models.Model):
 
         return fuel_consumption["diesel_consumption"]
 
+    def get_energy_in_resolution(self, start_date, end_date, resolution):
+
+        logs = self.get_logs(start_date, end_date)
+        print(start_date, end_date)
+
+        # resolution = "hourly"
+        result = []
+        start_value = {"time":0, "value":0}
+        print(start_date, end_date, resolution)
+
+        if resolution == "Hourly":
+            data = logs['data']
+            
+            for datapoint in reversed(data):
+                time = datetime.datetime.strptime(datapoint["recordTime"], "%Y-%m-%dT%H:%M:%S")
+                datapoint_timestamp = f"{time.year}-{time.month}-{time.day} {time.hour}:00"
+                datapoint_energy = datapoint["data"][1]["value"]
+                
+                if start_value["time"] == datapoint_timestamp:
+                    continue
+
+                elif start_value["time"] == 0:
+
+                    start_value["time"] = datapoint_timestamp
+                    start_value["value"] = datapoint_energy
+                    continue
+
+                elif start_value["time"] != datapoint_timestamp:
+
+                    result.append([datapoint_timestamp, datapoint_energy - start_value["value"]])
+                    
+                    start_value["time"] = datapoint_timestamp
+                    start_value["value"] = datapoint_energy
+
+        elif resolution == "Daily":
+            data = logs['data']
+            
+            for datapoint in reversed(data):
+                time = datetime.datetime.strptime(datapoint["recordTime"], "%Y-%m-%dT%H:%M:%S")
+                datapoint_timestamp = f"{time.year}-{time.month}-{time.day}"
+                datapoint_energy = datapoint["data"][1]["value"]
+                
+                if start_value["time"] == datapoint_timestamp:
+                    continue
+
+                elif start_value["time"] == 0:
+
+                    start_value["time"] = datapoint_timestamp
+                    start_value["value"] = datapoint_energy
+                    continue
+
+                elif start_value["time"] != datapoint_timestamp:
+
+                    result.append([datapoint_timestamp, datapoint_energy - start_value["value"]])
+                    
+                    start_value["time"] = datapoint_timestamp
+                    start_value["value"] = datapoint_energy
+
+            result = result[1:]
+
+        return result
+    
     def __str__(self):
         return self.device_id
 
