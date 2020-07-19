@@ -116,9 +116,9 @@ def consumption(request):
         customer = Customer.objects.get(user = user)
         devices = Device.objects.filter(user_id = request.user.id)
         start_date, end_date = get_raw_range_for_js(add_one_day=True)
-        parameters = ["Raw", "Hourly", "Daily", "Weekly"]
+        parameters = ["Hourly", "Daily"]
 
-        return render(request, 'power_quality.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
+        return render(request, 'consumption.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
 
 
 def power_quality(request):
@@ -501,6 +501,31 @@ def get_last_read(request):
         
 #         return result
 
+def get_energy_consumption_readings(request): 
+
+        user = User.objects.get(pk = request.user.id)
+
+        if request.method == "POST":
+
+                device_id = request.POST.get("device", "")
+                device = Device.objects.get(id = device_id)
+                period = request.POST.get("date", "").split("-")
+
+                resolution = request.POST.get("resolution", "")
+                #####REPLACE SLASHES WITH DASHES######
+                
+                start_date = format_date(period[0].replace("/","-"))
+
+                end_date = format_date(period[1].replace("/","-")) + datetime.timedelta(days = 1) #ADD ONE DAY TO DAY TO ENABLE FILTERING BY DURATION AS YOU CANNOT FILTER BY ONE DAY.
+
+                data = device.get_energy_in_resolution(start_date, end_date, resolution)
+                print(data)
+
+        try:
+                return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))
+        except:
+                return HttpResponse(json.dumps({"response": "failure"}))
+                
 def get_line_readings(request): 
 
         user = User.objects.get(pk = request.user.id)

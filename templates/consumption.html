@@ -21,8 +21,8 @@
                   <h2 style="flex:1">Raw Logs</h2>
                   <li class="reports modal-toggle" style="flex:1;">
                         
-                      <input style="width: 30% !important;" type="text" name="dates" class="time_period form__input button" value="" id = "read_time_period">
-                      <div id = "default_range" hidden>{{def_start_date}}-{{def_end_date}}</div>
+                      <!-- <input style="width: 30% !important;" type="text" name="dates" class="time_period form__input button" value="" id = "">
+                      <div id = "default_range" hidden>{{def_start_date}}-{{def_end_date}}</div> -->
                       
                   </li>
               </div>
@@ -30,8 +30,9 @@
               <table id="reaing_table" class="display">
                   <thead>
                       <tr>
+                          <th>Index</th>
                           <th>Date/Time</th>
-                          <th>Line 1 (Volts)</th>
+                          <th>Consumed (Kw-H</th>
                           <th>Line 2 (Volts)</th>
                           <th>Line 3 (Volts)</th>
                           <th>Line 1 (Amps)</th>
@@ -44,9 +45,6 @@
                           <th>Line 2 (kVAR)</th>
                           <th>Line 3 (kVAR)</th>
                           <th>Line 1 (P.F)</th>
-                          <th>Line 2 (P.F)</th>
-                          <th>Line 3 (P.F)</th>
-                          <th>Frequency (AVG)</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -59,5 +57,5 @@
         <!-- CORRESPONDING JAVASCRIPT FOR PAGE'S CHARTS -->
         <script src="{% static 'js/Chart.min.js' %}"></script>
         <script src="{% static 'js/chartjs-plugin-style.min.js' %}"></script>
-        <script src="{% static 'js/charts-readings-charts.js' %}"></script>
+        <script src="{% static 'js/charts-consumption-charts.js' %}"></script>
     {% endblock %}         

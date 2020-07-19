@@ -26,3 +26,4 @@ migrations/
 media/
 .env/
 staticfiles/
+data_dump.json
