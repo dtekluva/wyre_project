@@ -190,6 +190,7 @@ function add_to_tables(values){
   Swal.close()
 });
     
+
  table.draw();
 };
 
