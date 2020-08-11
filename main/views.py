@@ -120,7 +120,6 @@ def consumption(request):
 
         return render(request, 'consumption.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
 
-
 def power_quality(request):
         page = "Readings"
         user = User.objects.get(pk = request.user.id)

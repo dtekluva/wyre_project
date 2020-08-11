@@ -802,6 +802,7 @@ class Device(models.Model):
 
         elif resolution == "Daily":
             data = logs['data']
+            data.pop(0)
             
             for datapoint in reversed(data):
                 time = datetime.datetime.strptime(datapoint["recordTime"], "%Y-%m-%dT%H:%M:%S")
@@ -824,7 +825,8 @@ class Device(models.Model):
                     start_value["time"] = datapoint_timestamp
                     start_value["value"] = datapoint_energy
 
-            result = result[1:]
+            result = result
+            print(result)
 
         return result
     
