@@ -4,7 +4,6 @@ from requests.auth import HTTPBasicAuth
 import json, datetime, pytz
 from dateutil.parser import parse
 
-lagos=pytz.timezone('Africa/Lagos')
 
 username = "ppl"
 password = "Wyre2017"
@@ -41,8 +40,7 @@ def populate_db(readings, device_code, last_reading):
 
     for record in reversed(readings):
 
-        time_obj = datetime.datetime.strptime(record["RecordTime"][:19], "%Y-%m-%dT%H:%M:%S")- datetime.timedelta(hours=2)
-        time_obj = pytz.timezone('Africa/Lagos').localize(time_obj)
+        time_obj = datetime.datetime.strptime(record["RecordTime"][:19], "%Y-%m-%dT%H:%M:%S")#- datetime.timedelta(hours=2)
 
         if first_run : print("-----RUNNING MIGRATION-----"); first_run = False
 
