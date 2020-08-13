@@ -822,7 +822,7 @@ class Device(models.Model):
 
                 elif start_value["time"] != datapoint_timestamp:
 
-                    result.append([datapoint_timestamp, datapoint_energy - start_value["value"]])
+                    result.append([start_value["time"], datapoint_energy - start_value["value"]])
                     
                     start_value["time"] = datapoint_timestamp
                     start_value["value"] = datapoint_energy
