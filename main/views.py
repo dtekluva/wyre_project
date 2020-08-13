@@ -517,7 +517,7 @@ def get_energy_consumption_readings(request):
                 end_date = format_date(period[1].replace("/","-")) + datetime.timedelta(days = 1) #ADD ONE DAY TO DAY TO ENABLE FILTERING BY DURATION AS YOU CANNOT FILTER BY ONE DAY.
 
                 data = device.get_energy_in_resolution(start_date, end_date, resolution)
-                print(data)
+
 
         try:
                 return HttpResponse(json.dumps({"response": "success", "data": data}, sort_keys=True, indent=1, cls=DjangoJSONEncoder))

@@ -689,7 +689,7 @@ class Device(models.Model):
             if not (imbalance_l1 == imbalance_l2 == imbalance_l3 == 0):
                 message = f"Cases of imbalance occured on {self.name} installed at {self.location}. Worst case <br>L1: {imbalance_l1}kw, <br>L2: {imbalance_l2}kw, <br>L3: {imbalance_l3}kw. <br>{round(last_percentage_kw*100)}% Imbalance."
                 Message(sender = admin, receiver = customer, description = "", content = message ).save()
-                print(message)
+                # print(message)
                 self.save()
         
     def fuel_consumption(self, start_date = False, end_date = False):
@@ -779,7 +779,7 @@ class Device(models.Model):
 
         if resolution == "Hourly":
             data = logs['data']
-            print(data)
+            # print(data)
             
             for datapoint in reversed(data):
                 time = datetime.datetime.strptime(datapoint["recordTime"], "%Y-%m-%dT%H:%M:%S")
@@ -822,7 +822,7 @@ class Device(models.Model):
 
                 elif start_value["time"] != datapoint_timestamp:
 
-                    result.append([datapoint_timestamp, datapoint_energy - start_value["value"]])
+                    result.append([start_value["time"], datapoint_energy - start_value["value"]])
                     
                     start_value["time"] = datapoint_timestamp
                     start_value["value"] = datapoint_energy
