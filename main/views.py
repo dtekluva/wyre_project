@@ -220,7 +220,6 @@ def messaging(request):
         customer = Customer.objects.get(user = user)
         customer.get_messages()
         conversation_partners = customer.get_conversation_partners()
-        # print(conversation_partners)
         
         device_id = request.POST.get("device", "")
         devices = Device.objects.filter(user__id = user.id) if device_id == "None" else Device.objects.filter(user = user)
@@ -415,7 +414,7 @@ def get_yesterday_today_usage(request):
                 device_ids = data.get("devices", [])
                 today_energy = yesterday_energy = 0
 
-                now = datetime.datetime.now(tz = lagos_tz)
+                now = datetime.datetime.now()
                 yesterday_start = (now - datetime.timedelta(days = 1) ) - datetime.timedelta(hours = now.hour)
                 today_start = (now - datetime.timedelta(hours = now.hour))
                 end_date = now + datetime.timedelta(days = 1)
@@ -653,7 +652,7 @@ def update_historic_scores(request):
 
 ###########################################################
 ###########################################################
-############## LOAD NEW CDD ###############################
+##################### LOAD NEW CDD ########################
 
 @csrf_exempt
 def upload_cdd(request):
@@ -713,7 +712,7 @@ def update_details(request):
         customer = Customer.objects.get(user = user)
 
         if request.method == 'POST':
-                # # print(request.POST)
+
                 company_name = request.POST.get("name")
                 username = request.POST.get("username")
                 phone = request.POST.get("phone")
@@ -749,7 +748,7 @@ def update_branch(request):
         customer = Customer.objects.get(user = user)
 
         if request.method == 'POST':
-                # # print(request.POST)
+
                 branch_name = request.POST.get("branch_name")
                 address = request.POST.get("address")
                 gen1 = request.POST.get("gen1")
@@ -775,7 +774,7 @@ def create_branch(request):
         # customer = Customer.objects.get(user = user)
 
         if request.method == 'POST':
-                # print(request.POST)
+
                 branch_name = request.POST.get("branch_name")
                 address = request.POST.get("address")
                 gen1 = request.POST.get("gen1")
@@ -796,7 +795,7 @@ def create_branch(request):
 def create_device(request):
 
         if request.method == 'POST':
-                # # print(request.POST)
+
                 device_name = request.POST.get("device_name")
                 location = request.POST.get("location")
                 device_id = request.POST.get("device_id")
@@ -823,7 +822,7 @@ def update_device(request):
         customer = Customer.objects.get(user = user)
 
         if request.method == 'POST':
-                # # print(request.POST)
+
                 device_name = request.POST.get("device_name")
                 location = request.POST.get("location")
                 device_id = request.POST.get("device_id")
@@ -852,7 +851,7 @@ def add_user(request):
         devices = Device.objects.filter(user_id = request.user.id)
 
         if request.method == 'POST':
-                # # print(request.POST)
+
                 company_name = request.POST.get("name")
                 username = request.POST.get("username")
                 phone = request.POST.get("phone")
@@ -894,7 +893,7 @@ def edit_user(request):
         page = "Edit User"
 
         if request.method == 'POST':
-                # # print(request.POST)
+
                 company_name = request.POST.get("name")
                 username = request.POST.get("username")
                 phone = request.POST.get("phone")
@@ -938,7 +937,7 @@ def simple_upload(request):
         doc = Document(document = file)
         doc.save()
         if request.method == 'POST':
-                # # print(request.POST)
+
                 return HttpResponse(json.dumps({"response": "success", "message": doc.document.url}))
                 
         return render(request, 'upload.html')

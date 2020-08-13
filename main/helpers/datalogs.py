@@ -212,10 +212,12 @@ def get_daily_usage(data):
 def daily_utility_vs_gen_kwh(device_ids, start_date, end_date):
     daily_data = {}
     daily_usage = {"days":[], "gen1":[], "gen2":[], "utility":[]}
+    print(start_date, end_date)
 
     for device_id in device_ids:
         old_data = daily_data.copy()
         data = make_local_request(device_id, start_date, end_date)
+        print(data)
         df_data = rearrange_data(data["data"])
 
         

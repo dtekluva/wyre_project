@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Avg, Max, Min, Sum
-from wyre.settings import lagos_tz
+# from wyre.settings im
 from main.helpers import get_baseline, remote_request, datalogs
 from django.db.models.functions import Extract, ExtractMonth, ExtractYear
 import datetime, math, json
@@ -320,7 +320,7 @@ class Device(models.Model):
                 }
 
         # print(start_date, end_date)
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
         start_date = start_date or (now - datetime.timedelta(days = now.day -1)-datetime.timedelta(days = now.hour))
         end_date = end_date or now - datetime.timedelta(days = 1)
 
@@ -367,7 +367,7 @@ class Device(models.Model):
 
     def get_total_kwh(self, start_date = False, end_date = False):
 
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
         start_date = start_date or (now - datetime.timedelta(days = now.day-1))
         end_date = end_date or now
 
@@ -387,7 +387,7 @@ class Device(models.Model):
 
     def get_min_max_power(self, start_date = False, end_date = False):
 
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
         start_date = start_date or (now - datetime.timedelta(days = now.day-1))- datetime.timedelta(days = now.day)
         end_date = end_date or now
 
@@ -411,7 +411,7 @@ class Device(models.Model):
 
     def get_capacity_factor(self, start_date = False, end_date = False):
 
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
         start_date = start_date or (now - datetime.timedelta(days = 30))
         end_date = end_date or now
 
@@ -466,7 +466,7 @@ class Device(models.Model):
 
     def base_line_energy(self, start_date = False, end_date = False):
 
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
        
         start_date = start_date or (now - datetime.timedelta(days = 30*number_of_months_for_base_line))
         end_date = end_date or datetime.datetime.now()
@@ -545,7 +545,7 @@ class Device(models.Model):
 
     def base_line_energy_populate(self, start_date = False, end_date = False):
 
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
        
         start_date = start_date 
         end_date = end_date or datetime.datetime.now()
@@ -613,7 +613,7 @@ class Device(models.Model):
 
     def get_energy_this_month(self, start_date = False, end_date = False):
 
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
         start_date = start_date or (now - datetime.timedelta(days = now.day-1) ) - datetime.timedelta(hours = now.hour)
         end_date = end_date or now + datetime.timedelta(hours = now.hour)
 
@@ -651,7 +651,7 @@ class Device(models.Model):
 
         customer = self.customer
         admin    = Customer.objects.filter(is_bot = True)[0]
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
 
         start_date = now - datetime.timedelta(days = 6)
         end_date = now + datetime.timedelta(days = 1)
@@ -694,7 +694,7 @@ class Device(models.Model):
         
     def fuel_consumption(self, start_date = False, end_date = False):
 
-        now = datetime.datetime.now(tz = lagos_tz)
+        now = datetime.datetime.now()
         start_date = start_date or (now - datetime.timedelta(days = now.day-1))
         end_date = end_date or now + datetime.timedelta(days = 1)
 
@@ -775,9 +775,11 @@ class Device(models.Model):
         result = []
         start_value = {"time":0, "value":0}
         print(start_date, end_date, resolution)
+        previous_timestamp_value = "" # TO HOLD ACTUAL TIME STAMP VALUE JUST CALCULATED
 
         if resolution == "Hourly":
             data = logs['data']
+            print(data)
             
             for datapoint in reversed(data):
                 time = datetime.datetime.strptime(datapoint["recordTime"], "%Y-%m-%dT%H:%M:%S")
@@ -795,7 +797,7 @@ class Device(models.Model):
 
                 elif start_value["time"] != datapoint_timestamp:
 
-                    result.append([datapoint_timestamp, datapoint_energy - start_value["value"]])
+                    result.append([start_value["time"], datapoint_energy - start_value["value"]])
                     
                     start_value["time"] = datapoint_timestamp
                     start_value["value"] = datapoint_energy
@@ -826,7 +828,6 @@ class Device(models.Model):
                     start_value["value"] = datapoint_energy
 
             result = result
-            print(result)
 
         return result
     
@@ -972,7 +973,7 @@ class Datalog(models.Model):
                 
                 # print(data)
                 time = data['RecordTime']
-                time = make_aware(datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S"))
+                time = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S") #- datetime.timedelta(hours=2)
                 
                 d_i1 = self.filter_dict_from_list(data, "Digital Input #1")
                 d_i2 = self.filter_dict_from_list(data, "Digital Input #2")
@@ -987,9 +988,9 @@ class Datalog(models.Model):
 
                 if not Datalog.objects.filter(post_datetime = time, device__device_id = device.device_id):
 
-                    post_tme_offset_1hr = (time - datetime.timedelta(hours = 1))#.strftime("%H:%M:%S")
+                    # post_tme_offset_1hr = (time - datetime.timedelta(hours = 2))#.strftime("%H:%M:%S")
 
-                    Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = post_tme_offset_1hr, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
+                    Datalog.objects.create(customer = device.customer, device = device, user = device.user, post_datetime = time, post_date = time, post_time = time, digital_input_1 = d_i1, digital_input_2 = d_i2, digital_input_3 = d_i3, digital_input_4 = d_i4, summary_energy_register_1 = summary_energy_register1, summary_energy_register_2 = summary_energy_register2, total_kw = total_kW, pulse_counter = pulse_counter) 
                     
                 else:
                     continue
@@ -1219,7 +1220,7 @@ class Cache():
 
 # def base_line_energy(self, start_date = False, end_date = False):
 
-#         now = datetime.datetime.now(tz = lagos_tz)
+#         now = datetime.datetime.now()
 #         start_date = start_date or (now - datetime.timedelta(days = 30*10))
 #         end_date = end_date or (now - datetime.timedelta(days = datetime.datetime.now().day))
 
