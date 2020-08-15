@@ -116,7 +116,7 @@ def consumption(request):
         customer = Customer.objects.get(user = user)
         devices = Device.objects.filter(user_id = request.user.id)
         start_date, end_date = get_raw_range_for_js(add_one_day=True)
-        parameters = ["Hourly", "Daily"]
+        parameters = ["15mins", "30mins", "Hourly", "Daily"]
 
         return render(request, 'consumption.html', {'user':user, "customer": customer, "page": page, "devices":devices, "parameters":parameters, "def_start_date":start_date, "def_end_date":end_date})
 
