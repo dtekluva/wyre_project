@@ -774,7 +774,7 @@ class Device(models.Model):
         # resolution = "hourly"
         result = []
         start_value = {"time":0, "value":0}
-        print(start_date, end_date, resolution)
+        datapoint_energy = 0
         previous_timestamp_value = "" # TO HOLD ACTUAL TIME STAMP VALUE JUST CALCULATED
 
         if resolution == "Hourly":
@@ -804,7 +804,7 @@ class Device(models.Model):
 
         elif resolution == "Daily":
             data = logs['data']
-            data.pop(0)
+            # data.pop(0)
             
             for datapoint in reversed(data):
                 time = datetime.datetime.strptime(datapoint["recordTime"], "%Y-%m-%dT%H:%M:%S")
@@ -826,8 +826,78 @@ class Device(models.Model):
                     
                     start_value["time"] = datapoint_timestamp
                     start_value["value"] = datapoint_energy
+            
+            result.append([start_value["time"], datapoint_energy - start_value["value"]])
 
             result = result
+        
+        elif resolution == "15mins":
+            data = logs['data']
+            # data.pop(0)
+            
+            for datapoint in reversed(data):
+                time = datetime.datetime.strptime(datapoint["recordTime"], "%Y-%m-%dT%H:%M:%S")
+                # datapoint_timestamp = f"{time.month} {time.year} ,{time.day}-{time.minute}-{time.second}"
+                datapoint_timestamp = time.strftime("%H:%M %b %d, %Y.")
+                datapoint_energy = datapoint["data"][1]["value"]
+                
+                if start_value["time"] == datapoint_timestamp:
+                    continue
+
+                elif start_value["time"] == 0:
+
+                    start_value["time"] = datapoint_timestamp
+                    start_value["value"] = datapoint_energy
+                    continue
+
+                elif start_value["time"] != datapoint_timestamp:
+
+                    result.append([start_value["time"], datapoint_energy - start_value["value"]])
+                    
+                    start_value["time"] = datapoint_timestamp
+                    start_value["value"] = datapoint_energy
+            
+            result.append([start_value["time"], datapoint_energy - start_value["value"]])
+
+            result = result
+        
+        elif resolution == "30mins":
+            data = logs['data']
+            # data.pop(0)
+            
+            for datapoint in reversed(data):
+                time = datetime.datetime.strptime(datapoint["recordTime"], "%Y-%m-%dT%H:%M:%S")
+                # datapoint_timestamp = f"{time.month} {time.year} ,{time.day}-{time.minute}-{time.second}"
+                datapoint_timestamp = time.strftime("%H:%M %b %d, %Y.")
+                datapoint_energy = datapoint["data"][1]["value"]
+                
+                if start_value["time"] == datapoint_timestamp:
+                    continue
+
+                elif start_value["time"] == 0:
+
+                    start_value["time"] = datapoint_timestamp
+                    start_value["value"] = datapoint_energy
+                    continue
+
+                elif start_value["time"] != datapoint_timestamp:
+
+                    result.append([start_value["time"], datapoint_energy - start_value["value"]])
+                    
+                    start_value["time"] = datapoint_timestamp
+                    start_value["value"] = datapoint_energy
+            
+            result.append([start_value["time"], datapoint_energy - start_value["value"]])
+
+            result_30mins = []
+
+            while len(result) > 1:
+            
+                vals = result.pop(0), result.pop(0)
+                usage = vals[0][1] + vals[1][1]
+                result_30mins.append((vals[0][0], usage))
+
+            result = result_30mins
 
         return result
     
