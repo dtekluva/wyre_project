@@ -11,6 +11,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from main.helpers.fetch_readings import run_migrations
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+ 
 
 # Create your views here.
 cache = {}
