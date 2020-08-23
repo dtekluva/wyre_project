@@ -224,7 +224,10 @@ var get_daterange = (()=>{
 var download_btn = document.getElementById("load_readings");
 
 download_btn.addEventListener('click', (e=>{
-  exportToCsv('export.csv', values.data);
+  let period = get_daterange();
+  let device = $("#device")[0].innerText;
+  console.dir(device);
+  exportToCsv(`${device}-${period}.csv`, values.data);
 }))
 
 function exportToCsv(filename, rows) {
