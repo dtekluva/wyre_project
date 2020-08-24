@@ -6,7 +6,7 @@ from dateutil.parser import parse
 
 
 username = "ppl"
-password = "Wyre2017"
+password = "Ppl2020@"
 device_ids = ["128162","125639","128166", "133813"]
 
 last_reading = ""
