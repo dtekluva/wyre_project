@@ -72,9 +72,14 @@
 					<li class="dashboard">
 						<a href="/"><b>Dashboard</b></a>
 					</li>
+					{% if customer.company_name != "Sapio Utilities" %}
+					
 					<li>
 							<a style="background-image: url('https://img.icons8.com/office/25/000000/electricity.png')" href="{% url 'score_card'%}"><b>Score card</b></a>
 					</li>
+					
+					{% endif %}
+					{{customer.company_name}}
 					<li class="components has-submenu">
 						<a href="#"><b>Parameters<span class="submenu-arrow"></span></b></a>
 						<ul class="sidebar-menu__submenu">
@@ -169,7 +174,7 @@
 									 alt=""
 									 title="" />
 						</div>
-						<span class="content-header__user-name">{{customer.company_name |truncatechars:30}}</span>
+						<span id = "customer_name" class="content-header__user-name">{{customer.company_name |truncatechars:30}}</span>
 					</div>
 					<nav class="dropdown-menu dropdown-menu--header dropdown-menu--user-menu "
 							 id="userdropdown">

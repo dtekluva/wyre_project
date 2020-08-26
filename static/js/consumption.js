@@ -211,10 +211,11 @@ Date.prototype.remHours = function(h) {
 
 
 var get_daterange = (()=>{
-  let start_date = $('input[name="consumption_dates"]').data('daterangepicker').startDate.format('MM/DD/YYYY');
-  let end_date = $('input[name="consumption_dates"]').data('daterangepicker').endDate.format('MM/DD/YYYY');
 
-  return `${start_date}-${end_date}`;
+  // let start_date = $('input[name="consumption_dates"]').data('daterangepicker').startDate.format('MM/DD/YYYY');
+  // let end_date = $('input[name="consumption_dates"]').data('daterangepicker').endDate.format('MM/DD/YYYY');
+  let period = $('input[name="consumption_dates"]')[0].value;
+  return period;
 });
 
 ///////////////////////////////////////////////////////////////////////////////////
