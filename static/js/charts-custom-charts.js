@@ -29,6 +29,7 @@ gradientFill3.addColorStop(1, "rgba(128, 182, 244, 0)");
 
 
 
+
 var ActivityChart = new Chart(chartactivity, {
     type: 'bar',
     yAxisID: "kW-Hours",
@@ -141,14 +142,21 @@ var ActivityChart = new Chart(chartactivity, {
 });
 console.dir(ActivityChart.data);
 
-/* Diseases Chart */
+var company_name = document.getElementById("customer_name").innerHTML;
+console.log(company_name);
+
+if (company_name == "Sapio Ltd" | company_name == "Sapio Utilities"){
+    var label_values = ["GEN-1", "PHCN", "IPP"]
+}else{
+    var label_values = ["GEN-1", "GEN-2", "PHCN"]
+};
 
 var chartdiseases = document.getElementById('DiseasesChart').getContext("2d");
 
 var DiseasesChart = new Chart(chartdiseases, {
     type: 'doughnut',
     data: {
-        labels: ["GEN-1", "GEN-2", "PHCN"],
+        labels: label_values,
         datasets: [{
             label: "Data",
             fill: true,
