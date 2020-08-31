@@ -28,7 +28,13 @@ gradientFill3.addColorStop(0, "rgba(128, 182, 244, 0.5)");
 gradientFill3.addColorStop(1, "rgba(128, 182, 244, 0)");
 
 
+var company_name = document.getElementById("customer_name").innerHTML;
 
+if (company_name == "Sapio Ltd" | company_name == "Sapio Utilities"){
+    var label_values = ["GEN", "PHCN", "IPP"]
+}else{
+    var label_values = ["GEN-1", "GEN-2", "PHCN"]
+};
 
 var ActivityChart = new Chart(chartactivity, {
     type: 'bar',
@@ -38,7 +44,7 @@ var ActivityChart = new Chart(chartactivity, {
         labels: [50,50,50,50,50,50,50,50,50,50],
         datasets: [
             {
-            label: "Mains (KWh)",
+            label: label_values[2],
             borderColor: gradientStroke,
             pointBorderColor: gradientStroke,
             pointBackgroundColor: "rgba(255, 255, 255, 1)",
@@ -54,7 +60,7 @@ var ActivityChart = new Chart(chartactivity, {
             data: [50,50,50,50,50,50,50,50,50,50]
             },	
             {
-            label: "Gen 1 (KWh)",
+            label: label_values[0],
             borderColor: gradientStroke2,
             pointBorderColor: gradientStroke2,
             pointBackgroundColor: "rgba(255, 255, 255, 1)",
@@ -70,7 +76,7 @@ var ActivityChart = new Chart(chartactivity, {
             data: [50,50,50,50,50,50,50,50,50,50]
             },
             {
-            label: "Gen 2 (KWh)",
+            label: label_values[1],
             borderColor: gradientStroke3,
             pointBorderColor: gradientStroke3,
             pointBackgroundColor: "rgba(255, 255, 255, 1)",
@@ -140,16 +146,8 @@ var ActivityChart = new Chart(chartactivity, {
         }
     }
 });
-console.dir(ActivityChart.data);
 
-var company_name = document.getElementById("customer_name").innerHTML;
-console.log(company_name);
 
-if (company_name == "Sapio Ltd" | company_name == "Sapio Utilities"){
-    var label_values = ["GEN-1", "PHCN", "IPP"]
-}else{
-    var label_values = ["GEN-1", "GEN-2", "PHCN"]
-};
 
 var chartdiseases = document.getElementById('DiseasesChart').getContext("2d");
 
