@@ -96,7 +96,11 @@
 					</li>
 		
 					<li class="patients has-submenu">
+						{% if customer.is_main_admin %}
 						<a href="#"><b>Customers<span class="submenu-arrow"></span></b></a>
+						{% else %}
+						<a href="#"><b>Profile<span class="submenu-arrow"></span></b></a>
+						{% endif %}
 						<ul class="sidebar-menu__submenu">
 							<!-- <li>
 								<a href="dashboard__patient.html">Bills and Uploads</a>
