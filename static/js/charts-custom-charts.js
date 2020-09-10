@@ -31,7 +31,7 @@ gradientFill3.addColorStop(1, "rgba(128, 182, 244, 0)");
 var company_name = document.getElementById("customer_name").innerHTML;
 
 if (company_name == "Sapio Ltd" | company_name == "Sapio Utilities"){
-    var label_values = ["GEN", "PHCN", "IPP"]
+    var label_values = ["-", "UTILITY", "IPP"]
 }else{
     var label_values = ["GEN-1", "GEN-2", "PHCN"]
 };
