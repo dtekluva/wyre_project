@@ -19,11 +19,11 @@ tippy('#baseline-card', {
 tippy('#felf-card', {
         content: `
                     <strong>
-                        Facility Energy Load Factor.<hr/>
+                        PEAK TO AVG POWER RATIO.<hr/>
                         <ul>
                             
                             <li>
-                                Describes energy usage efficiency. 
+                                Describes energy usage efficiency, between peak and average load consumption of a facility. 
                             </li>
                             <li>
                                 Higher is better, more standardized usage
@@ -42,7 +42,7 @@ tippy('#felf-card', {
 tippy('#capacity-card', {
     content: `
                 <strong>
-                    Generator Loading/ Usage Efficiency<hr/>
+                    Generator Sizing/ Usage Efficiency<hr/>
 
                     <ul>
                         
