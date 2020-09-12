@@ -23,14 +23,10 @@ tippy('#felf-card', {
                         <ul>
                             
                             <li>
-                                Describes energy usage efficiency, between peak and average load consumption of a facility. 
+                                Describes the disparity between peak and average power demand of a facility. 
                             </li>
                             <li>
-                                Higher is better, more standardized usage
-                            </li>
-                            <br>
-                            <li>
-                                Lower is worse, meaning facility sees high highs', and low lows'.
+                                The higher the ratio the better, the lower the ratio the worse. 
                             </li>
                         </ul>
 
@@ -42,7 +38,7 @@ tippy('#felf-card', {
 tippy('#capacity-card', {
     content: `
                 <strong>
-                    Generator Sizing/ Usage Efficiency<hr/>
+                    Generator Size Efficiency<hr/>
 
                     <ul>
                         
