@@ -427,8 +427,8 @@ class Device(models.Model):
         capacity_factor_gen1 = 0 if not gen1_size or not avg_load_gen_1 else avg_load_gen_1 / gen1_size
         capacity_factor_gen2 = 0 if not gen2_size or not avg_load_gen_2 else avg_load_gen_2 / gen2_size
 
-        verdict_gen_1 = "overloaded" if capacity_factor_gen1 > 0.7 else "perfect"
-        verdict_gen_2 = "overloaded" if capacity_factor_gen2 > 0.7 else "perfect"
+        verdict_gen_1 = self.get_capacity_factor_score(capacity_factor_gen1)
+        verdict_gen_2 = self.get_capacity_factor_score(capacity_factor_gen1)
 
         response =  {
                         "gen1_capacity" : gen1_size,
@@ -442,6 +442,21 @@ class Device(models.Model):
                         "verdict_gen_2": verdict_gen_2
                     }
         return response
+
+    def get_capacity_factor_score(self, capacity_factor_value):
+
+        if capacity_factor_value <= 30:
+            return "Very Poor"
+        elif capacity_factor_value <= 40:
+            return "Poor"
+        elif capacity_factor_value <= 55:
+            return "Fair"
+        elif capacity_factor_value <= 65:
+            return "Good"
+        elif capacity_factor_value <= 75:
+            return "Excellent"
+        elif capacity_factor_value > 75:
+            return "Overloaded."
     
     def get_facility_energy_load_factor(self, start_date = False, end_date = False):
 
