@@ -15,12 +15,14 @@ def make_remote_request(device_id, start_date = "2019-08-15", end_date = "2019-0
     cookie = {auth_key_name: auth_key_value}
     # device_id = "128166" #2019-04-15
 
-    url_data_logs = f'http://expertpowerplus.com/APIhttp://expertpowerplus.com/API/api/basic/{device_id}/Datalogs?startDate={start_date}&endDate={end_date}&datalogNum=1'
+    url_data_logs = f'http://expertpowerplus.com/API/api/basic/{device_id}/Datalogs?startDate={start_date}&endDate={end_date}&datalogNum=1'
 
     url_last_read = f'http://expertpowerplus.com/API/api/basic/{device_id}/LastReading'
 
     url = url_data_logs if url == "logs" else url_last_read
+    print(url)
 
     r = requests.get(url, cookies=cookie)
+    print(r.content)
     return r.json()
 
