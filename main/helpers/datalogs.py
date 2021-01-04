@@ -15,7 +15,7 @@ def make_local_request(device_id, start_date = "2019-08-15", end_date = "2019-08
         end_date = end_date.strftime("%Y-%m-%d")
         
 
-    # req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre1234')
+    # req = requests.get('http://expertpowerplus.com/API/api/Login?userName=ppl&pass=Wyre1234')
 
     # # # print(req)
     # auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) chnaged to (form_p)
@@ -25,7 +25,7 @@ def make_local_request(device_id, start_date = "2019-08-15", end_date = "2019-08
 
     # url_data_logs = f'http://www.expertpowerplus.com:8080/api/basic/{device_id}/Datalogs?startDate={start_date}&endDate={end_date}&datalogNum=1'
 
-    # url_last_read = f'http://expertpowerplus.com:8080/api/basic/{device_id}/LastReading'
+    # url_last_read = f'http://expertpowerplus.com/API/api/basic/{device_id}/LastReading'
 
     # url = url_data_logs if url == "logs" else url_last_read
 

@@ -3,14 +3,14 @@ from requests.auth import HTTPBasicAuth
 import json
 
 
-req = requests.get('http://expertpowerplus.com:8080/api/Login?userName=ppl&pass=Wyre2017')
+req = requests.get('http://expertpowerplus.com/API/api/Login?userName=ppl&pass=Wyre2017')
 
 auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) changed to (form_p)
 auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
 
 cookie = {auth_key_name: auth_key_value}
 
-# r = requests.get('http://expertpowerplus.com:8080/api/basic/133813/LastReading', cookies=cookie)
+# r = requests.get('http://expertpowerplus.com/API/api/basic/133813/LastReading', cookies=cookie)
 r = requests.get('http://www.expertpowerplus.com:8080/api/basic/133813/Datalogs?startDate=2019-10-01&endDate=2019-10-20&datalogNum=1', cookies=cookie)
 
 

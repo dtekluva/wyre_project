@@ -13,7 +13,7 @@ last_reading = ""
 
 def authenticate(username, password):#LOGIN TO EXPERT POWER PLUS
 
-    req = requests.get(f'http://expertpowerplus.com:8080/api/Login?userName={username}&pass={password}')
+    req = requests.get(f'http://expertpowerplus.com/API/api/Login?userName={username}&pass={password}')
     # # print(req.cookies)
     auth_key_name = (list(req.cookies)[0]).name #get name of cookie unit used to be (.ASPXAUTH) changed to (form_p)
     auth_key_value = dict(req.cookies).get(auth_key_name) #get actual cookie unit
@@ -24,7 +24,7 @@ def authenticate(username, password):#LOGIN TO EXPERT POWER PLUS
 
 def make_request(cookie, device_id, start_date, end_date):
     
-    request = requests.get(f'http://expertpowerplus.com:8080/api/Basic?startDate={start_date}&endDate={end_date}&deviceId={device_id}', cookies=cookie)
+    request = requests.get(f'http://expertpowerplus.com/API/api/Basic?startDate={start_date}&endDate={end_date}&deviceId={device_id}', cookies=cookie)
 
     response = request.content
     data = json.loads(response)
